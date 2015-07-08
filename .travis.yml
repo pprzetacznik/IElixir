@@ -9,6 +9,5 @@ before_script:
   - export PATH=`pwd`/elixir/bin:$PATH
   - yes | mix deps.get
   - mix deps.compile
-  - mix escript.build
   - mix IElixir test_connection_file
 script: mix test
