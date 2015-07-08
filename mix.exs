@@ -5,7 +5,6 @@ defmodule IElixir.Mixfile do
     [app: :ielixir,
      version: "0.0.1",
      elixir: "~> 1.1-dev",
-     escript: [main_module: IElixir],
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps]

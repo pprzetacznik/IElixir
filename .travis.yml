@@ -10,5 +10,5 @@ before_script:
   - yes | mix deps.get
   - mix deps.compile
   - mix escript.build
-  - ./ielixir test_connection_file
+  - mix IElixir test_connection_file
 script: mix test
