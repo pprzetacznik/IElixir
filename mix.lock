@@ -1,0 +1,2 @@
+%{"erlzmq": {:git, "git://github.com/zeromq/erlzmq2.git", "be8119254d13500bd01ca2d90637888187299393", []},
+  "poison": {:hex, :poison, "1.4.0"}}

@@ -28,6 +28,7 @@ defmodule IElixir.Mixfile do
   #
   # Type `mix help deps` for more examples and options
   defp deps do
-    [ { :erlzmq, github: "zeromq/erlzmq2" } ]
+    [{ :erlzmq, github: "zeromq/erlzmq2" },
+     {:poison, "~> 1.4.0"}]
   end
 end
