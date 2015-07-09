@@ -10,7 +10,7 @@ defmodule IElixir.Heartbeat do
     { :ok, sock } = :erlzmq.socket(opts[:ctx], [:rep, {:active, true }])
     conn_info = opts[:conn_info]
     url = conn_info["transport"] <> "://" <> conn_info["ip"] <> ":" <> Integer.to_string(conn_info["hb_port"])
-    Logger.info(url)
+    Logger.info("Initializing Heartbeat agent on url: " <> url)
     :ok = :erlzmq.bind(sock, url)
     { :ok, id } = :erlzmq.getsockopt(sock, :identity)
     { :ok, { sock, id } }
@@ -20,16 +20,8 @@ defmodule IElixir.Heartbeat do
     :erlzmq.close(sock)
   end
 
-  def send_message(pid) do
-    GenServer.cast(pid, :message1)
-  end
-
-  # def handle_cast(request, state) do
-  #   Logger.info("Przyszedł jakiś request")
-  #   {:noreply, []}
-  # end
   def handle_info({ :zmq, _, data, [] }, state = { sock, id }) do
-    Logger.info("GOT HEARTBEAT")
+    Logger.info("Heartbeat ping received")
     :erlzmq.send(sock, data)
     { :noreply, state }
   end
