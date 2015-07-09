@@ -8,5 +8,8 @@ defmodule IElixir do
       |> Poison.Parser.parse!
     Logger.info(conn_info["stdin_port"])
     { :ok, ctx } = :erlzmq.context()
+
+    { :ok, _ } = IElixir.Heartbeat.start_link([conn_info: conn_info, ctx: ctx])
+    GenServer.cast(MyHeartbeat, :message)
   end
 end
