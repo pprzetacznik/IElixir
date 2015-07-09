@@ -9,5 +9,9 @@ before_script:
   - export PATH=`pwd`/elixir/bin:$PATH
   - yes | mix deps.get
   - mix deps.compile
-  - mix IElixir test_connection_file
+  # Integration tests are not configured yet
+  # - configuring virtualenv
+  # - downloading python dependencies
+  # - downloading jupyter_kernel_test application
+  # - configuring kernel.json file with start_script.sh
 script: mix test
