@@ -1,4 +1,46 @@
 IElixir
 =======
 
-Jupyter's kernel for Elixir  [![Build Status](https://travis-ci.org/pprzetacznik/IElixir.svg)](https://travis-ci.org/pprzetacznik/IElixir)
+Jupyter's kernel for Elixir
+
+[![Build Status](https://travis-ci.org/pprzetacznik/IElixir.svg)](https://travis-ci.org/pprzetacznik/IElixir)
+
+##Getting Started
+
+### Configure Jupyter
+
+```Bash
+$ git clone https://github.com/jupyter/notebook.git
+$ cd notebook
+$ mkvirtualenv jupyter-env
+$ workon jupyter-env
+$ pip install -r requirements.txt
+```
+
+### Configure IElixir
+
+Clone IElixir repository
+```Bash
+$ git clone https://github.com/pprzetacznik/IElixir.git
+```
+
+Create and edit `kernel.json` file
+
+```Bash
+$ mkdir ~/.ipython/kernels/ielixir
+$ vim ~/.ipython/kernels/ielixir/kernel.json
+```
+
+Put into the file following content:
+```Bash
+{
+  "argv": ["{PATH_TO_YOUR_IELIXIR_PROJECT}/start_script.sh", "{connection_file}"],
+  "display_name": "ielixir",
+  "language": "Elixir"
+}
+```
+
+Run Jupyter console with following line:
+```Bash
+(jupyter-env) $ jupyter console --kernel ielixir
+```
