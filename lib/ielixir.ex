@@ -6,7 +6,7 @@ defmodule IElixir do
   def run(connection_file) do
     conn_info = parse_connection_file(connection_file)
     { :ok, ctx } = :erlzmq.context()
-    { :ok, _ } = IElixir.Heartbeat.start_link([conn_info: conn_info, ctx: ctx])
+    { :ok, _ } = IElixir.Supervisor.start_link([conn_info: conn_info, ctx: ctx])
     loop()
   end
 

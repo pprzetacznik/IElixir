@@ -5,4 +5,4 @@
 erl_crash.dump
 *.ez
 *.iml
-ielixir
+/ielixir
