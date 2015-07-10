@@ -19,9 +19,12 @@ $ pip install -r requirements.txt
 
 ### Configure IElixir
 
-Clone IElixir repository
+Clone IElixir repository and prepare the project
 ```Bash
 $ git clone https://github.com/pprzetacznik/IElixir.git
+$ mix deps.get
+$ mix deps.compile
+$ mix test
 ```
 
 Create and edit `kernel.json` file
