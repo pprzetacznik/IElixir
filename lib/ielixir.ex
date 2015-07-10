@@ -15,7 +15,7 @@ defmodule IElixir do
     loop()
   end
 
-  defp parse_connection_file(connection_file) do
+  def parse_connection_file(connection_file) do
     File.read!(connection_file)
       |> Poison.Parser.parse!
   end
