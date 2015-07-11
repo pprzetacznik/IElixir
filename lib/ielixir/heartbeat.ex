@@ -7,11 +7,7 @@ defmodule IElixir.Heartbeat do
   end
 
   def init(opts) do
-    { :ok, sock } = :erlzmq.socket(opts[:ctx], [:rep, {:active, true }])
-    conn_info = opts[:conn_info]
-    url = conn_info["transport"] <> "://" <> conn_info["ip"] <> ":" <> Integer.to_string(conn_info["hb_port"])
-    Logger.info("Initializing Heartbeat agent on url: " <> url)
-    :ok = :erlzmq.bind(sock, url)
+    sock = IElixir.Utils.make_socket(opts, "hb", :rep)
     { :ok, id } = :erlzmq.getsockopt(sock, :identity)
     { :ok, { sock, id } }
   end
