@@ -1,4 +1,4 @@
-defmodule IElixir.Heartbeat do
+defmodule IElixir.StdIn do
   use GenServer
   require Logger
 
@@ -7,9 +7,8 @@ defmodule IElixir.Heartbeat do
   end
 
   def init(opts) do
-    sock = IElixir.Utils.make_socket(opts, "hb", :rep)
-    { :ok, id } = :erlzmq.getsockopt(sock, :identity)
-    { :ok, { sock, id } }
+    sock = IElixir.Utils.make_socket(opts, "stdin", :router)
+    { :ok, { sock, sock } }
   end
 
   def terminate(_reason, { sock, _ }) do
@@ -17,12 +16,12 @@ defmodule IElixir.Heartbeat do
   end
 
   def handle_info({ :zmq, _, data, [] }, state = { sock, _id }) do
-    Logger.info("Heartbeat ping received")
-    :erlzmq.send(sock, data)
+    Logger.info("StdIn message received")
     { :noreply, state }
   end
   def handle_info(msg, state) do
-    Logger.warn("Got unexpected message on hb process: #{inspect msg}")
+    Logger.warn("Got unexpected message on StdIn process: #{inspect msg}")
     { :noreply, state}
   end
 end
+

@@ -7,7 +7,11 @@ defmodule IElixir.Supervisor do
 
   def init(opts) do
     children = [
-      worker(IElixir.Heartbeat, [opts])
+      worker(IElixir.Heartbeat, [opts]),
+      worker(IElixir.Control, [opts]),
+      worker(IElixir.IOPub, [opts]),
+      worker(IElixir.Shell, [opts]),
+      worker(IElixir.StdIn, [opts])
     ]
 
     supervise(children, strategy: :one_for_one)
