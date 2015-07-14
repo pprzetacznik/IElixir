@@ -71,8 +71,18 @@ defmodule IElixir.Shell do
     Logger.info("Assembled message by Shell process: #{inspect message}")
   end
 
-  def respond(sock, message, type, content) do
-    Logger.info("Here will be response to the Jupyter")
+  def respond(sock, message, message_type, content) do
+    message = [
+      message.uuid,
+      "<IDS|MSG>",
+      message.baddad42,
+      Poison.encode!(message.header),
+      Poison.encode!(message.header),
+      Poison.encode!(message.metadata),
+      Poison.encode!(content)
+    ]
+    Logger.info("Message before sending: #{inspect message}")
+    send_all(sock, message)
   end
 
   def send_all(sock, [message]) do
