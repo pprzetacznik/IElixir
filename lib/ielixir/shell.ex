@@ -34,20 +34,66 @@ defmodule IElixir.Shell do
     if :rcvmore in flags do
       {:buffer, message_buffer}
     else
-      {:msg, List.update_at(Enum.reverse(message_buffer), 3, &(Poison.Parser.parse!(&1)))}
+      {:msg, parse_message(Enum.reverse(message_buffer))}
     end
   end
 
-  defp process(message = [_, _, _, %{"msg_type" => msg_type}, _, _, _], sock) do
+  defp process(message = %IElixir.Message{header: %{"msg_type" => msg_type}}, sock) do
     case msg_type do
       "kernel_info_request" ->
         Logger.info("Received kernel_info_request")
+        {:ok, version} = Version.parse(System.version)
+        content = %{
+          "protocol_version" => '5.0',
+          "implementation" => "ielixir",
+          "implementation_version" => "1.0",
+          "language_info" => %{
+            "name" => "elixir",
+            "version" => inspect(version),
+            "mimetype" => "",
+            "file_extension" => ".ex",
+            "pygments_lexer" => "",
+            "codemirror_mode" => "",
+            "nbconvert_exporter" => ""
+          },
+          "banner" => "",
+          "help_links" => [%{
+            "text" => "",
+            "url" => ""
+          }]
+        }
+        respond(sock, message, :kernel_info_reply, content)
       _ ->
         Logger.info("Received other request: #{inspect msg_type}")
     end
   end
   defp process(message, sock) do
     Logger.info("Assembled message by Shell process: #{inspect message}")
+  end
+
+  def respond(sock, message, type, content) do
+    Logger.info("Here will be response to the Jupyter")
+  end
+
+  def send_all(sock, [message]) do
+    :ok = :erlzmq.send(sock, message, [])
+  end
+  def send_all(sock, [message | other_messages]) do
+    :ok = :erlzmq.send(sock, message, [:sndmore])
+    send_all(sock, other_messages)
+  end
+
+  def parse_message([uuid, "<IDS|MSG>", baddad42, header, parent_header, metadata, content | blob]) do
+    %IElixir.Message{uuid: uuid,
+      baddad42: baddad42,
+      header: Poison.Parser.parse!(header),
+      parent_header: Poison.Parser.parse!(parent_header),
+      metadata: Poison.Parser.parse!(metadata),
+      content: Poison.Parser.parse!(content),
+      blob: blob}
+  end
+  def parse_message(message) do
+    Logger.warn("Invalid message on shell socket #{inspect message}")
   end
 end
 

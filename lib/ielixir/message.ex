@@ -1,7 +1,10 @@
 defmodule IElixir.Message do
-  defstruct uuids: [],
-    msg_id: nil,
-    msg_type: nil,
-    username: nil
+  defstruct uuid: nil,
+    baddad42: nil,
+    header: nil,
+    parent_header: nil,
+    metadata: nil,
+    content: nil,
+    blob: nil
 end
 
