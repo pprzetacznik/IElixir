@@ -7,7 +7,7 @@ defmodule IElixir.HMAC do
     GenServer.start_link(__MODULE__, opts, name: HMACService)
   end
 
-  def compute_sig(header_str, parent_header_str, metadata_str, content_str) do
+  def compute_signature(header_str, parent_header_str, metadata_str, content_str) do
     GenServer.call(HMACService,
       {:compute_sig, [header_str, parent_header_str, metadata_str, content_str]})
   end

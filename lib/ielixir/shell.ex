@@ -62,24 +62,30 @@ defmodule IElixir.Shell do
             "url" => ""
           }]
         }
-        respond(sock, message, :kernel_info_reply, content)
+        respond(sock, message, "kernel_info_reply", content)
       _ ->
         Logger.info("Received other request: #{inspect msg_type}")
     end
   end
-  defp process(message, sock) do
+  defp process(message, _sock) do
     Logger.info("Assembled message by Shell process: #{inspect message}")
   end
 
   def respond(sock, message, message_type, content) do
+    new_header = %{message.header | "msg_type" => message_type}
+    header = Poison.encode!(new_header)
+    parent_header = Poison.encode!(message.header)
+    metadata = Poison.encode!(message.metadata)
+    content = Poison.encode!(content)
+
     message = [
       message.uuid,
       "<IDS|MSG>",
-      message.baddad42,
-      Poison.encode!(message.header),
-      Poison.encode!(message.header),
-      Poison.encode!(message.metadata),
-      Poison.encode!(content)
+      IElixir.HMAC.compute_signature(header, parent_header, metadata, content),
+      header,
+      parent_header,
+      metadata,
+      content
     ]
     Logger.info("Message before sending: #{inspect message}")
     send_all(sock, message)
