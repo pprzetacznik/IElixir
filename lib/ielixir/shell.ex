@@ -41,13 +41,13 @@ defmodule IElixir.Shell do
   defp process(message = %IElixir.Message{header: %{"msg_type" => msg_type}}, sock) do
     case msg_type do
       "kernel_info_request" ->
-        Logger.info("Received kernel_info_request")
+        Logger.debug("Received kernel_info_request")
         {:ok, version} = Version.parse(System.version)
         content = %{
-          "protocol_version" => '5.0',
-          "implementation" => "ielixir",
-          "implementation_version" => "1.0",
-          "language_info" => %{
+          "protocol_version": "5.0",
+          "implementation": "ielixir",
+          "implementation_version": "1.0",
+          "language_info": %{
             "name" => "elixir",
             "version" => inspect(version),
             "mimetype" => "",
@@ -56,15 +56,27 @@ defmodule IElixir.Shell do
             "codemirror_mode" => "",
             "nbconvert_exporter" => ""
           },
-          "banner" => "",
-          "help_links" => [%{
+          "banner": "",
+          "help_links": [%{
             "text" => "",
             "url" => ""
           }]
         }
         respond(sock, message, "kernel_info_reply", content)
+      "execute_request" ->
+        Logger.debug("Received execute_request: #{inspect message}")
+        content = %{
+          "status": "ok",
+          "execution_count": 5,
+          "payload": [
+            %{}
+          ],
+          "user_expressions": %{}
+        }
+        respond(sock, message, "execute_reply", content)
       _ ->
-        Logger.info("Received other request: #{inspect msg_type}")
+        Logger.debug("Received other request: #{inspect msg_type}")
+        Logger.debug(inspect message)
     end
   end
   defp process(message, _sock) do
@@ -87,7 +99,7 @@ defmodule IElixir.Shell do
       metadata,
       content
     ]
-    Logger.info("Message before sending: #{inspect message}")
+    Logger.debug("Message before sending: #{inspect message}")
     send_all(sock, message)
   end
 

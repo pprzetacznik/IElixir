@@ -14,6 +14,7 @@ defmodule IElixir.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
+    # [applications: [:logger]]
     [applications: [:logger]]
   end
 
@@ -27,7 +28,9 @@ defmodule IElixir.Mixfile do
   #
   # Type `mix help deps` for more examples and options
   defp deps do
-    [{ :erlzmq, github: "zeromq/erlzmq2" },
-     { :poison, github: "devinus/poison" }]
+    [
+      { :erlzmq, github: "zeromq/erlzmq2" },
+      { :poison, github: "devinus/poison" }
+    ]
   end
 end
