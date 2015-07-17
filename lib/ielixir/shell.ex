@@ -65,6 +65,7 @@ defmodule IElixir.Shell do
         respond(sock, message, "kernel_info_reply", content)
       "execute_request" ->
         Logger.debug("Received execute_request: #{inspect message}")
+        IElixir.IOPub.send_status("busy", message)
         IElixir.IOPub.send_status("idle", message)
 
         content = %{

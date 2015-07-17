@@ -37,7 +37,10 @@ defmodule IElixir.IOPub do
       metadata,
       content
     ]
+    Logger.debug("Status message before sending @ IOPub socket: #{inspect message}")
     IElixir.Shell.send_all(sock, message)
+
+    {:noreply, sock}
   end
 
   def handle_info({ :zmq, _, data, []}, sock) do
