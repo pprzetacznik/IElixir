@@ -42,13 +42,4 @@ defmodule IElixir.IOPub do
 
     {:noreply, sock}
   end
-
-  def handle_info({ :zmq, _, data, []}, sock) do
-    Logger.info("IOPub message received")
-    { :noreply, sock }
-  end
-  def handle_info(msg, state) do
-    Logger.warn("Got unexpected message on IOPub process: #{inspect msg}")
-    { :noreply, state}
-  end
 end
