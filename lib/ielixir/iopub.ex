@@ -8,6 +8,7 @@ defmodule IElixir.IOPub do
 
   def init(opts) do
     sock = IElixir.Utils.make_socket(opts, "iopub", :pub)
+    Logger.debug("IOPub PID: #{inspect self()}")
     {:ok, sock}
   end
 
@@ -15,10 +16,34 @@ defmodule IElixir.IOPub do
     GenServer.cast(IOPub, {:send_status, status, message})
   end
 
-  def terminate(_reason, { sock, _ }) do
+  def send_message(message) do
+    GenServer.cast(IOPub, {:send_message, message})
+  end
+
+  def terminate(_reason, {sock, _}) do
     :erlzmq.close(sock)
   end
 
+  def handle_cast({:send_message, message}, sock) do
+    header = Poison.encode!(message.header)
+    parent_header = Poison.encode!(message.parent_header)
+    metadata = Poison.encode!(message.metadata)
+    content = Poison.encode!(message.content)
+
+    message = [
+      message.uuid,
+      "<IDS|MSG>",
+      IElixir.HMAC.compute_signature(header, parent_header, metadata, content),
+      header,
+      parent_header,
+      metadata,
+      content
+    ]
+    Logger.debug("Sending message @ IOPub socket: #{inspect message}")
+    IElixir.Shell.send_all(sock, message)
+
+    {:noreply, sock}
+  end
   def handle_cast({:send_status, status, message}, sock) do
     content = %{"execution_state": status}
 

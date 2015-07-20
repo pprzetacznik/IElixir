@@ -7,6 +7,7 @@ defmodule IElixir.Shell do
   end
 
   def init(opts) do
+    Logger.debug("Shell PID: #{inspect self()}")
     sock = IElixir.Utils.make_socket(opts, "shell", :router)
     {:ok, {sock, []}}
   end
@@ -66,6 +67,44 @@ defmodule IElixir.Shell do
       "execute_request" ->
         Logger.debug("Received execute_request: #{inspect message}")
         IElixir.IOPub.send_status("busy", message)
+        new_message = %{message |
+            "parent_header": message.header,
+            "header": %{message.header |
+              "msg_type" => "execute_input"
+            },
+            "content": %{
+              "execution_count": 1,
+              "code": message.content["code"]
+            }
+        }
+        IElixir.IOPub.send_message(new_message)
+
+        new_message = %{message |
+            "parent_header": message.header,
+            "header": %{ message.header |
+              "msg_type" => "stream"
+            },
+            "content": %{
+              "name": "stdout",
+              "text": "hello, world"
+            }
+        }
+        IElixir.IOPub.send_message(new_message)
+
+        new_message = %{message |
+            "parent_header": message.header,
+            "header": %{ message.header |
+              "msg_type" => "execute_result"
+            },
+            "content": %{
+              "execution_count": 1,
+              "data": %{
+                "text/plain": "result!"
+              },
+              "metadata": %{}
+            }
+        }
+        IElixir.IOPub.send_message(new_message)
         IElixir.IOPub.send_status("idle", message)
 
         content = %{
