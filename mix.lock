@@ -1,2 +1,4 @@
 %{"erlzmq": {:git, "git://github.com/zeromq/erlzmq2.git", "be8119254d13500bd01ca2d90637888187299393", []},
-  "poison": {:git, "git://github.com/devinus/poison.git", "fc989e4eee5743212fec543a939bba9337da1c5b", []}}
+  "poison": {:git, "git://github.com/devinus/poison.git", "fc989e4eee5743212fec543a939bba9337da1c5b", []},
+  "quickrand": {:hex, :quickrand, "1.5.0"},
+  "uuid": {:git, "git://github.com/okeuday/uuid.git", "6bc38507460c821321d66504d3f8d6c1cdb57d98", []}}

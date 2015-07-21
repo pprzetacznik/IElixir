@@ -30,7 +30,8 @@ defmodule IElixir.Mixfile do
   defp deps do
     [
       { :erlzmq, github: "zeromq/erlzmq2" },
-      { :poison, github: "devinus/poison" }
+      { :poison, github: "devinus/poison" },
+      { :uuid, github: "okeuday/uuid" }
     ]
   end
 end

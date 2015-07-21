@@ -86,7 +86,7 @@ defmodule IElixir.Shell do
             },
             "content": %{
               "name": "stdout",
-              "text": "hello, world"
+              "text": "hello, world\n"
             }
         }
         IElixir.IOPub.send_message(new_message)
@@ -110,9 +110,7 @@ defmodule IElixir.Shell do
         content = %{
           "status": "ok",
           "execution_count": 5,
-          "payload": [
-            %{}
-          ],
+          "payload": [],
           "user_expressions": %{}
         }
         respond(sock, message, "execute_reply", content)

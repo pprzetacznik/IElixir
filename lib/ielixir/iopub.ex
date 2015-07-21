@@ -45,16 +45,19 @@ defmodule IElixir.IOPub do
     {:noreply, sock}
   end
   def handle_cast({:send_status, status, message}, sock) do
-    content = %{"execution_state": status}
-
-    new_header = %{message.header | "msg_type" => "status"}
-    header = Poison.encode!(new_header)
-    parent_header = Poison.encode!(message.header)
-    metadata = Poison.encode!(message.metadata)
-    content = Poison.encode!(content)
+    parent_header = Poison.encode!(message.parent_header)
+    header_content = %{
+      "msg_id": :uuid.uuid_to_string(:uuid.get_v4(), :binary_standard),
+      "username": "kernel",
+      "msg_type": "status",
+      "session": message.header["session"]
+    }
+    header = Poison.encode!(header_content)
+    metadata = Poison.encode!(%{})
+    content = Poison.encode!(%{"execution_state": status})
 
     message = [
-      message.uuid,
+      header_content.msg_id,
       "<IDS|MSG>",
       IElixir.HMAC.compute_signature(header, parent_header, metadata, content),
       header,
