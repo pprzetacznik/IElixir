@@ -1,13 +1,14 @@
 defmodule IElixir.Heartbeat do
   use GenServer
   require Logger
+  alias IElixir.Utils
 
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, [])
   end
 
   def init(opts) do
-    sock = IElixir.Utils.make_socket(opts, "hb", :rep)
+    sock = Utils.make_socket(opts, "hb", :rep)
     {:ok, id} = :erlzmq.getsockopt(sock, :identity)
     {:ok, {sock, id}}
   end

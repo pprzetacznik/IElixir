@@ -1,5 +1,6 @@
 defmodule IElixir.Message do
   require Logger
+  alias IElixir.HMAC
 
   defstruct uuid: nil,
     baddad42: nil,
@@ -18,7 +19,7 @@ defmodule IElixir.Message do
     message = [
       message.uuid,
       "<IDS|MSG>",
-      IElixir.HMAC.compute_signature(header, parent_header, metadata, content),
+      HMAC.compute_signature(header, parent_header, metadata, content),
       header,
       parent_header,
       metadata,

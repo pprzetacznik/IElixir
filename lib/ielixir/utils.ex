@@ -9,5 +9,13 @@ defmodule IElixir.Utils do
     :ok = :erlzmq.bind(sock, url)
     sock
   end
+
+  def send_all(sock, [message]) do
+    :ok = :erlzmq.send(sock, message, [])
+  end
+  def send_all(sock, [message | other_messages]) do
+    :ok = :erlzmq.send(sock, message, [:sndmore])
+    send_all(sock, other_messages)
+  end
 end
 

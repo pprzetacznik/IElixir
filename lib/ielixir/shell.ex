@@ -3,6 +3,7 @@ defmodule IElixir.Shell do
   require Logger
   alias IElixir.Message
   alias IElixir.IOPub
+  alias IElixir.Utils
 
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, [])
@@ -10,7 +11,7 @@ defmodule IElixir.Shell do
 
   def init(opts) do
     Logger.debug("Shell PID: #{inspect self()}")
-    sock = IElixir.Utils.make_socket(opts, "shell", :router)
+    sock = Utils.make_socket(opts, "shell", :router)
     {:ok, {sock, []}}
   end
 
@@ -54,7 +55,7 @@ defmodule IElixir.Shell do
         "url" => ""
       }]
     }
-    respond(sock, message, "kernel_info_reply", content)
+    send_message(sock, message, "kernel_info_reply", content)
   end
   defp process("execute_request", message, sock) do
     Logger.debug("Received execute_request: #{inspect message}")
@@ -69,13 +70,13 @@ defmodule IElixir.Shell do
       "payload": [],
       "user_expressions": %{}
     }
-    respond(sock, message, "execute_reply", content)
+    send_message(sock, message, "execute_reply", content)
   end
   defp process(msg_type, message, _sock) do
     Logger.info("Received message of type: #{msg_type} @ shell socket: #{inspect message}")
   end
 
-  def respond(sock, message, message_type, content) do
+  def send_message(sock, message, message_type, content) do
     new_message = %{message |
       "parent_header": message.header,
       "header": %{message.header |
@@ -83,15 +84,7 @@ defmodule IElixir.Shell do
       },
       "content": content
     }
-    IElixir.Shell.send_all(sock, Message.encode(new_message))
-  end
-
-  def send_all(sock, [message]) do
-    :ok = :erlzmq.send(sock, message, [])
-  end
-  def send_all(sock, [message | other_messages]) do
-    :ok = :erlzmq.send(sock, message, [:sndmore])
-    send_all(sock, other_messages)
+    Utils.send_all(sock, Message.encode(new_message))
   end
 end
 
