@@ -27,5 +27,28 @@ defmodule IElixir.Message do
     Logger.debug("Message encoded: #{inspect message}")
     message
   end
+
+  def parse([uuid, "<IDS|MSG>", baddad42, header, parent_header, metadata, content | blob]) do
+    %IElixir.Message{uuid: uuid,
+      baddad42: baddad42,
+      header: Poison.Parser.parse!(header),
+      parent_header: Poison.Parser.parse!(parent_header),
+      metadata: Poison.Parser.parse!(metadata),
+      content: Poison.Parser.parse!(content),
+      blob: blob}
+  end
+  def parse(message) do
+    Logger.warn("Invalid message on shell socket #{inspect message}")
+  end
+
+  def assemble_message(message, flags, message_buffer) do
+    message_buffer = [message | message_buffer]
+    if :rcvmore in flags do
+      {:buffer, message_buffer}
+    else
+      {:msg, parse(Enum.reverse(message_buffer))}
+    end
+  end
+
 end
 

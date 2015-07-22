@@ -1,6 +1,8 @@
 defmodule IElixir.Shell do
   use GenServer
   require Logger
+  alias IElixir.Message
+  alias IElixir.IOPub
 
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, [])
@@ -17,7 +19,7 @@ defmodule IElixir.Shell do
   end
 
   def handle_info({:zmq, _, message, flags}, {sock, message_buffer}) do
-    case assemble_message(message, flags, message_buffer) do
+    case Message.assemble_message(message, flags, message_buffer) do
       {:buffer, buffer} ->
         { :noreply, {sock, buffer}}
       {:msg, message} ->
@@ -28,15 +30,6 @@ defmodule IElixir.Shell do
   def handle_info(message, state) do
     Logger.warn("Got unexpected message on shell process: #{inspect message}")
     {:noreply, state}
-  end
-
-  defp assemble_message(message, flags, message_buffer) do
-    message_buffer = [message | message_buffer]
-    if :rcvmore in flags do
-      {:buffer, message_buffer}
-    else
-      {:msg, parse_message(Enum.reverse(message_buffer))}
-    end
   end
 
   defp process("kernel_info_request", message, sock) do
@@ -65,11 +58,11 @@ defmodule IElixir.Shell do
   end
   defp process("execute_request", message, sock) do
     Logger.debug("Received execute_request: #{inspect message}")
-    IElixir.IOPub.send_status("busy", message)
-    IElixir.IOPub.send_execute_input(message)
-    IElixir.IOPub.send_stream(message, "hello, world\n")
-    IElixir.IOPub.send_execute_result(message, "result!")
-    IElixir.IOPub.send_status("idle", message)
+    IOPub.send_status("busy", message)
+    IOPub.send_execute_input(message)
+    IOPub.send_stream(message, "hello, world\n")
+    IOPub.send_execute_result(message, "result!")
+    IOPub.send_status("idle", message)
     content = %{
       "status": "ok",
       "execution_count": 5,
@@ -90,7 +83,7 @@ defmodule IElixir.Shell do
       },
       "content": content
     }
-    IElixir.Shell.send_all(sock, IElixir.Message.encode(new_message))
+    IElixir.Shell.send_all(sock, Message.encode(new_message))
   end
 
   def send_all(sock, [message]) do
@@ -99,19 +92,6 @@ defmodule IElixir.Shell do
   def send_all(sock, [message | other_messages]) do
     :ok = :erlzmq.send(sock, message, [:sndmore])
     send_all(sock, other_messages)
-  end
-
-  def parse_message([uuid, "<IDS|MSG>", baddad42, header, parent_header, metadata, content | blob]) do
-    %IElixir.Message{uuid: uuid,
-      baddad42: baddad42,
-      header: Poison.Parser.parse!(header),
-      parent_header: Poison.Parser.parse!(parent_header),
-      metadata: Poison.Parser.parse!(metadata),
-      content: Poison.Parser.parse!(content),
-      blob: blob}
-  end
-  def parse_message(message) do
-    Logger.warn("Invalid message on shell socket #{inspect message}")
   end
 end
 
