@@ -21,7 +21,7 @@ defmodule IElixir.Shell do
       {:buffer, buffer} ->
         { :noreply, {sock, buffer}}
       {:msg, message} ->
-        process(message, sock)
+        process(message.header["msg_type"], message, sock)
         {:noreply, {sock, []}}
     end
   end
@@ -39,108 +39,58 @@ defmodule IElixir.Shell do
     end
   end
 
-  defp process(message = %IElixir.Message{header: %{"msg_type" => msg_type}}, sock) do
-    case msg_type do
-      "kernel_info_request" ->
-        Logger.debug("Received kernel_info_request")
-        {:ok, version} = Version.parse(System.version)
-        content = %{
-          "protocol_version": "5.0",
-          "implementation": "ielixir",
-          "implementation_version": "1.0",
-          "language_info": %{
-            "name" => "elixir",
-            "version" => inspect(version),
-            "mimetype" => "",
-            "file_extension" => ".ex",
-            "pygments_lexer" => "",
-            "codemirror_mode" => "",
-            "nbconvert_exporter" => ""
-          },
-          "banner": "",
-          "help_links": [%{
-            "text" => "",
-            "url" => ""
-          }]
-        }
-        respond(sock, message, "kernel_info_reply", content)
-      "execute_request" ->
-        Logger.debug("Received execute_request: #{inspect message}")
-        IElixir.IOPub.send_status("busy", message)
-        new_message = %{message |
-            "parent_header": message.header,
-            "header": %{message.header |
-              "msg_type" => "execute_input"
-            },
-            "content": %{
-              "execution_count": 1,
-              "code": message.content["code"]
-            }
-        }
-        IElixir.IOPub.send_message(new_message)
-
-        new_message = %{message |
-            "parent_header": message.header,
-            "header": %{ message.header |
-              "msg_type" => "stream"
-            },
-            "content": %{
-              "name": "stdout",
-              "text": "hello, world\n"
-            }
-        }
-        IElixir.IOPub.send_message(new_message)
-
-        new_message = %{message |
-            "parent_header": message.header,
-            "header": %{ message.header |
-              "msg_type" => "execute_result"
-            },
-            "content": %{
-              "execution_count": 1,
-              "data": %{
-                "text/plain": "result!"
-              },
-              "metadata": %{}
-            }
-        }
-        IElixir.IOPub.send_message(new_message)
-        IElixir.IOPub.send_status("idle", message)
-
-        content = %{
-          "status": "ok",
-          "execution_count": 5,
-          "payload": [],
-          "user_expressions": %{}
-        }
-        respond(sock, message, "execute_reply", content)
-      _ ->
-        Logger.debug("Received other request: #{inspect msg_type}")
-        Logger.debug(inspect message)
-    end
+  defp process("kernel_info_request", message, sock) do
+    Logger.debug("Received kernel_info_request")
+    {:ok, version} = Version.parse(System.version)
+    content = %{
+      "protocol_version": "5.0",
+      "implementation": "ielixir",
+      "implementation_version": "1.0",
+      "language_info": %{
+        "name" => "elixir",
+        "version" => inspect(version),
+        "mimetype" => "",
+        "file_extension" => ".ex",
+        "pygments_lexer" => "",
+        "codemirror_mode" => "",
+        "nbconvert_exporter" => ""
+      },
+      "banner": "",
+      "help_links": [%{
+        "text" => "",
+        "url" => ""
+      }]
+    }
+    respond(sock, message, "kernel_info_reply", content)
   end
-  defp process(message, _sock) do
-    Logger.info("Assembled message by Shell process: #{inspect message}")
+  defp process("execute_request", message, sock) do
+    Logger.debug("Received execute_request: #{inspect message}")
+    IElixir.IOPub.send_status("busy", message)
+    IElixir.IOPub.send_execute_input(message)
+    IElixir.IOPub.send_stream(message, "hello, world\n")
+    IElixir.IOPub.send_execute_result(message, "result!")
+    IElixir.IOPub.send_status("idle", message)
+    content = %{
+      "status": "ok",
+      "execution_count": 5,
+      "payload": [],
+      "user_expressions": %{}
+    }
+    respond(sock, message, "execute_reply", content)
+  end
+  defp process(msg_type, message, _sock) do
+    Logger.info("Received message of type: #{msg_type} @ shell socket: #{inspect message}")
   end
 
   def respond(sock, message, message_type, content) do
-    new_header = %{message.header | "msg_type" => message_type}
-    header = Poison.encode!(new_header)
-    parent_header = Poison.encode!(message.header)
-    metadata = Poison.encode!(message.metadata)
-    content = Poison.encode!(content)
-
-    message = [
-      message.uuid,
-      "<IDS|MSG>",
-      IElixir.HMAC.compute_signature(header, parent_header, metadata, content),
-      header,
-      parent_header,
-      metadata,
-      content
-    ]
-    Logger.debug("Message before sending: #{inspect message}")
-    send_all(sock, message)
+    new_message = %{message |
+      "parent_header": message.header,
+      "header": %{message.header |
+        "msg_type" => message_type
+      },
+      "content": content
+    }
+    IElixir.Shell.send_all(sock, IElixir.Message.encode(new_message))
   end
 
   def send_all(sock, [message]) do

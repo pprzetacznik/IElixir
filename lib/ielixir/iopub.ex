@@ -16,12 +16,70 @@ defmodule IElixir.IOPub do
     GenServer.cast(IOPub, {:send_status, status, message})
   end
 
+  def send_execute_input(message) do
+    GenServer.cast(IOPub, {:send_execute_input, message})
+  end
+
+  def send_stream(message, text) do
+    GenServer.cast(IOPub, {:send_stream, message, text})
+  end
+
+  def send_execute_result(message, text) do
+    GenServer.cast(IOPub, {:send_execute_result, message, text})
+  end
+
   def send_message(message) do
     GenServer.cast(IOPub, {:send_message, message})
   end
 
   def terminate(_reason, {sock, _}) do
     :erlzmq.close(sock)
+  end
+
+  def handle_cast({:send_execute_input, message}, sock) do
+    new_message = %{message |
+      "parent_header": message.header,
+      "header": %{message.header |
+        "msg_type" => "execute_input"
+      },
+      "content": %{
+        "execution_count": 1,
+        "code": message.content["code"]
+      }
+    }
+    IElixir.Shell.send_all(sock, IElixir.Message.encode(new_message))
+    {:noreply, sock}
+  end
+  def handle_cast({:send_stream, message, text}, sock) do
+    new_message = %{message |
+      "parent_header": message.header,
+      "header": %{message.header |
+        "msg_type" => "stream"
+      },
+      "content": %{
+        "name": "stdout",
+        "text": text
+      }
+    }
+    IElixir.Shell.send_all(sock, IElixir.Message.encode(new_message))
+    {:noreply, sock}
+  end
+  def handle_cast({:send_execute_result, message, text}, sock) do
+    new_message = %{message |
+      "parent_header": message.header,
+      "header": %{ message.header |
+        "msg_type" => "execute_result"
+      },
+      "content": %{
+        "execution_count": 1,
+        "data": %{
+          "text/plain": text
+        },
+        "metadata": %{}
+      }
+    }
+    IElixir.Shell.send_all(sock, IElixir.Message.encode(new_message))
+    {:noreply, sock}
   end
 
   def handle_cast({:send_message, message}, sock) do
