@@ -4,6 +4,7 @@ defmodule IElixir.Shell do
   alias IElixir.Message
   alias IElixir.IOPub
   alias IElixir.Utils
+  alias IElixir.Sandbox
 
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, [])
@@ -22,7 +23,7 @@ defmodule IElixir.Shell do
   def handle_info({:zmq, _, message, flags}, {sock, message_buffer}) do
     case Message.assemble_message(message, flags, message_buffer) do
       {:buffer, buffer} ->
-        { :noreply, {sock, buffer}}
+        {:noreply, {sock, buffer}}
       {:msg, message} ->
         process(message.header["msg_type"], message, sock)
         {:noreply, {sock, []}}
@@ -61,8 +62,10 @@ defmodule IElixir.Shell do
     Logger.debug("Received execute_request: #{inspect message}")
     IOPub.send_status("busy", message)
     IOPub.send_execute_input(message)
+    result = Sandbox.execute_code(message.content)
+    # Logger.debug("Result = #{inspect value}")
     IOPub.send_stream(message, "hello, world\n")
-    IOPub.send_execute_result(message, "result!")
+    IOPub.send_execute_result(message, result)
     IOPub.send_status("idle", message)
     content = %{
       "status": "ok",

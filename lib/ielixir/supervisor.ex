@@ -7,6 +7,7 @@ defmodule IElixir.Supervisor do
 
   def init(opts) do
     children = [
+      worker(IElixir.Sandbox, [[]]),
       worker(IElixir.HMAC, [opts[:conn_info]]),
       worker(IElixir.Heartbeat, [opts]),
       worker(IElixir.Control, [opts]),
