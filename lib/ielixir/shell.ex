@@ -63,7 +63,6 @@ defmodule IElixir.Shell do
     IOPub.send_status("busy", message)
     IOPub.send_execute_input(message)
     result = Sandbox.execute_code(message.content)
-    # Logger.debug("Result = #{inspect value}")
     IOPub.send_stream(message, "hello, world\n")
     IOPub.send_execute_result(message, result)
     IOPub.send_status("idle", message)
