@@ -16,11 +16,11 @@ before_script:
   - source /usr/local/bin/virtualenvwrapper.sh
   - mkvirtualenv test_ielixir
   - workon test_ielixir
-  - git clone https://github.com/jupyter/jupyter_kernel_test.git
-  - pip install jupyter-console
-  # Integration tests are not configured yet
-  # - configuring virtualenv
-  # - downloading python dependencies
-  # - downloading jupyter_kernel_test application
-  # - configuring kernel.json file with start_script.sh
-script: mix test
+  - git clone -b ielixir https://github.com/pprzetacznik/jupyter_kernel_test.git
+  - pip install jupyter-console nose
+  - ./install_script.sh
+script:
+  - mix test
+  - cd jupyter_kernel_test
+  - python test_ipython.py
+
