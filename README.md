@@ -43,6 +43,11 @@ Put into the file following content:
 }
 ```
 
+or simply run installation script to create this file:
+```Bash
+$ ./install_script.sh
+```
+
 Run Jupyter console with following line:
 ```Bash
 (jupyter-env) $ jupyter console --kernel ielixir
