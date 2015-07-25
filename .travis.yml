@@ -1,7 +1,7 @@
 language: erlang
 otp_release:
   - 17.1
-sudo: false
+sudo: true
 before_install:
   - wget http://s3.hex.pm/builds/elixir/master.zip
   - unzip -d elixir master.zip
@@ -9,6 +9,15 @@ before_script:
   - export PATH=`pwd`/elixir/bin:$PATH
   - yes | mix deps.get
   - mix deps.compile
+  - sudo apt-get install python python-pip
+  - sudo pip install virtualenv virtualenvwrapper
+  - mkdir ~/.virtualenvs
+  - export WORKON_HOME=~/.virtualenvs
+  - source /usr/local/bin/virtualenvwrapper.sh
+  - mkvirtualenv test_ielixir
+  - workon test_ielixir
+  - git clone https://github.com/jupyter/jupyter_kernel_test.git
+  - pip install jupyter-console
   # Integration tests are not configured yet
   # - configuring virtualenv
   # - downloading python dependencies
