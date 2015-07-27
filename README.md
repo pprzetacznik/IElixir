@@ -67,3 +67,29 @@ Go to [http://localhost:8888/](http://localhost:8888/) site (by default) in your
 Evaluate some commands in your new notebook:
 
 ![IElixir basics](/resources/jupyter_ielixir_basics.png?raw=true)
+
+### References
+
+I was inspired by following codes and articles:
+
+* [https://github.com/pminten/ielixir](https://github.com/pminten/ielixir)
+* [https://github.com/robbielynch/ierlang](https://github.com/robbielynch/ierlang)
+* [https://github.com/dsblank/simple_kernel](https://github.com/dsblank/simple_kernel)
+* [http://andrew.gibiansky.com/blog/ipython/ipython-kernels/](http://andrew.gibiansky.com/blog/ipython/ipython-kernels/)
+* [https://ipython.org/ipython-doc/dev/development/messaging.html](https://ipython.org/ipython-doc/dev/development/messaging.html)
+
+### License
+
+Copyright 2015 Piotr Przetacznik
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
