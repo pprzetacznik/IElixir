@@ -1,4 +1,4 @@
-defmodule IElixir.StdIn do
+defmodule IElixir.Socket.StdIn do
   use GenServer
   require Logger
 

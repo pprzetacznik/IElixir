@@ -1,4 +1,4 @@
-defmodule IElixir.Heartbeat do
+defmodule IElixir.Socket.Heartbeat do
   use GenServer
   require Logger
   alias IElixir.Utils

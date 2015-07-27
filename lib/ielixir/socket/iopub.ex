@@ -1,4 +1,4 @@
-defmodule IElixir.IOPub do
+defmodule IElixir.Socket.IOPub do
   use GenServer
   require Logger
   alias IElixir.Utils

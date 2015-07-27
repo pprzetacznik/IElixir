@@ -1,8 +1,8 @@
-defmodule IElixir.Shell do
+defmodule IElixir.Socket.Shell do
   use GenServer
   require Logger
+  alias IElixir.Socket.IOPub
   alias IElixir.Message
-  alias IElixir.IOPub
   alias IElixir.Utils
   alias IElixir.Sandbox
 

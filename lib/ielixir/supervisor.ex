@@ -9,11 +9,11 @@ defmodule IElixir.Supervisor do
     children = [
       worker(IElixir.Sandbox, [[]]),
       worker(IElixir.HMAC, [opts[:conn_info]]),
-      worker(IElixir.Heartbeat, [opts]),
-      worker(IElixir.Control, [opts]),
-      worker(IElixir.IOPub, [opts]),
-      worker(IElixir.Shell, [opts]),
-      worker(IElixir.StdIn, [opts])
+      worker(IElixir.Socket.Heartbeat, [opts]),
+      worker(IElixir.Socket.Control, [opts]),
+      worker(IElixir.Socket.IOPub, [opts]),
+      worker(IElixir.Socket.Shell, [opts]),
+      worker(IElixir.Socket.StdIn, [opts])
     ]
 
     supervise(children, strategy: :one_for_one)
