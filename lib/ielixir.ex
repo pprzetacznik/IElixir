@@ -1,21 +1,15 @@
 defmodule IElixir do
   require Logger
+  use Application
 
-  def run(connection_file) do
-    conn_info = parse_connection_file(connection_file)
+  def start(_type, _args) do
+    conn_info = parse_connection_file(System.get_env("CONNECTION_FILE"))
     { :ok, ctx } = :erlzmq.context()
-    { :ok, _ } = IElixir.Supervisor.start_link([conn_info: conn_info, ctx: ctx])
-    loop()
-  end
-
-  defp loop() do
-    :timer.sleep(1000)
-    loop()
+    IElixir.Supervisor.start_link([conn_info: conn_info, ctx: ctx])
   end
 
   def parse_connection_file(connection_file) do
     File.read!(connection_file)
       |> Poison.Parser.parse!
   end
-
 end

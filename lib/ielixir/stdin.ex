@@ -11,11 +11,11 @@ defmodule IElixir.StdIn do
     { :ok, { sock, sock } }
   end
 
-  def terminate(_reason, { sock, _ }) do
+  def terminate(_reason, {sock, _ }) do
     :erlzmq.close(sock)
   end
 
-  def handle_info({ :zmq, _, data, [] }, state = { sock, _id }) do
+  def handle_info({:zmq, _, _data, []}, state = {_sock, _id}) do
     Logger.info("StdIn message received")
     { :noreply, state }
   end

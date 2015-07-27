@@ -22,5 +22,5 @@ before_script:
 script:
   - mix test
   - cd jupyter_kernel_test
-  - python test_ipython.py
+  - MIX_ENV=dev python test_ipython.py
 

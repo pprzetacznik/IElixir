@@ -3,7 +3,6 @@ defmodule IElixir.IOPub do
   require Logger
   alias IElixir.Utils
   alias IElixir.Message
-  alias IElixir.HMAC
 
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, name: IOPub)

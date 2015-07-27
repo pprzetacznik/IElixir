@@ -6,7 +6,11 @@ then
   exit 1
 fi
 
+if [ -z "$MIX_ENV" ]
+then
+  export MIX_ENV=prod
+fi
 IELIXIR_PATH=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)/
 cd $IELIXIR_PATH
-mix IElixir $1
+CONNECTION_FILE=$1 mix run --no-halt
 

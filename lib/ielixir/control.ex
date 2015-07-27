@@ -8,19 +8,19 @@ defmodule IElixir.Control do
 
   def init(opts) do
     sock = IElixir.Utils.make_socket(opts, "control", :router)
-    { :ok, { sock, sock } }
+    {:ok, {sock, sock}}
   end
 
-  def terminate(_reason, { sock, _ }) do
+  def terminate(_reason, {sock, _}) do
     :erlzmq.close(sock)
   end
 
-  def handle_info({ :zmq, _, data, [] }, state = { sock, _id }) do
+  def handle_info({:zmq, _, _data, []}, state = {_sock, _id}) do
     Logger.debug("Control message received")
-    { :noreply, state }
+    {:noreply, state}
   end
   def handle_info(msg, state) do
     Logger.warn("Got unexpected message on control process: #{inspect msg}")
-    { :noreply, state}
+    {:noreply, state}
   end
 end

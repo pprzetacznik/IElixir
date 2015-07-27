@@ -6,7 +6,7 @@ defmodule IElixir.Sandbox do
     GenServer.start_link(__MODULE__, opts, name: Sandbox)
   end
 
-  def init(opts) do
+  def init(_opts) do
     {:ok, []}
   end
 
