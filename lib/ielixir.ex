@@ -1,8 +1,6 @@
 defmodule IElixir do
   require Logger
 
-  def main([connection_file | _other_args]), do: run(connection_file)
-
   def run(connection_file) do
     conn_info = parse_connection_file(connection_file)
     { :ok, ctx } = :erlzmq.context()
