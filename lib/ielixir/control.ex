@@ -16,7 +16,7 @@ defmodule IElixir.Control do
   end
 
   def handle_info({ :zmq, _, data, [] }, state = { sock, _id }) do
-    Logger.info("Control message received")
+    Logger.debug("Control message received")
     { :noreply, state }
   end
   def handle_info(msg, state) do

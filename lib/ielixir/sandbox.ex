@@ -16,7 +16,7 @@ defmodule IElixir.Sandbox do
 
   def handle_call({:execute_code, request}, _from, state) do
     Logger.debug("Executing request: #{inspect request}")
-    {{result, binding}, {input, output}} = do_capture_io(
+    {{result, binding}, {_, output}} = do_capture_io(
       fn ->
         Code.eval_string(request["code"], state)
       end

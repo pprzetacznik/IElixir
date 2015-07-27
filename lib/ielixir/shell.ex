@@ -66,6 +66,13 @@ defmodule IElixir.Shell do
     IOPub.send_stream(message, output)
     IOPub.send_execute_result(message, result)
     IOPub.send_status("idle", message)
+    send_execute_reply(sock, message)
+  end
+  defp process(msg_type, message, _sock) do
+    Logger.debug("Received message of type: #{msg_type} @ shell socket: #{inspect message}")
+  end
+
+  def send_execute_reply(sock, message) do
     content = %{
       "status": "ok",
       "execution_count": 5,
@@ -73,9 +80,6 @@ defmodule IElixir.Shell do
       "user_expressions": %{}
     }
     send_message(sock, message, "execute_reply", content)
-  end
-  defp process(msg_type, message, _sock) do
-    Logger.debug("Received message of type: #{msg_type} @ shell socket: #{inspect message}")
   end
 
   def send_message(sock, message, message_type, content) do

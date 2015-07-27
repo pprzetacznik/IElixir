@@ -81,28 +81,19 @@ defmodule IElixir.IOPub do
     {:noreply, sock}
   end
   def handle_cast({:send_status, status, message}, sock) do
-    parent_header = Poison.encode!(message.header)
-    header_content = %{
-      "msg_id": :uuid.uuid_to_string(:uuid.get_v4(), :binary_standard),
-      "username": "kernel",
-      "msg_type": "status",
-      "session": message.header["session"]
+    new_message = %{message |
+      "parent_header": message.header,
+      "header": %{
+        "msg_id": :uuid.uuid_to_string(:uuid.get_v4(), :binary_standard),
+        "username": "kernel",
+        "msg_type": "status",
+        "session": message.header["session"]
+      },
+      "metadata": %{},
+      "content": %{"execution_state": status}
     }
-    header = Poison.encode!(header_content)
-    metadata = Poison.encode!(%{})
-    content = Poison.encode!(%{"execution_state": status})
-
-    message = [
-      header_content.msg_id,
-      "<IDS|MSG>",
-      HMAC.compute_signature(header, parent_header, metadata, content),
-      header,
-      parent_header,
-      metadata,
-      content
-    ]
-    Logger.debug("Status message before sending @ IOPub socket: #{inspect message}")
-    Utils.send_all(sock, message)
+    Utils.send_all(sock, Message.encode(new_message))
     {:noreply, sock}
   end
 end
+
