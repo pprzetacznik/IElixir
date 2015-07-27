@@ -10,8 +10,16 @@ defmodule IElixir.Sandbox do
     {:ok, []}
   end
 
+  def clean() do
+    GenServer.cast(Sandbox, :clean)
+  end
+
   def execute_code(request) do
     GenServer.call(Sandbox, {:execute_code, request})
+  end
+
+  def handle_cast(:clean, _state) do
+    {:noreply, []}
   end
 
   def handle_call({:execute_code, request}, _from, state) do

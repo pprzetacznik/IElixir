@@ -17,5 +17,5 @@ use Mix.Config
 #       format: "$date $time [$level] $metadata$message\n",
 #       metadata: [:user_id]
 
-    config :ielixir, connection_file: System.get_env("CONNECTION_FILE")
+    config :ielixir, connection_file: "test/test_connection_file"
 

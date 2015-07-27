@@ -9,11 +9,13 @@ use Mix.Config
 # party users, it should be done in your mix.exs file.
 
 # Sample configuration:
-#
+
     config :logger,
       level: :info
-#
+
 #     config :logger, :console,
 #       format: "$date $time [$level] $metadata$message\n",
 #       metadata: [:user_id]
+
+    config :ielixir, connection_file: System.get_env("CONNECTION_FILE")
 

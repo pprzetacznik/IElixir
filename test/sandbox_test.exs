@@ -6,8 +6,7 @@ defmodule SandboxTest do
   doctest Sandbox
 
   setup do
-    {:ok, _} = Sandbox.start_link([])
-    :ok
+    Sandbox.clean()
   end
 
   test "evaluating IO.puts(\"Hello World\")" do
