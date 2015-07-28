@@ -60,11 +60,12 @@ defmodule IElixir.Socket.Shell do
   end
   defp process("execute_request", message, sock) do
     Logger.debug("Received execute_request: #{inspect message}")
+    execution_count = Sandbox.get_execution_count()
     IOPub.send_status("busy", message)
-    IOPub.send_execute_input(message)
+    IOPub.send_execute_input(message, execution_count)
     {result, output, execution_count} = Sandbox.execute_code(message.content)
     IOPub.send_stream(message, output)
-    IOPub.send_execute_result(message, result)
+    IOPub.send_execute_result(message, {result, execution_count})
     IOPub.send_status("idle", message)
     send_execute_reply(sock, message, execution_count)
   end

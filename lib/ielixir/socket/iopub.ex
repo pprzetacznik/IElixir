@@ -18,8 +18,8 @@ defmodule IElixir.Socket.IOPub do
     GenServer.cast(IOPub, {:send_status, status, message})
   end
 
-  def send_execute_input(message) do
-    GenServer.cast(IOPub, {:send_execute_input, message})
+  def send_execute_input(message, execution_count) do
+    GenServer.cast(IOPub, {:send_execute_input, message, execution_count})
   end
 
   def send_stream(message, text) do
@@ -34,14 +34,14 @@ defmodule IElixir.Socket.IOPub do
     :erlzmq.close(sock)
   end
 
-  def handle_cast({:send_execute_input, message}, sock) do
+  def handle_cast({:send_execute_input, message, execution_count}, sock) do
     new_message = %{message |
       "parent_header": message.header,
       "header": %{message.header |
         "msg_type" => "execute_input"
       },
       "content": %{
-        "execution_count": 1,
+        "execution_count": execution_count,
         "code": message.content["code"]
       }
     }
@@ -62,14 +62,14 @@ defmodule IElixir.Socket.IOPub do
     Utils.send_all(sock, Message.encode(new_message))
     {:noreply, sock}
   end
-  def handle_cast({:send_execute_result, message, text}, sock) do
+  def handle_cast({:send_execute_result, message, {text, execution_count}}, sock) do
     new_message = %{message |
       "parent_header": message.header,
       "header": %{ message.header |
         "msg_type" => "execute_result"
       },
       "content": %{
-        "execution_count": 1,
+        "execution_count": execution_count,
         "data": %{
           "text/plain": text
         },

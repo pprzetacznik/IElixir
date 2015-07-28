@@ -15,6 +15,10 @@ defmodule IElixir.Sandbox do
     GenServer.cast(Sandbox, :clean)
   end
 
+  def get_execution_count() do
+    GenServer.call(Sandbox, :get_execution_count)
+  end
+
   def execute_code(request) do
     GenServer.call(Sandbox, {:execute_code, request})
   end
@@ -24,6 +28,9 @@ defmodule IElixir.Sandbox do
     {:noreply, state}
   end
 
+  def handle_call(:get_execution_count, _from, state = %{execution_count: execution_count}) do
+    {:reply, execution_count, state}
+  end
   def handle_call({:execute_code, request}, _from, state) do
     Logger.debug("Executing request: #{inspect request}")
     {{result, binding}, {_, output}} = do_capture_io(
@@ -31,8 +38,8 @@ defmodule IElixir.Sandbox do
         Code.eval_string(request["code"], state.binding)
       end
     )
-    Logger.info(inspect binding)
     new_state = %{execution_count: state.execution_count + 1, binding: binding}
+    Logger.debug("State: #{inspect new_state}")
     {:reply, {inspect(result), output, state.execution_count}, new_state}
   end
 
