@@ -44,11 +44,11 @@ defmodule IElixir.Sandbox do
       {:reply, {inspect(result), output, state.execution_count}, new_state}
     rescue
       compile_error in CompileError ->
-        error_message = "** (CompileError) #{inspect compile_error.file}:#{inspect compile_error.line} #{inspect compile_error.description}\n\n"
+        error_message = "** (CompileError) #{inspect compile_error.file}:#{inspect compile_error.line} #{inspect compile_error.description}\n"
         {:reply, {"", error_message, state.execution_count}, state}
       error ->
         Logger.error("#{inspect error}")
-        error_message = "** (NotRecognizedError) #{inspect error.file}:#{inspect error.line} #{inspect error.description}\n\n"
+        error_message = "** (NotRecognizedError) #{inspect error.file}:#{inspect error.line} #{inspect error.description}\n"
         {:reply, {"", error_message, state.execution_count}, state}
     end
   end

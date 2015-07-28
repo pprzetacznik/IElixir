@@ -64,8 +64,12 @@ defmodule IElixir.Socket.Shell do
     IOPub.send_status("busy", message)
     IOPub.send_execute_input(message, execution_count)
     {result, output, execution_count} = Sandbox.execute_code(message.content)
-    IOPub.send_stream(message, output)
-    IOPub.send_execute_result(message, {result, execution_count})
+    if output != "" do
+      IOPub.send_stream(message, output)
+    end
+    if result != "" do
+      IOPub.send_execute_result(message, {result, execution_count})
+    end
     IOPub.send_status("idle", message)
     send_execute_reply(sock, message, execution_count)
   end
