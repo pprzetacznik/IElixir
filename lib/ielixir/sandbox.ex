@@ -7,7 +7,8 @@ defmodule IElixir.Sandbox do
   end
 
   def init(_opts) do
-    {:ok, []}
+    state = %{execution_count: 1, binding: []}
+    {:ok, state}
   end
 
   def clean() do
@@ -19,17 +20,20 @@ defmodule IElixir.Sandbox do
   end
 
   def handle_cast(:clean, _state) do
-    {:noreply, []}
+    state = %{execution_count: 1, binding: []}
+    {:noreply, state}
   end
 
   def handle_call({:execute_code, request}, _from, state) do
     Logger.debug("Executing request: #{inspect request}")
     {{result, binding}, {_, output}} = do_capture_io(
       fn ->
-        Code.eval_string(request["code"], state)
+        Code.eval_string(request["code"], state.binding)
       end
     )
-    {:reply, {inspect(result), output}, binding}
+    Logger.info(inspect binding)
+    new_state = %{execution_count: state.execution_count + 1, binding: binding}
+    {:reply, {inspect(result), output, state.execution_count}, new_state}
   end
 
   def do_capture_io(fun) do

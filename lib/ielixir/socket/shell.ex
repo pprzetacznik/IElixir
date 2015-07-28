@@ -62,20 +62,20 @@ defmodule IElixir.Socket.Shell do
     Logger.debug("Received execute_request: #{inspect message}")
     IOPub.send_status("busy", message)
     IOPub.send_execute_input(message)
-    {result, output} = Sandbox.execute_code(message.content)
+    {result, output, execution_count} = Sandbox.execute_code(message.content)
     IOPub.send_stream(message, output)
     IOPub.send_execute_result(message, result)
     IOPub.send_status("idle", message)
-    send_execute_reply(sock, message)
+    send_execute_reply(sock, message, execution_count)
   end
   defp process(msg_type, message, _sock) do
     Logger.debug("Received message of type: #{msg_type} @ shell socket: #{inspect message}")
   end
 
-  def send_execute_reply(sock, message) do
+  def send_execute_reply(sock, message, execution_count) do
     content = %{
       "status": "ok",
-      "execution_count": 5,
+      "execution_count": execution_count,
       "payload": [],
       "user_expressions": %{}
     }

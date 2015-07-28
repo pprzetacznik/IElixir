@@ -11,23 +11,23 @@ defmodule SandboxTest do
 
   test "evaluating IO.puts(\"Hello World\")" do
     request = prepare_request("IO.puts(\"Hello World\")\n")
-    assert {":ok", "Hello World\n"} == Sandbox.execute_code(request)
+    assert {":ok", "Hello World\n", 1} == Sandbox.execute_code(request)
   end
 
   test "evaluating sample statements" do
     request = prepare_request("a=10\n")
-    assert {"10", ""} == Sandbox.execute_code(request)
+    assert {"10", "", 1} == Sandbox.execute_code(request)
   end
 
   test "evaluating atoms" do
     request = prepare_request(":sampleatom\n")
-    assert {":sampleatom", ""} == Sandbox.execute_code(request)
+    assert {":sampleatom", "", 1} == Sandbox.execute_code(request)
   end
 
   test "evaluating addition and binding" do
-    assert {"10", ""} == Sandbox.execute_code(prepare_request("a=10\n"))
-    assert {"15", ""} == Sandbox.execute_code(prepare_request("b=15\n"))
-    assert {"25", ""} == Sandbox.execute_code(prepare_request("a+b\n"))
+    assert {"10", "", 1} == Sandbox.execute_code(prepare_request("a=10\n"))
+    assert {"15", "", 2} == Sandbox.execute_code(prepare_request("b=15\n"))
+    assert {"25", "", 3} == Sandbox.execute_code(prepare_request("a+b\n"))
   end
 
   defp prepare_request(code) do
