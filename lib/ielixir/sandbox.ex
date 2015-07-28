@@ -33,14 +33,24 @@ defmodule IElixir.Sandbox do
   end
   def handle_call({:execute_code, request}, _from, state) do
     Logger.debug("Executing request: #{inspect request}")
-    {{result, binding}, {_, output}} = do_capture_io(
-      fn ->
-        Code.eval_string(request["code"], state.binding)
-      end
-    )
-    new_state = %{execution_count: state.execution_count + 1, binding: binding}
-    Logger.debug("State: #{inspect new_state}")
-    {:reply, {inspect(result), output, state.execution_count}, new_state}
+    try do
+      {{result, binding}, {_, output}} = do_capture_io(
+        fn ->
+          Code.eval_string(request["code"], state.binding)
+        end
+      )
+      new_state = %{execution_count: state.execution_count + 1, binding: binding}
+      Logger.debug("State: #{inspect new_state}")
+      {:reply, {inspect(result), output, state.execution_count}, new_state}
+    rescue
+      compile_error in CompileError ->
+        error_message = "** (CompileError) #{inspect compile_error.file}:#{inspect compile_error.line} #{inspect compile_error.description}\n\n"
+        {:reply, {"", error_message, state.execution_count}, state}
+      error ->
+        Logger.error("#{inspect error}")
+        error_message = "** (NotRecognizedError) #{inspect error.file}:#{inspect error.line} #{inspect error.description}\n\n"
+        {:reply, {"", error_message, state.execution_count}, state}
+    end
   end
 
   def do_capture_io(fun) do
