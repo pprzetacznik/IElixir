@@ -50,7 +50,7 @@ defmodule IElixir.Socket.Shell do
         "codemirror_mode" => "",
         "nbconvert_exporter" => ""
       },
-      "banner": "",
+      "banner": "Welcome to IElixir!",
       "help_links": [%{
         "text" => "",
         "url" => ""
@@ -67,12 +67,29 @@ defmodule IElixir.Socket.Shell do
     if output != "" do
       IOPub.send_stream(message, output)
     end
-    if result != "" do
+    if result != "" or message.content["silent"] == true do
       IOPub.send_execute_result(message, {result, execution_count})
     end
     IOPub.send_status("idle", message)
     send_execute_reply(sock, message, execution_count)
   end
+  defp process("complete_request", message, sock) do
+    Logger.debug("Received complete_request: #{inspect message}")
+    IOPub.send_status("busy", message)
+    position = message.content["cursor_pos"]
+    case IEx.Autocomplete.expand(Enum.reverse(to_char_list(message.content["code"]))) do
+      {:yes, [], entries} ->
+        IOPub.send_status("idle", message)
+        send_complete_reply(sock, message, {Enum.map(entries, &to_string/1), 0, position})
+      {:yes, hint, []} ->
+        IOPub.send_status("idle", message)
+        send_complete_reply(sock, message, {[to_string(hint)], position, position})
+      {:yes, hint, entries} ->
+        Logger.info("Unexpected hints: {:yes, #{inspect hint}, #{inspect entries}}")
+      {:no, _, _} ->
+    end
+  end
+
   defp process(msg_type, message, _sock) do
     Logger.debug("Received message of type: #{msg_type} @ shell socket: #{inspect message}")
   end
@@ -85,6 +102,17 @@ defmodule IElixir.Socket.Shell do
       "user_expressions": %{}
     }
     send_message(sock, message, "execute_reply", content)
+  end
+
+  def send_complete_reply(sock, message, {list, cursor_start, cursor_end}) do
+    content = %{
+      "matches": list,
+      "cursor_start": cursor_start,
+      "cursor_end": cursor_end,
+      "metadata": %{},
+      "status": "ok"
+    }
+    send_message(sock, message, "complete_reply", content)
   end
 
   def send_message(sock, message, message_type, content) do
