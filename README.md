@@ -14,7 +14,7 @@ $ git clone https://github.com/jupyter/notebook.git
 $ cd notebook
 $ mkvirtualenv jupyter-env
 $ workon jupyter-env
-$ pip install -r requirements.txt
+$ pip install --pre -e .
 ```
 
 ### Configure IElixir
