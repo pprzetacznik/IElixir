@@ -14,7 +14,8 @@ $ git clone https://github.com/jupyter/notebook.git
 $ cd notebook
 $ mkvirtualenv jupyter-env
 $ workon jupyter-env
-$ pip install --pre -e .
+(jupyter-env) $ pip install --pre -e .
+(jupyter-env) $ pip install jupyter-console
 ```
 
 ### Configure IElixir
@@ -27,8 +28,9 @@ $ mix deps.compile
 $ mix test
 ```
 
-Create and edit `kernel.json` file
+#### Prepare `kernel.json` file
 
+Create and edit `kernel.json` file
 ```Bash
 $ mkdir ~/.ipython/kernels/ielixir
 $ vim ~/.ipython/kernels/ielixir/kernel.json
