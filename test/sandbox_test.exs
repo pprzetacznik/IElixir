@@ -40,10 +40,6 @@ defmodule SandboxTest do
     assert {:yes, 'um', []} == Sandbox.get_code_completion("En")
   end
 
-  test "simple autocompletion" do
-    assert {:yes, 'um', []} == IEx.Autocomplete.expand(Enum.reverse(to_char_list("En")))
-  end
-
   defp prepare_request(code) do
     %{
       "allow_stdin" => true,

@@ -16,7 +16,7 @@ defmodule IElixir.Mixfile do
   def application do
     [
       mod: {IElixir, []},
-      applications: [:logger]
+      applications: [:logger, :iex]
     ]
   end
 
