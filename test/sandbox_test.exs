@@ -30,6 +30,12 @@ defmodule SandboxTest do
     assert {"25", "", 3} == Sandbox.execute_code(prepare_request("a+b\n"))
   end
 
+  test "lambdas" do
+    {_result, output, line_number} = Sandbox.execute_code(prepare_request("function = fn x -> 2*x end"))
+    assert {output, line_number} == {"", 1}
+    assert {"4", "", 2} == Sandbox.execute_code(prepare_request("function.(2)"))
+  end
+
   defp prepare_request(code) do
     %{
       "allow_stdin" => true,

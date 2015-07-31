@@ -6,7 +6,7 @@ defmodule IElixir.Utils do
     { :ok, sock } = :erlzmq.socket(opts[:ctx], [type, {:active, type != :pub }])
     url = conn_info["transport"] <> "://" <> conn_info["ip"] <> ":" <> Integer.to_string(conn_info[socket_name <> "_port"])
     :ok = :erlzmq.bind(sock, url)
-    Logger.info("Initializing " <> socket_name <> " agent on url: " <> url)
+    Logger.debug("Initializing " <> socket_name <> " agent on url: " <> url)
     sock
   end
 

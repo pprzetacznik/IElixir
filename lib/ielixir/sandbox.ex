@@ -15,6 +15,10 @@ defmodule IElixir.Sandbox do
     GenServer.cast(Sandbox, :clean)
   end
 
+  def get_code_completion(code) do
+    GenServer.call(Sandbox, {:get_code_completion, code})
+  end
+
   def get_execution_count() do
     GenServer.call(Sandbox, :get_execution_count)
   end
@@ -28,6 +32,10 @@ defmodule IElixir.Sandbox do
     {:noreply, state}
   end
 
+  def handle_call({:get_code_completion, code}, _from, state) do
+    result = IEx.Autocomplete.expand(Enum.reverse(to_char_list(code)))
+    {:reply, result, state}
+  end
   def handle_call(:get_execution_count, _from, state = %{execution_count: execution_count}) do
     {:reply, execution_count, state}
   end

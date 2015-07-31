@@ -77,14 +77,15 @@ defmodule IElixir.Socket.Shell do
     Logger.debug("Received complete_request: #{inspect message}")
     IOPub.send_status("busy", message)
     position = message.content["cursor_pos"]
-    case IEx.Autocomplete.expand(Enum.reverse(to_char_list(message.content["code"]))) do
-      {:yes, [], [entry]} -> ;
+    case Sandbox.get_code_completion(message.content["code"]) do
+      {:yes, [], [_entry]} -> ;
       {:yes, [], entries} ->
         send_complete_reply(sock, message, {Enum.map(entries, &to_string/1), 0, position})
       {:yes, hint, []} ->
         send_complete_reply(sock, message, {[to_string(hint)], position, position})
       {:yes, hint, entries} ->
         Logger.info("Unexpected hints: {:yes, #{inspect hint}, #{inspect entries}}")
+      _ -> ;
     end
     IOPub.send_status("idle", message)
   end
