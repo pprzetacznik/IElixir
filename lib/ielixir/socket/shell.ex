@@ -78,14 +78,14 @@ defmodule IElixir.Socket.Shell do
     IOPub.send_status("busy", message)
     position = message.content["cursor_pos"]
     case Sandbox.get_code_completion(message.content["code"]) do
-      {:yes, [], [_entry]} -> ;
+      {:yes, [], [_entry]} ->
+        send_complete_reply(sock, message, {[], position, position})
       {:yes, [], entries} ->
         send_complete_reply(sock, message, {Enum.map(entries, &to_string/1), 0, position})
       {:yes, hint, []} ->
         send_complete_reply(sock, message, {[to_string(hint)], position, position})
-      {:yes, hint, entries} ->
-        Logger.info("Unexpected hints: {:yes, #{inspect hint}, #{inspect entries}}")
-      _ -> ;
+      _ ->
+        send_complete_reply(sock, message, {[], position, position})
     end
     IOPub.send_status("idle", message)
   end
