@@ -59,7 +59,7 @@ Run Jupyter console with following line:
 
 Run Jupyter Notebook with following line:
 ```Bash
-(jupyter-env) $ jupyter notebook
+(jupyter-env) $ jupyter notebook resources/example.ipynb
 ```
 
 Go to [http://localhost:8888/](http://localhost:8888/) site (by default) in your browser and pick IElixir kernel:
