@@ -89,7 +89,10 @@ defmodule IElixir.Socket.Shell do
     end
     IOPub.send_status("idle", message)
   end
-
+  defp process("is_complete_request", message, sock) do
+    Logger.warn("Received is_complete_request")
+    send_is_complete_reply(sock, message, "complete")
+  end
   defp process(msg_type, message, _sock) do
     Logger.debug("Received message of type: #{msg_type} @ shell socket: #{inspect message}")
   end
@@ -113,6 +116,13 @@ defmodule IElixir.Socket.Shell do
       "status": "ok"
     }
     send_message(sock, message, "complete_reply", content)
+  end
+
+  def send_is_complete_reply(sock, message, status) do
+    content = %{
+      "status": "complete",
+    }
+    send_message(sock, message, "is_complete_reply", content)
   end
 
   def send_message(sock, message, message_type, content) do
