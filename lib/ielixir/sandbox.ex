@@ -27,6 +27,10 @@ defmodule IElixir.Sandbox do
     GenServer.call(Sandbox, {:execute_code, request})
   end
 
+  def is_complete_code(code) do
+    GenServer.call(Sandbox, {:is_complete_code, code})
+  end
+
   def handle_cast(:clean, _state) do
     state = %{execution_count: 1, binding: []}
     {:noreply, state}
@@ -54,6 +58,17 @@ defmodule IElixir.Sandbox do
       error ->
         error_message = "** (#{inspect error.__struct__}) #{inspect error.file}:#{inspect error.line} #{inspect error.description}\n"
         {:reply, {"", error_message, state.execution_count}, state}
+    end
+  end
+  def handle_call({:is_complete_code, code}, _from, state) do
+    try do
+      Code.eval_string(code, state.binding)
+      {:reply, "complete", state}
+    rescue
+      _error in TokenMissingError ->
+        {:reply, "incomplete", state}
+      _ ->
+        {:reply, "invalid", state}
     end
   end
 

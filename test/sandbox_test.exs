@@ -40,6 +40,12 @@ defmodule SandboxTest do
     assert {:yes, 'um', []} == Sandbox.get_code_completion("En")
   end
 
+  test "is complete code" do
+    assert "complete" == Sandbox.is_complete_code("a = 10")
+    assert "invalid" == Sandbox.is_complete_code("a + b")
+    assert "incomplete" == Sandbox.is_complete_code("case x do")
+  end
+
   defp prepare_request(code) do
     %{
       "allow_stdin" => true,

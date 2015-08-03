@@ -91,7 +91,8 @@ defmodule IElixir.Socket.Shell do
   end
   defp process("is_complete_request", message, sock) do
     Logger.warn("Received is_complete_request")
-    send_is_complete_reply(sock, message, "complete")
+    status = Sandbox.is_complete_code(message.content["code"])
+    send_is_complete_reply(sock, message, status)
   end
   defp process(msg_type, message, _sock) do
     Logger.debug("Received message of type: #{msg_type} @ shell socket: #{inspect message}")
@@ -118,9 +119,16 @@ defmodule IElixir.Socket.Shell do
     send_message(sock, message, "complete_reply", content)
   end
 
+  def send_is_complete_reply(sock, message, status = "incomplete") do
+    content = %{
+      "status": status,
+      "indent": "  ",
+    }
+    send_message(sock, message, "is_complete_reply", content)
+  end
   def send_is_complete_reply(sock, message, status) do
     content = %{
-      "status": "complete",
+      "status": status,
     }
     send_message(sock, message, "is_complete_reply", content)
   end
