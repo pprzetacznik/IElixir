@@ -24,8 +24,8 @@ Clone IElixir repository and prepare the project
 ```Bash
 $ git clone https://github.com/pprzetacznik/IElixir.git
 $ mix deps.get
-$ mix deps.compile
 $ mix test
+$ MIX_ENV=prod mix compile
 ```
 
 #### Prepare `kernel.json` file
