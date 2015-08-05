@@ -63,15 +63,19 @@ defmodule IElixir.Socket.Shell do
     execution_count = Sandbox.get_execution_count()
     IOPub.send_status("busy", message)
     IOPub.send_execute_input(message, execution_count)
-    {result, output, execution_count} = Sandbox.execute_code(message.content)
-    if output != "" do
-      IOPub.send_stream(message, output)
-    end
-    if result != "" or message.content["silent"] == true do
-      IOPub.send_execute_result(message, {result, execution_count})
+    case Sandbox.execute_code(message.content) do
+      {:ok, result, output, execution_count} ->
+        if output != "" do
+          IOPub.send_stream(message, output)
+        end
+        if result != "" or message.content["silent"] == true do
+          IOPub.send_execute_result(message, {result, execution_count})
+        end
+        send_execute_reply(sock, message, execution_count)
+      {:error, exception_name, traceback} ->
+        send_execute_reply(sock, message, execution_count, exception_name, traceback)
     end
     IOPub.send_status("idle", message)
-    send_execute_reply(sock, message, execution_count)
   end
   defp process("complete_request", message, sock) do
     Logger.debug("Received complete_request: #{inspect message}")
@@ -104,6 +108,16 @@ defmodule IElixir.Socket.Shell do
       "execution_count": execution_count,
       "payload": [],
       "user_expressions": %{}
+    }
+    send_message(sock, message, "execute_reply", content)
+  end
+  def send_execute_reply(sock, message, execution_count, exception_name, traceback) do
+    content = %{
+      "status": "error",
+      "execution_count": execution_count,
+      "ename": exception_name,
+      "evalue": 1,
+      "traceback": traceback,
     }
     send_message(sock, message, "execute_reply", content)
   end

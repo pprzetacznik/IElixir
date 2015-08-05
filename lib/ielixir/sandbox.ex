@@ -54,19 +54,19 @@ defmodule IElixir.Sandbox do
       Logger.debug("State: #{inspect new_state}")
       case result do
         :"do not show this result in output" ->
-          {:reply, {"", output, state.execution_count}, new_state}
+          {:reply, {:ok, "", output, state.execution_count}, new_state}
         _ ->
-          {:reply, {inspect(result), output, state.execution_count}, new_state}
+          {:reply, {:ok, inspect(result), output, state.execution_count}, new_state}
       end
     rescue
       error in ArgumentError ->
         error_message = "** (#{inspect error.__struct__}) #{error.message}\n"
-        {:reply, {"", error_message, state.execution_count}, state}
+        {:reply, {:error, inspect(error.__struct__), error_message}, state}
       error in CompileError ->
-        error_message = "** (#{inspect error.__struct__}) console:#{inspect error.line} #{inspect error.description}\n"
-        {:reply, {"", error_message, state.execution_count}, state}
+        error_message = "** (#{inspect error.__struct__}) console:#{inspect error.line} #{inspect error.description}"
+        {:reply, {:error, inspect(error.__struct__), [error_message]}, state}
       error ->
-        {:reply, {"", "#{inspect(error)}\n", state.execution_count}, state}
+        {:reply, {:error, inspect(error.__struct__), [inspect(error)]}, state}
     end
   end
   def handle_call({:is_complete_code, code}, _from, state) do
