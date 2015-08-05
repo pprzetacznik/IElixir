@@ -59,6 +59,9 @@ defmodule IElixir.Sandbox do
           {:reply, {inspect(result), output, state.execution_count}, new_state}
       end
     rescue
+      error in ArgumentError ->
+        error_message = "** (#{inspect error.__struct__}) #{error.message}\n"
+        {:reply, {"", error_message, state.execution_count}, state}
       error in CompileError ->
         error_message = "** (#{inspect error.__struct__}) console:#{inspect error.line} #{inspect error.description}\n"
         {:reply, {"", error_message, state.execution_count}, state}
