@@ -3,8 +3,6 @@ defmodule SandboxTest do
   alias IElixir.Sandbox
   require Logger
 
-  doctest Sandbox
-
   setup do
     Sandbox.clean()
   end
@@ -32,7 +30,7 @@ defmodule SandboxTest do
 
   test "lambdas" do
     {_result, output, line_number} = Sandbox.execute_code(prepare_request("function = fn x -> 2*x end"))
-    assert {output, line_number} == {"", 1}
+    assert {"", 1} == {output, line_number}
     assert {"4", "", 2} == Sandbox.execute_code(prepare_request("function.(2)"))
   end
 
@@ -44,6 +42,11 @@ defmodule SandboxTest do
     assert "complete" == Sandbox.is_complete_code("a = 10")
     assert "invalid" == Sandbox.is_complete_code("a + b")
     assert "incomplete" == Sandbox.is_complete_code("case x do")
+  end
+
+  test "use expression" do
+    {result, output, line_number} = Sandbox.execute_code(prepare_request("h()"))
+    assert {"", 1} == {result, line_number}
   end
 
   defp prepare_request(code) do

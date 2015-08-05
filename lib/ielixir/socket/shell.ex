@@ -90,7 +90,7 @@ defmodule IElixir.Socket.Shell do
     IOPub.send_status("idle", message)
   end
   defp process("is_complete_request", message, sock) do
-    Logger.warn("Received is_complete_request")
+    Logger.debug("Received is_complete_request: #{inspect message}")
     status = Sandbox.is_complete_code(message.content["code"])
     send_is_complete_reply(sock, message, status)
   end

@@ -7,8 +7,7 @@ defmodule IElixir.Sandbox do
   end
 
   def init(_opts) do
-    state = %{execution_count: 1, binding: []}
-    {:ok, state}
+    {:ok, prepare_clear_state()}
   end
 
   def clean() do
@@ -32,8 +31,7 @@ defmodule IElixir.Sandbox do
   end
 
   def handle_cast(:clean, _state) do
-    state = %{execution_count: 1, binding: []}
-    {:noreply, state}
+    {:noreply, prepare_clear_state()}
   end
 
   def handle_call({:get_code_completion, code}, _from, state) do
@@ -46,18 +44,26 @@ defmodule IElixir.Sandbox do
   def handle_call({:execute_code, request}, _from, state) do
     Logger.debug("Executing request: #{inspect request}")
     try do
-      {{result, binding}, {_, output}} = do_capture_io(
+      {{result, binding, env, scope}, {_, output}} = do_capture_io(
         fn ->
-          Code.eval_string(request["code"], state.binding)
+          {:ok, quoted} = Code.string_to_quoted(request["code"])
+          :elixir.eval_forms(quoted, state.binding, state.env, state.scope)
         end
       )
-      new_state = %{execution_count: state.execution_count + 1, binding: binding}
+      new_state = %{execution_count: state.execution_count + 1, binding: binding, env: env, scope: scope}
       Logger.debug("State: #{inspect new_state}")
-      {:reply, {inspect(result), output, state.execution_count}, new_state}
+      case result do
+        :"do not show this result in output" ->
+          {:reply, {"", output, state.execution_count}, new_state}
+        _ ->
+          {:reply, {inspect(result), output, state.execution_count}, new_state}
+      end
     rescue
-      error ->
-        error_message = "** (#{inspect error.__struct__}) #{inspect error.file}:#{inspect error.line} #{inspect error.description}\n"
+      error in CompileError ->
+        error_message = "** (#{inspect error.__struct__}) console:#{inspect error.line} #{inspect error.description}\n"
         {:reply, {"", error_message, state.execution_count}, state}
+      error ->
+        {:reply, {"", "#{inspect(error)}\n", state.execution_count}, state}
     end
   end
   def handle_call({:is_complete_code, code}, _from, state) do
@@ -70,6 +76,11 @@ defmodule IElixir.Sandbox do
       _ ->
         {:reply, "invalid", state}
     end
+  end
+
+  def prepare_clear_state() do
+    {_, binding, env, scope} = :elixir.eval('import IEx.Helpers', [])
+    %{execution_count: 1, binding: binding, env: env, scope: scope}
   end
 
   def do_capture_io(fun) do
