@@ -5,7 +5,7 @@ defmodule IElixir do
   def start(_type, _args) do
     conn_info = Application.get_env(:ielixir, :connection_file)
                 |> parse_connection_file
-    { :ok, ctx } = :erlzmq.context()
+    {:ok, ctx} = :erlzmq.context()
     IElixir.Supervisor.start_link([conn_info: conn_info, ctx: ctx])
   end
 
@@ -14,3 +14,4 @@ defmodule IElixir do
       |> Poison.Parser.parse!
   end
 end
+

@@ -7,21 +7,23 @@ defmodule IElixir.Socket.StdIn do
   end
 
   def init(opts) do
+    Process.flag(:trap_exit, true)
     sock = IElixir.Utils.make_socket(opts, "stdin", :router)
-    { :ok, { sock, sock } }
+    {:ok, sock}
   end
 
-  def terminate(_reason, {sock, _ }) do
+  def terminate(_reason, sock) do
+    Logger.debug("Shutdown StdIn")
     :erlzmq.close(sock)
   end
 
-  def handle_info({:zmq, _, _data, []}, state = {_sock, _id}) do
+  def handle_info({:zmq, _, _data, []}, sock) do
     Logger.info("StdIn message received")
-    { :noreply, state }
+    {:noreply, sock}
   end
-  def handle_info(msg, state) do
+  def handle_info(msg, sock) do
     Logger.warn("Got unexpected message on StdIn process: #{inspect msg}")
-    { :noreply, state}
+    {:noreply, sock}
   end
 end
 

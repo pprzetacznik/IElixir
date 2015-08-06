@@ -11,12 +11,13 @@ defmodule IElixir.Socket.Shell do
   end
 
   def init(opts) do
-    Logger.debug("Shell PID: #{inspect self()}")
+    Process.flag(:trap_exit, true)
     sock = Utils.make_socket(opts, "shell", :router)
     {:ok, {sock, []}}
   end
 
   def terminate(_reason, {sock, _}) do
+    Logger.debug("Shutdown Shell")
     :erlzmq.close(sock)
   end
 

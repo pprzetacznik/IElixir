@@ -4,23 +4,24 @@ defmodule IElixir.Socket.Heartbeat do
   alias IElixir.Utils
 
   def start_link(opts) do
-    GenServer.start_link(__MODULE__, opts, [])
+    GenServer.start_link(__MODULE__, opts, name: Heartbeat)
   end
 
   def init(opts) do
+    Process.flag(:trap_exit, true)
     sock = Utils.make_socket(opts, "hb", :rep)
-    {:ok, id} = :erlzmq.getsockopt(sock, :identity)
-    {:ok, {sock, id}}
+    {:ok, sock}
   end
 
-  def terminate(_reason, {sock, _ }) do
+  def terminate(_reason, sock) do
+    Logger.debug("Shutdown Heartbeat")
     :erlzmq.close(sock)
   end
 
-  def handle_info({:zmq, _, data, []}, state = {sock, _id}) do
+  def handle_info({:zmq, _, data, []}, sock) do
     Logger.debug("Heartbeat ping received")
     :erlzmq.send(sock, data)
-    {:noreply, state}
+    {:noreply, sock}
   end
   def handle_info(msg, state) do
     Logger.warn("Got unexpected message on hb process: #{inspect msg}")

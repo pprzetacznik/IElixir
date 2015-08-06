@@ -9,8 +9,8 @@ defmodule IElixir.Socket.IOPub do
   end
 
   def init(opts) do
+    Process.flag(:trap_exit, true)
     sock = Utils.make_socket(opts, "iopub", :pub)
-    Logger.debug("IOPub PID: #{inspect self()}")
     {:ok, sock}
   end
 
@@ -30,7 +30,8 @@ defmodule IElixir.Socket.IOPub do
     GenServer.cast(IOPub, {:send_execute_result, message, text})
   end
 
-  def terminate(_reason, {sock, _}) do
+  def terminate(_reason, sock) do
+    Logger.debug("Shutdown IOPub")
     :erlzmq.close(sock)
   end
 
