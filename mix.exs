@@ -3,37 +3,27 @@ defmodule IElixir.Mixfile do
 
   def project do
     [app: :ielixir,
-     version: "0.0.1",
+     version: "0.9.0-dev",
+     source_url: "https://github.com/pprzetacznik/IElixir",
+     name: "IElixir",
      elixir: "~> 1.1-dev",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps]
   end
 
-  # Configuration for the OTP application
-  #
-  # Type `mix help compile.app` for more information
   def application do
-    [
-      mod: {IElixir, []},
-      applications: [:logger, :iex]
-    ]
+    [mod: {IElixir, []},
+     applications: [:logger, :iex]]
   end
 
-  # Dependencies can be Hex packages:
-  #
-  #   {:mydep, "~> 0.3.0"}
-  #
-  # Or git/path repositories:
-  #
-  #   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}
-  #
-  # Type `mix help deps` for more examples and options
   defp deps do
-    [
-      { :erlzmq, github: "zeromq/erlzmq2" },
-      { :poison, github: "devinus/poison" },
-      { :uuid, github: "okeuday/uuid" }
-    ]
+    [{:erlzmq, github: "zeromq/erlzmq2"},
+     {:poison, github: "devinus/poison"},
+     {:uuid, github: "okeuday/uuid"},
+
+     # Docs dependencies
+     {:earmark, "~> 0.1", only: :dev},
+     {:ex_doc, "~> 0.7", only: :dev}]
   end
 end

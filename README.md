@@ -70,6 +70,13 @@ Evaluate some commands in your new notebook:
 
 ![IElixir basics](/resources/jupyter_ielixir_basics.png?raw=true)
 
+### Generate documentation
+
+Run following command and see `doc` directory for generated documentation in HTML:
+```Bash
+$ mix docs
+```
+
 ### References
 
 I was inspired by following codes and articles:

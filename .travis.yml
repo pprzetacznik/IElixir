@@ -21,6 +21,7 @@ before_script:
   - ./install_script.sh
 script:
   - mix test
+  - mix docs
   - cd jupyter_kernel_test
   - MIX_ENV=dev python test_ipython.py
 

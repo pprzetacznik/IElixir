@@ -83,12 +83,10 @@ defmodule IElixir.Socket.Shell do
     IOPub.send_status("busy", message)
     position = message.content["cursor_pos"]
     case Sandbox.get_code_completion(message.content["code"]) do
-      {:yes, [], [_entry]} ->
-        send_complete_reply(sock, message, {[], position, position})
-      {:yes, [], entries} ->
-        send_complete_reply(sock, message, {Enum.map(entries, &to_string/1), 0, position})
+      {:yes, "", entries = [_h | [_t]]} ->
+        send_complete_reply(sock, message, {entries, 0, position})
       {:yes, hint, []} ->
-        send_complete_reply(sock, message, {[to_string(hint)], position, position})
+        send_complete_reply(sock, message, {[hint], position, position})
       _ ->
         send_complete_reply(sock, message, {[], position, position})
     end
@@ -97,7 +95,7 @@ defmodule IElixir.Socket.Shell do
   defp process("is_complete_request", message, sock) do
     Logger.debug("Received is_complete_request: #{inspect message}")
     status = Sandbox.is_complete_code(message.content["code"])
-    send_is_complete_reply(sock, message, status)
+    send_is_complete_reply(sock, message, to_string(status))
   end
   defp process(msg_type, message, _sock) do
     Logger.debug("Received message of type: #{msg_type} @ shell socket: #{inspect message}")
