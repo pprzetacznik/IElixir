@@ -13,14 +13,8 @@ defmodule IElixir.Socket.Control do
     {:ok, {sock, []}}
   end
 
-  def handle_info({:zmq, _, message, flags}, {sock, message_buffer}) do
-    case Message.assemble_message(message, flags, message_buffer) do
-      {:buffer, buffer} ->
-        {:noreply, {sock, buffer}}
-      {:msg, message} ->
-        process(message.header["msg_type"], message, sock)
-        {:noreply, {sock, []}}
-    end
+  def handle_info(message = {:zmq, _, _, _}, state) do
+    {:noreply, Message.assemble_message(message, state, &process/3)}
   end
   def handle_info(msg, state) do
     Logger.warn("Got unexpected message on control process: #{inspect msg}")
@@ -28,7 +22,6 @@ defmodule IElixir.Socket.Control do
   end
 
   defp process("shutdown_request", message, sock) do
-    Logger.debug("Got shutdown_request :: #{inspect message}\n")
     send_message(sock, message, "shutdown_reply", %{"restart": true})
     Logger.info("Stopping application")
     :erlzmq.close(sock)

@@ -21,14 +21,8 @@ defmodule IElixir.Socket.Shell do
     :erlzmq.close(sock)
   end
 
-  def handle_info({:zmq, _, message, flags}, {sock, message_buffer}) do
-    case Message.assemble_message(message, flags, message_buffer) do
-      {:buffer, buffer} ->
-        {:noreply, {sock, buffer}}
-      {:msg, message} ->
-        process(message.header["msg_type"], message, sock)
-        {:noreply, {sock, []}}
-    end
+  def handle_info(message = {:zmq, _, _, _}, state) do
+    {:noreply, Message.assemble_message(message, state, &process/3)}
   end
   def handle_info(message, state) do
     Logger.warn("Got unexpected message on shell process: #{inspect message}")

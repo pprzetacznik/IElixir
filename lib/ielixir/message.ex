@@ -42,7 +42,17 @@ defmodule IElixir.Message do
     Logger.warn("Invalid message on shell socket #{inspect message}")
   end
 
-  def assemble_message(message, flags, message_buffer) do
+  def assemble_message({:zmq, _, message, flags}, {sock, message_buffer}, process_fun) do
+    case assemble_message_part(message, flags, message_buffer) do
+      {:buffer, buffer} ->
+        {sock, buffer}
+      {:msg, message} ->
+        process_fun.(message.header["msg_type"], message, sock)
+        {sock, []}
+    end
+  end
+
+  defp assemble_message_part(message, flags, message_buffer) do
     message_buffer = [message | message_buffer]
     if :rcvmore in flags do
       {:buffer, message_buffer}
@@ -50,6 +60,5 @@ defmodule IElixir.Message do
       {:msg, parse(Enum.reverse(message_buffer))}
     end
   end
-
 end
 

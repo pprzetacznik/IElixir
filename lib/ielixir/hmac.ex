@@ -1,12 +1,38 @@
 defmodule IElixir.HMAC do
-  require Logger
+  @moduledoc """
+  This module provides server which computes HMAC signature of provided message.
+  """
 
+  @typedoc "Return values of `start*` functions"
+  @type on_start :: {:ok, pid} | :ignore | {:error, {:already_started, pid} | term}
+
+  require Logger
   use GenServer
 
+  @doc """
+  Start HMAC server:
+
+      IElixir.HMAC.start_link(%{"signature_scheme" => "hmac-sha256", "key" => "7534565f-e742-40f3-85b4-bf4e5f35390a"})
+
+  ## Options
+
+  "signature_scheme" and "key" options are required for proper work of HMAC server.
+  """
+  @spec start_link(map) :: on_start
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, name: HMACService)
   end
 
+  @doc """
+  Compute signature for provided message.
+
+  ### Example
+
+      iex> IElixir.HMAC.compute_signature("", "", "", "")
+      "25eb8ea448d87f384f43c96960600c2ce1e713a364739674a6801585ae627958"
+
+  """
+  @spec compute_signature(String.t, String.t, String.t, String.t) :: String.t
   def compute_signature(header_str, parent_header_str, metadata_str, content_str) do
     GenServer.call(HMACService,
       {:compute_sig, [header_str, parent_header_str, metadata_str, content_str]})
