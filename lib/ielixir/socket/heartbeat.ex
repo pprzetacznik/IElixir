@@ -1,7 +1,10 @@
 defmodule IElixir.Socket.Heartbeat do
+  @moduledoc """
+  This is module responsible for handling Heartbeat requests.
+  """
+
   use GenServer
   require Logger
-  alias IElixir.Utils
 
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, name: Heartbeat)
@@ -9,7 +12,7 @@ defmodule IElixir.Socket.Heartbeat do
 
   def init(opts) do
     Process.flag(:trap_exit, true)
-    sock = Utils.make_socket(opts, "hb", :rep)
+    sock = IElixir.Utils.make_socket(opts, "hb", :rep)
     {:ok, sock}
   end
 

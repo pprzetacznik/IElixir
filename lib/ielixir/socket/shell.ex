@@ -1,9 +1,18 @@
 defmodule IElixir.Socket.Shell do
+  @moduledoc """
+  From https://ipython.org/ipython-doc/dev/development/messaging.html
+
+  "Shell: this single ROUTER socket allows multiple incoming connections from
+  frontends, and this is the socket where requests for code execution, object
+  information, prompts, etc. are made to the kernel by any frontend.
+  The communication on this socket is a sequence of request/reply actions from
+  each frontend and the kernel."
+  """
+
   use GenServer
   require Logger
   alias IElixir.Socket.IOPub
   alias IElixir.Message
-  alias IElixir.Utils
   alias IElixir.Sandbox
 
   def start_link(opts) do
@@ -12,7 +21,7 @@ defmodule IElixir.Socket.Shell do
 
   def init(opts) do
     Process.flag(:trap_exit, true)
-    sock = Utils.make_socket(opts, "shell", :router)
+    sock = IElixir.Utils.make_socket(opts, "shell", :router)
     {:ok, {sock, []}}
   end
 
@@ -51,7 +60,7 @@ defmodule IElixir.Socket.Shell do
         "url" => ""
       }]
     }
-    send_message(sock, message, "kernel_info_reply", content)
+    Message.send_message(sock, message, "kernel_info_reply", content)
   end
   defp process("execute_request", message, sock) do
     Logger.debug("Received execute_request: #{inspect message}")
@@ -95,16 +104,16 @@ defmodule IElixir.Socket.Shell do
     Logger.debug("Received message of type: #{msg_type} @ shell socket: #{inspect message}")
   end
 
-  def send_execute_reply(sock, message, execution_count) do
+  defp send_execute_reply(sock, message, execution_count) do
     content = %{
       "status": "ok",
       "execution_count": execution_count,
       "payload": [],
       "user_expressions": %{}
     }
-    send_message(sock, message, "execute_reply", content)
+    Message.send_message(sock, message, "execute_reply", content)
   end
-  def send_execute_reply(sock, message, execution_count, exception_name, traceback) do
+  defp send_execute_reply(sock, message, execution_count, exception_name, traceback) do
     content = %{
       "status": "error",
       "execution_count": execution_count,
@@ -112,10 +121,10 @@ defmodule IElixir.Socket.Shell do
       "evalue": 1,
       "traceback": traceback,
     }
-    send_message(sock, message, "execute_reply", content)
+    Message.send_message(sock, message, "execute_reply", content)
   end
 
-  def send_complete_reply(sock, message, {list, cursor_start, cursor_end}) do
+  defp send_complete_reply(sock, message, {list, cursor_start, cursor_end}) do
     content = %{
       "matches": list,
       "cursor_start": cursor_start,
@@ -123,32 +132,21 @@ defmodule IElixir.Socket.Shell do
       "metadata": %{},
       "status": "ok"
     }
-    send_message(sock, message, "complete_reply", content)
+    Message.send_message(sock, message, "complete_reply", content)
   end
 
-  def send_is_complete_reply(sock, message, status = "incomplete") do
+  defp send_is_complete_reply(sock, message, status = "incomplete") do
     content = %{
       "status": status,
       "indent": "  ",
     }
-    send_message(sock, message, "is_complete_reply", content)
+    Message.send_message(sock, message, "is_complete_reply", content)
   end
-  def send_is_complete_reply(sock, message, status) do
+  defp send_is_complete_reply(sock, message, status) do
     content = %{
       "status": status,
     }
-    send_message(sock, message, "is_complete_reply", content)
-  end
-
-  def send_message(sock, message, message_type, content) do
-    new_message = %{message |
-      "parent_header": message.header,
-      "header": %{message.header |
-        "msg_type" => message_type
-      },
-      "content": content
-    }
-    Utils.send_all(sock, Message.encode(new_message))
+    Message.send_message(sock, message, "is_complete_reply", content)
   end
 end
 

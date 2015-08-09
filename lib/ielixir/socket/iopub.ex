@@ -1,7 +1,14 @@
 defmodule IElixir.Socket.IOPub do
+  @moduledoc """
+  From https://ipython.org/ipython-doc/dev/development/messaging.html
+
+  "IOPub: this socket is the ‘broadcast channel’ where the kernel publishes all
+  side effects (stdout, stderr, etc.) as well as the requests coming from any
+  client over the shell socket and its own requests on the stdin socket."
+  """
+
   use GenServer
   require Logger
-  alias IElixir.Utils
   alias IElixir.Message
 
   def start_link(opts) do
@@ -10,7 +17,7 @@ defmodule IElixir.Socket.IOPub do
 
   def init(opts) do
     Process.flag(:trap_exit, true)
-    sock = Utils.make_socket(opts, "iopub", :pub)
+    sock = IElixir.Utils.make_socket(opts, "iopub", :pub)
     {:ok, sock}
   end
 
@@ -46,7 +53,7 @@ defmodule IElixir.Socket.IOPub do
         "code": message.content["code"]
       }
     }
-    Utils.send_all(sock, Message.encode(new_message))
+    Message.send_all(sock, Message.encode(new_message))
     {:noreply, sock}
   end
   def handle_cast({:send_stream, message, text}, sock) do
@@ -60,7 +67,7 @@ defmodule IElixir.Socket.IOPub do
         "text": text
       }
     }
-    Utils.send_all(sock, Message.encode(new_message))
+    Message.send_all(sock, Message.encode(new_message))
     {:noreply, sock}
   end
   def handle_cast({:send_execute_result, message, {text, execution_count}}, sock) do
@@ -77,7 +84,7 @@ defmodule IElixir.Socket.IOPub do
         "metadata": %{}
       }
     }
-    Utils.send_all(sock, Message.encode(new_message))
+    Message.send_all(sock, Message.encode(new_message))
     {:noreply, sock}
   end
   def handle_cast({:send_status, status, message}, sock) do
@@ -92,7 +99,7 @@ defmodule IElixir.Socket.IOPub do
       "metadata": %{},
       "content": %{"execution_state": status}
     }
-    Utils.send_all(sock, Message.encode(new_message))
+    Message.send_all(sock, Message.encode(new_message))
     {:noreply, sock}
   end
 end

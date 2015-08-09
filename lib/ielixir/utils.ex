@@ -33,14 +33,5 @@ defmodule IElixir.Utils do
     Logger.debug("Initializing " <> socket_name <> " agent on url: " <> url)
     sock
   end
-
-  @doc false
-  def send_all(sock, [message]) do
-    :ok = :erlzmq.send(sock, message, [])
-  end
-  def send_all(sock, [message | other_messages]) do
-    :ok = :erlzmq.send(sock, message, [:sndmore])
-    send_all(sock, other_messages)
-  end
 end
 

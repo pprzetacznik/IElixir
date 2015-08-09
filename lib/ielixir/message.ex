@@ -1,4 +1,9 @@
 defmodule IElixir.Message do
+  @moduledoc """
+  This is documentation for Message structure and some utils that helps in
+  encoding, parsing, assembling and sending messages.
+  """
+
   require Logger
   alias IElixir.HMAC
 
@@ -59,6 +64,26 @@ defmodule IElixir.Message do
     else
       {:msg, parse(Enum.reverse(message_buffer))}
     end
+  end
+
+  def send_message(sock, message, message_type, content) do
+    new_message = %{message |
+      "parent_header": message.header,
+      "header": %{message.header |
+        "msg_type" => message_type
+      },
+      "content": content
+    }
+    send_all(sock, encode(new_message))
+  end
+
+  @doc false
+  def send_all(sock, [message]) do
+    :ok = :erlzmq.send(sock, message, [])
+  end
+  def send_all(sock, [message | other_messages]) do
+    :ok = :erlzmq.send(sock, message, [:sndmore])
+    send_all(sock, other_messages)
   end
 end
 
