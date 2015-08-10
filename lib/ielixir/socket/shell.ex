@@ -51,7 +51,7 @@ defmodule IElixir.Socket.Shell do
         "mimetype" => "",
         "file_extension" => ".ex",
         "pygments_lexer" => "",
-        "codemirror_mode" => "",
+        "codemirror_mode" => "erlang",
         "nbconvert_exporter" => ""
       },
       "banner": "Welcome to IElixir!",
