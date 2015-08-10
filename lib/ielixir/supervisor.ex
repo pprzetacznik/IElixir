@@ -1,11 +1,17 @@
 defmodule IElixir.Supervisor do
+  @moduledoc """
+  This is supervisor module. Takes care if everything is working.
+  """
+
   use Supervisor
   require Logger
 
+  @doc false
   def start_link(opts) do
     Supervisor.start_link(__MODULE__, opts, name: Supervisor)
   end
 
+  @doc false
   def init(opts) do
     children = [
       worker(IElixir.Socket.Control, [opts]),

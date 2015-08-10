@@ -2,6 +2,8 @@ defmodule IElixir.Message do
   @moduledoc """
   This is documentation for Message structure and some utils that helps in
   encoding, parsing, assembling and sending messages.
+
+  Here are extracted functions which helps with messages management.
   """
 
   require Logger
@@ -15,6 +17,7 @@ defmodule IElixir.Message do
     content: nil,
     blob: nil
 
+  @doc false
   def encode(message) do
     header = Poison.encode!(message.header)
     parent_header = Poison.encode!(message.parent_header)
@@ -34,6 +37,7 @@ defmodule IElixir.Message do
     message
   end
 
+  @doc false
   def parse([uuid, "<IDS|MSG>", baddad42, header, parent_header, metadata, content | blob]) do
     %IElixir.Message{uuid: uuid,
       baddad42: baddad42,
@@ -47,6 +51,7 @@ defmodule IElixir.Message do
     Logger.warn("Invalid message on shell socket #{inspect message}")
   end
 
+  @doc false
   def assemble_message({:zmq, _, message, flags}, {sock, message_buffer}, process_fun) do
     case assemble_message_part(message, flags, message_buffer) do
       {:buffer, buffer} ->
@@ -66,6 +71,7 @@ defmodule IElixir.Message do
     end
   end
 
+  @doc false
   def send_message(sock, message, message_type, content) do
     new_message = %{message |
       "parent_header": message.header,

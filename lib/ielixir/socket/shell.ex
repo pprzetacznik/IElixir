@@ -1,12 +1,11 @@
 defmodule IElixir.Socket.Shell do
   @moduledoc """
-  From https://ipython.org/ipython-doc/dev/development/messaging.html
-
   "Shell: this single ROUTER socket allows multiple incoming connections from
   frontends, and this is the socket where requests for code execution, object
   information, prompts, etc. are made to the kernel by any frontend.
   The communication on this socket is a sequence of request/reply actions from
   each frontend and the kernel."
+  From https://ipython.org/ipython-doc/dev/development/messaging.html
   """
 
   use GenServer
@@ -15,6 +14,7 @@ defmodule IElixir.Socket.Shell do
   alias IElixir.Message
   alias IElixir.Sandbox
 
+  @doc false
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, [])
   end

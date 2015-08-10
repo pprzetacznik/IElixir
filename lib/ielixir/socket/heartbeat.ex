@@ -6,6 +6,7 @@ defmodule IElixir.Socket.Heartbeat do
   use GenServer
   require Logger
 
+  @doc false
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, name: Heartbeat)
   end

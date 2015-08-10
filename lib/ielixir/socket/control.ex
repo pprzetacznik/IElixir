@@ -1,16 +1,16 @@
 defmodule IElixir.Socket.Control do
   @moduledoc """
-  From https://ipython.org/ipython-doc/dev/development/messaging.html
-
   "Control: This channel is identical to Shell, but operates on a separate
   socket, to allow important messages to avoid queueing behind execution
   requests (e.g. shutdown or abort)."
+  From https://ipython.org/ipython-doc/dev/development/messaging.html
   """
 
   use GenServer
   require Logger
   alias IElixir.Message
 
+  @doc false
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, [])
   end
