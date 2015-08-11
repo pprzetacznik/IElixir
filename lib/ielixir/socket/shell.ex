@@ -48,16 +48,22 @@ defmodule IElixir.Socket.Shell do
       "language_info": %{
         "name" => "elixir",
         "version" => inspect(version),
-        "mimetype" => "",
-        "file_extension" => ".ex",
-        "pygments_lexer" => "",
+        "mimetype" => "text/x-elixir",
+        "file_extension" => "ex",
+        "pygments_lexer" => "pygments.lexers.erlang.ElixirLexer",
         "codemirror_mode" => "erlang",
         "nbconvert_exporter" => ""
       },
       "banner": "Welcome to IElixir!",
       "help_links": [%{
-        "text" => "",
-        "url" => ""
+        "text" => "Elixir Getting Started",
+        "url" => "http://elixir-lang.org/getting-started/introduction.html"
+      }, %{
+        "text" => "Elixir Documentation",
+        "url" => "http://elixir-lang.org/docs.html"
+      }, %{
+        "text" => "Elixir Sources",
+        "url" => "https://github.com/elixir-lang/elixir"
       }]
     }
     Message.send_message(sock, message, "kernel_info_reply", content)
