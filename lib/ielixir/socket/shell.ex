@@ -83,6 +83,7 @@ defmodule IElixir.Socket.Shell do
         end
         send_execute_reply(sock, message, execution_count)
       {:error, exception_name, traceback} ->
+        IOPub.send_error(message, execution_count, exception_name, traceback)
         send_execute_reply(sock, message, execution_count, exception_name, traceback)
     end
     IOPub.send_status("idle", message)
@@ -124,7 +125,7 @@ defmodule IElixir.Socket.Shell do
       "status": "error",
       "execution_count": execution_count,
       "ename": exception_name,
-      "evalue": 1,
+      "evalue": "1",
       "traceback": traceback,
     }
     Message.send_message(sock, message, "execute_reply", content)
@@ -144,13 +145,13 @@ defmodule IElixir.Socket.Shell do
   defp send_is_complete_reply(sock, message, status = "incomplete") do
     content = %{
       "status": status,
-      "indent": "  ",
+      "indent": "  "
     }
     Message.send_message(sock, message, "is_complete_reply", content)
   end
   defp send_is_complete_reply(sock, message, status) do
     content = %{
-      "status": status,
+      "status": status
     }
     Message.send_message(sock, message, "is_complete_reply", content)
   end

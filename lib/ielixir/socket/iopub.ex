@@ -37,6 +37,10 @@ defmodule IElixir.Socket.IOPub do
     GenServer.cast(IOPub, {:send_execute_result, message, text})
   end
 
+  def send_error(message, execution_count, exception_name, traceback) do
+    GenServer.cast(IOPub, {:send_error, message, execution_count, exception_name, traceback})
+  end
+
   def terminate(_reason, sock) do
     Logger.debug("Shutdown IOPub")
     :erlzmq.close(sock)
@@ -72,6 +76,16 @@ defmodule IElixir.Socket.IOPub do
   def handle_cast({:send_status, status, message}, sock) do
     content = %{"execution_state": status}
     Message.send_message(sock, message, "status", content)
+    {:noreply, sock}
+  end
+  def handle_cast({:send_error, message, execution_count, exception_name, traceback}, sock) do
+    content = %{
+      "execution_count": execution_count,
+      "ename": exception_name,
+      "evalue": "1",
+      "traceback": traceback,
+    }
+    Message.send_message(sock, message, "error", content)
     {:noreply, sock}
   end
 end

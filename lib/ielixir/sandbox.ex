@@ -152,13 +152,14 @@ defmodule IElixir.Sandbox do
       end
     rescue
       error in ArgumentError ->
-        error_message = "** (#{inspect error.__struct__}) #{error.message}\n"
-        {:reply, {:error, inspect(error.__struct__), error_message}, state}
+        error_message = "** (#{inspect error.__struct__}) #{inspect error.message}"
+        {:reply, {:error, inspect(error.__struct__), [error_message]}, state}
       error in CompileError ->
         error_message = "** (#{inspect error.__struct__}) console:#{inspect error.line} #{inspect error.description}"
         {:reply, {:error, inspect(error.__struct__), [error_message]}, state}
       error ->
-        {:reply, {:error, inspect(error.__struct__), [inspect(error)]}, state}
+        error_message = "** #{inspect error}"
+        {:reply, {:error, inspect(error.__struct__), [error_message]}, state}
     end
   end
   def handle_call({:is_complete_code, code}, _from, state) do
