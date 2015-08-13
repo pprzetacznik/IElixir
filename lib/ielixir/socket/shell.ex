@@ -107,6 +107,10 @@ defmodule IElixir.Socket.Shell do
     status = Sandbox.is_complete_code(message.content["code"])
     send_is_complete_reply(sock, message, to_string(status))
   end
+  defp process("history_request", message, sock) do
+    Logger.debug("History request: #{inspect message}")
+    send_history_reply(sock, message)
+  end
   defp process(msg_type, message, _sock) do
     Logger.debug("Received message of type: #{msg_type} @ shell socket: #{inspect message}")
   end
@@ -154,6 +158,11 @@ defmodule IElixir.Socket.Shell do
       "status": status
     }
     Message.send_message(sock, message, "is_complete_reply", content)
+  end
+
+  defp send_history_reply(sock, message) do
+    content = []
+    Message.send_message(sock, message, "history_reply", content)
   end
 end
 
