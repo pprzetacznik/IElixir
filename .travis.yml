@@ -1,14 +1,15 @@
-language: erlang
+language: elixir
+
+elixir:
+  - 1.0.5
+
 otp_release:
+  - 17.5
   - 18.0
+
 sudo: true
 
-before_install:
-  - wget http://s3.hex.pm/builds/elixir/master.zip
-  - unzip -d elixir master.zip
-
 before_script:
-  - export PATH=`pwd`/elixir/bin:$PATH
   - yes | mix deps.get
   - mix deps.compile
   - sudo apt-get install python python-pip
@@ -29,6 +30,6 @@ script:
 
 after_script:
   - cd $TRAVIS_BUILD_DIR
-  - MIX_ENV=docs mix docs
   - MIX_ENV=docs mix deps.get
+  - MIX_ENV=docs mix docs
   - MIX_ENV=docs mix inch.report
