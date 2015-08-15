@@ -19,7 +19,7 @@ defmodule IElixir.Mixfile do
 
   defp deps do
     [{:erlzmq, github: "zeromq/erlzmq2"},
-     {:poison, github: "devinus/poison"},
+     {:poison, github: "devinus/poison", override: true},
      {:uuid, github: "okeuday/uuid"},
 
      {:sqlite_ecto, "~> 0.5.0"},

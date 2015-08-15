@@ -5,7 +5,7 @@
   "esqlite": {:hex, :esqlite, "0.2.1"},
   "ex_doc": {:hex, :ex_doc, "0.7.3"},
   "pipe": {:hex, :pipe, "0.0.2"},
-  "poison": {:hex, :poison, "1.4.0"},
+  "poison": {:git, "git://github.com/devinus/poison.git", "53de16a8dcb67d896d1d2b8ea91b9d506b8d83f4", []},
   "poolboy": {:hex, :poolboy, "1.5.1"},
   "quickrand": {:hex, :quickrand, "1.5.0"},
   "sqlite_ecto": {:hex, :sqlite_ecto, "0.5.0"},
