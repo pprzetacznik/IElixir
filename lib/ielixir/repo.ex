@@ -1,5 +1,6 @@
 defmodule IElixir.Repo do
   use Ecto.Repo,
-    otp_app: :my_app,
+    otp_app: :ielixir,
     adapter: Sqlite.Ecto
 end
+

@@ -13,6 +13,10 @@ defmodule IElixir.Socket.Shell do
   alias IElixir.Socket.IOPub
   alias IElixir.Message
   alias IElixir.Sandbox
+  alias IElixir.Repo
+  alias IElixir.Queries
+  alias IElixir.HistoryEntry
+  alias IElixir.Queries
 
   @doc false
   def start_link(opts) do
@@ -81,6 +85,13 @@ defmodule IElixir.Socket.Shell do
         if result != "" or message.content["silent"] == true do
           IOPub.send_execute_result(message, {result, execution_count})
         end
+        history_entry = %HistoryEntry{
+          session: message.header["session"],
+          line_number: execution_count,
+          input: message.content["code"],
+          output: output
+        }
+        Repo.insert(history_entry)
         send_execute_reply(sock, message, execution_count)
       {:error, exception_name, traceback} ->
         IOPub.send_error(message, execution_count, exception_name, traceback)
@@ -161,8 +172,18 @@ defmodule IElixir.Socket.Shell do
   end
 
   defp send_history_reply(sock, message) do
-    content = []
+    history_entries = Queries.get_all()
+    Logger.warn("#{inspect history_entries}")
+    content = Enum.map(history_entries, &extract_tuple_from_history_entry/1)
+    Logger.warn("#{inspect content}")
     Message.send_message(sock, message, "history_reply", content)
+  end
+
+  defp extract_tuple_from_history_entry(entry = %HistoryEntry{}) do
+    case entry.output do
+      "" -> [entry.session, entry.line_number, entry.input]
+      _ -> [entry.session, entry.line_number, [entry.input, entry.output]]
+    end
   end
 end
 
