@@ -173,9 +173,9 @@ defmodule IElixir.Socket.Shell do
 
   defp send_history_reply(sock, message) do
     history_entries = Queries.get_all()
-    Logger.warn("#{inspect history_entries}")
-    content = Enum.map(history_entries, &extract_tuple_from_history_entry/1)
-    Logger.warn("#{inspect content}")
+    content = %{
+      "history": Enum.map(history_entries, &extract_tuple_from_history_entry/1)
+    }
     Message.send_message(sock, message, "history_reply", content)
   end
 
