@@ -1,10 +1,13 @@
 language: erlang
 otp_release:
-  - 17.1
+  - 18.0
+  - 17.5
 sudo: true
+
 before_install:
   - wget http://s3.hex.pm/builds/elixir/master.zip
   - unzip -d elixir master.zip
+
 before_script:
   - export PATH=`pwd`/elixir/bin:$PATH
   - yes | mix deps.get
@@ -19,9 +22,14 @@ before_script:
   - git clone -b ielixir https://github.com/pprzetacznik/jupyter_kernel_test.git
   - pip install jupyter-console nose
   - ./install_script.sh
+
 script:
   - mix test
-  - mix docs
   - cd jupyter_kernel_test
   - MIX_ENV=dev python test_ipython.py
 
+after_script:
+  - cd $TRAVIS_BUILD_DIR
+  - MIX_ENV=docs mix deps.get
+  - MIX_ENV=docs mix docs
+  - MIX_ENV=docs mix inch.report
