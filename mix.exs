@@ -15,13 +15,16 @@ defmodule IElixir.Mixfile do
 
   def application do
     [mod: {IElixir, []},
-     applications: [:logger, :iex]]
+     applications: [:logger, :iex, :sqlite_ecto, :ecto]]
   end
 
   defp deps do
     [{:erlzmq, github: "zeromq/erlzmq2"},
      {:poison, github: "devinus/poison", override: true},
      {:uuid, github: "okeuday/uuid"},
+
+     {:sqlite_ecto, "~> 0.5.0"},
+     {:ecto, "~> 0.15.0"},
 
      # Docs dependencies
      {:earmark, "~> 0.1", only: :docs},
