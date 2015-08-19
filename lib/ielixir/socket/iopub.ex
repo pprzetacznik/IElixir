@@ -21,22 +21,39 @@ defmodule IElixir.Socket.IOPub do
     {:ok, sock}
   end
 
+  @doc """
+  Send status of sandbox: 'ok' | 'error' | 'abort'.
+  """
   def send_status(status, message) do
     GenServer.cast(IOPub, {:send_status, status, message})
   end
 
+  @doc """
+  Send execute_input message. Send information about 'execution_count'.
+  """
   def send_execute_input(message, execution_count) do
     GenServer.cast(IOPub, {:send_execute_input, message, execution_count})
   end
 
-  def send_stream(message, text) do
-    GenServer.cast(IOPub, {:send_stream, message, text})
-  end
-
+  @doc """
+  Send execute_result message. This is used for sending what executed code
+  returned.
+  """
   def send_execute_result(message, text) do
     GenServer.cast(IOPub, {:send_execute_result, message, text})
   end
 
+  @doc """
+  Send stream message. This is used for sending output of code execution.
+  """
+  def send_stream(message, text) do
+    GenServer.cast(IOPub, {:send_stream, message, text})
+  end
+
+  @doc """
+  Send error message. Send traceback so client can have information about what
+  went wrong.
+  """
   def send_error(message, execution_count, exception_name, traceback) do
     GenServer.cast(IOPub, {:send_error, message, execution_count, exception_name, traceback})
   end
