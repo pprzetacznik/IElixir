@@ -85,13 +85,10 @@ defmodule IElixir.Socket.Shell do
         if result != "" or message.content["silent"] == true do
           IOPub.send_execute_result(message, {result, execution_count})
         end
-        history_entry = %HistoryEntry{
-          session: message.header["session"],
-          line_number: execution_count,
-          input: message.content["code"],
-          output: output
-        }
-        Repo.insert(history_entry)
+        Queries.insert(message.header["session"],
+          execution_count,
+          message.content["code"],
+          output)
         send_execute_reply(sock, message, execution_count)
       {:error, exception_name, traceback} ->
         IOPub.send_error(message, execution_count, exception_name, traceback)
@@ -172,18 +169,10 @@ defmodule IElixir.Socket.Shell do
   end
 
   defp send_history_reply(sock, message) do
-    history_entries = Queries.get_all()
     content = %{
-      "history": Enum.map(history_entries, &extract_tuple_from_history_entry/1)
+      "history": Queries.get_entries_list()
     }
     Message.send_message(sock, message, "history_reply", content)
-  end
-
-  defp extract_tuple_from_history_entry(entry = %HistoryEntry{}) do
-    case entry.output do
-      "" -> [entry.session, entry.line_number, entry.input]
-      _ -> [entry.session, entry.line_number, [entry.input, entry.output]]
-    end
   end
 end
 
