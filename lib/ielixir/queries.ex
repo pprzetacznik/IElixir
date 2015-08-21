@@ -27,19 +27,21 @@ defmodule IElixir.Queries do
     :ok
   end
 
-  @doc """
+  @doc ~S"""
   Get list of history entries.
 
   ### Example
 
-      iex> input = "a=10"
-      "a=10"
-      iex> {:ok, result, output, line_number} = IElixir.Sandbox.execute_code(%{"code" => input})
+      iex> {:ok, result, output, line_number} = IElixir.Sandbox.execute_code(%{"code" => "a=10"})
       {:ok, "10", "", 1}
-      iex> IElixir.Queries.insert("cd8ad0b7-09fa-49b7-be7d-987845b4be63", line_number, input, output)
+      iex> IElixir.Queries.insert("cd8ad0b7-09fa-49b7-be7d-987845b4be63", line_number, "a=10", output)
+      :ok
+      iex> {:ok, result, output, line_number} = IElixir.Sandbox.execute_code(%{"code" => "IO.puts(\"aaa\")"})
+      {:ok, ":ok", "aaa\n", 2}
+      iex> IElixir.Queries.insert("cd8ad0b7-09fa-49b7-be7d-987845b4be63", line_number, "IO.puts(\"aaa\")", output)
       :ok
       iex> IElixir.Queries.get_entries_list()
-      [["cd8ad0b7-09fa-49b7-be7d-987845b4be63", 1, "a=10"]]
+      [["cd8ad0b7-09fa-49b7-be7d-987845b4be63", 1, "a=10"], ["cd8ad0b7-09fa-49b7-be7d-987845b4be63", 2, ["IO.puts(\"aaa\")", "aaa\n"]]]
 
   """
   def get_entries_list do
