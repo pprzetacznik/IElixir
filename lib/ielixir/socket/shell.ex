@@ -13,9 +13,6 @@ defmodule IElixir.Socket.Shell do
   alias IElixir.Socket.IOPub
   alias IElixir.Message
   alias IElixir.Sandbox
-  alias IElixir.Repo
-  alias IElixir.Queries
-  alias IElixir.HistoryEntry
   alias IElixir.Queries
 
   @doc false
