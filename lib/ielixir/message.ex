@@ -74,11 +74,16 @@ defmodule IElixir.Message do
   @doc false
   def send_message(sock, message, message_type, content) do
     new_message = %{message |
-      "parent_header": message.header,
-      "header": %{message.header |
-        "msg_type" => message_type
+      "header": %{
+        "msg_id" => :uuid.uuid_to_string(:uuid.get_v4(), :binary_standard),
+        "username" => "ielixir_kernel",
+        "session" => message.header["session"],
+        "msg_type" => message_type,
+        "version" => "5.0",
       },
-      "content": content
+      "parent_header": message.header,
+      "metadata": %{},
+      "content": content,
     }
     send_all(sock, encode(new_message))
   end
