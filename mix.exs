@@ -9,6 +9,8 @@ defmodule IElixir.Mixfile do
      elixir: "~> 1.1.0-dev",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     description: "IElixir",
+     package: package,
      deps: deps,
      test_coverage: [tool: ExCoveralls]]
   end
@@ -33,5 +35,13 @@ defmodule IElixir.Mixfile do
 
      # Test dependencies
      {:excoveralls, "~> 0.3.11", only: :test}]
+  end
+
+  defp package do
+     [files: ["config", "lib", "priv", "resources", "mix.exs", "README.md", "LICENSE", "install_script.sh", "start_script.sh", ".travis.yml"],
+     contributors: ["Piotr Przetacznik"],
+     licenses: ["Apache 2.0"],
+     links: %{"GitHub" => "https://github.com/pprzetacznik/ielixir",
+              "Docs" => "http://hexdocs.pm/ielixir/"}]
   end
 end
