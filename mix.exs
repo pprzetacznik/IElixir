@@ -3,10 +3,10 @@ defmodule IElixir.Mixfile do
 
   def project do
     [app: :ielixir,
-     version: "0.9.0-dev",
+     version: "0.9.0",
      source_url: "https://github.com/pprzetacznik/IElixir",
      name: "IElixir",
-     elixir: ">= 1.0.0",
+     elixir: ">= 1.1.0 and < 1.2.0",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      description: "IElixir",
