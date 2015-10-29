@@ -17,7 +17,7 @@ defmodule IElixir.Mixfile do
 
   def application do
     [mod: {IElixir, []},
-     applications: [:logger, :iex, :sqlite_ecto, :ecto]]
+     applications: [:logger, :iex]]
   end
 
   defp deps do
@@ -36,7 +36,7 @@ defmodule IElixir.Mixfile do
 
   defp package do
      [files: ["config", "lib", "priv", "resources", "mix.exs", "README.md", "LICENSE", "install_script.sh", "start_script.sh", ".travis.yml"],
-     contributors: ["Piotr Przetacznik"],
+     maintainers: ["Piotr Przetacznik"],
      licenses: ["Apache 2.0"],
      links: %{"GitHub" => "https://github.com/pprzetacznik/ielixir",
               "Docs" => "http://hexdocs.pm/ielixir/"}]
