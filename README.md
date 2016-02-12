@@ -27,6 +27,7 @@ $ workon jupyter-env
 Clone IElixir repository and prepare the project
 ```Bash
 $ git clone https://github.com/pprzetacznik/IElixir.git
+$ cd IElixir
 $ mix deps.get
 $ mix test
 $ MIX_ENV=prod mix compile
