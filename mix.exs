@@ -3,7 +3,7 @@ defmodule IElixir.Mixfile do
 
   def project do
     [app: :ielixir,
-     version: "0.9.0",
+     version: "0.9.5",
      source_url: "https://github.com/pprzetacznik/IElixir",
      name: "IElixir",
      elixir: ">= 1.1.0 and < 1.3.0",
