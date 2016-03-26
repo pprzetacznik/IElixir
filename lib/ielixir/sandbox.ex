@@ -96,6 +96,12 @@ defmodule IElixir.Sandbox do
       iex> IElixir.Sandbox.execute_code(%{"code" => "asdf"})
       {:error, "CompileError", ["** (CompileError) console:1 \"undefined function asdf/0\""]}
 
+      iex> IElixir.Sandbox.execute_code(%{"code" => "hd []"})
+      {:error, "ArgumentError", ["** (ArgumentError) \"argument error\""]}
+
+      iex> IElixir.Sandbox.execute_code(%{"code" => "\"a\" + 5"})
+      {:error, "ArithmeticError", ["** %ArithmeticError{}"]}
+
   """
   @spec execute_code(map) :: execution_response
   def execute_code(request) do
