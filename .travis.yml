@@ -20,8 +20,6 @@ before_script:
   - git clone -b ielixir https://github.com/pprzetacznik/jupyter_kernel_test.git
   - pip install jupyter-console nose
   - MIX_ENV=dev ./install_script.sh
-
->>>>>>> master
 script:
   - mix test
   - cd jupyter_kernel_test
