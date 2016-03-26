@@ -8,3 +8,5 @@ CONTENT='{
                 "language": "Elixir"
 }'
 echo $CONTENT > ~/.ipython/kernels/ielixir/kernel.json
+
+mix ecto.migrate -r IElixir.Repo

@@ -14,6 +14,7 @@ defmodule IElixir.Supervisor do
   @doc false
   def init(opts) do
     children = [
+      worker(IElixir.Repo, []),
       worker(IElixir.Socket.Control, [opts]),
       worker(IElixir.HMAC, [opts[:conn_info]]),
       worker(IElixir.Sandbox, [[]]),
