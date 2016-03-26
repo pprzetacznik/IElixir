@@ -8,6 +8,7 @@ Jupyter's kernel for Elixir
 [![Coverage Status](https://coveralls.io/repos/github/pprzetacznik/IElixir/badge.svg?branch=master)](https://coveralls.io/github/pprzetacznik/IElixir?branch=master)
 [![Join the chat at https://gitter.im/pprzetacznik/IElixir](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pprzetacznik/IElixir?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+Hex: https://hex.pm/packages/ielixir.
 Please see generated documentation for implementation details: http://hexdocs.pm/ielixir/.
 
 ##Getting Started
