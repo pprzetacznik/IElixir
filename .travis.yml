@@ -1,15 +1,13 @@
-language: erlang
+language: elixir
+elixir:
+  - 1.1.0
+  - 1.2.3
 otp_release:
-  - 18.1
   - 17.5
+  - 18.1
+  - 18.2
 sudo: true
-
-before_install:
-  - wget http://s3.hex.pm/builds/elixir/v1.1.1.zip
-  - unzip -d elixir v1.1.1.zip
-
 before_script:
-  - export PATH=`pwd`/elixir/bin:$PATH
   - yes | mix deps.get
   - mix deps.compile
   - sudo apt-get install python python-pip
@@ -23,11 +21,11 @@ before_script:
   - pip install jupyter-console nose
   - MIX_ENV=dev ./install_script.sh
 
+>>>>>>> master
 script:
   - mix test
   - cd jupyter_kernel_test
   - MIX_ENV=dev python test_ipython.py
-
 after_script:
   - cd $TRAVIS_BUILD_DIR
   - MIX_ENV=docs mix deps.get

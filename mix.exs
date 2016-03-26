@@ -1,7 +1,7 @@
 defmodule IElixir.Mixfile do
   use Mix.Project
 
-  @version "0.9.0"
+  @version "0.9.5"
 
   def project do
     [app: :ielixir,
