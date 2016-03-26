@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [ -z "$MIX_ENV" ]
+then
+  export MIX_ENV=prod
+fi
+
 mkdir -p ~/.ipython/kernels/ielixir/
 START_SCRIPT_PATH=$(cd `dirname "$0"` && pwd)/start_script.sh
 CONTENT='{
