@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if [ ! $# -eq 1 ]
 then
@@ -10,7 +10,7 @@ if [ -z "$MIX_ENV" ]
 then
   export MIX_ENV=prod
 fi
-IELIXIR_PATH=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)/
+IELIXIR_PATH=$(cd `dirname "$0"` && pwd)/
 cd $IELIXIR_PATH
 CONNECTION_FILE=$1 mix run --no-halt
 
