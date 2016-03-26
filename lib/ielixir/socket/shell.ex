@@ -13,6 +13,7 @@ defmodule IElixir.Socket.Shell do
   alias IElixir.Socket.IOPub
   alias IElixir.Message
   alias IElixir.Sandbox
+  alias IElixir.Queries
 
   @doc false
   def start_link(opts) do
@@ -81,6 +82,10 @@ defmodule IElixir.Socket.Shell do
         if result != "" or message.content["silent"] == true do
           IOPub.send_execute_result(message, {result, execution_count})
         end
+        Queries.insert(message.header["session"],
+          execution_count,
+          message.content["code"],
+          output)
         send_execute_reply(sock, message, execution_count)
       {:error, exception_name, traceback} ->
         IOPub.send_error(message, execution_count, exception_name, traceback)
@@ -161,7 +166,9 @@ defmodule IElixir.Socket.Shell do
   end
 
   defp send_history_reply(sock, message) do
-    content = []
+    content = %{
+      "history": Queries.get_entries_list()
+    }
     Message.send_message(sock, message, "history_reply", content)
   end
 end

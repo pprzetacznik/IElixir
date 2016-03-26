@@ -1,29 +1,36 @@
 defmodule IElixir.Mixfile do
   use Mix.Project
 
+  @version "0.9.0"
+
   def project do
     [app: :ielixir,
-     version: "0.9.0",
+     version: @version,
      source_url: "https://github.com/pprzetacznik/IElixir",
      name: "IElixir",
      elixir: ">= 1.1.0 and < 1.2.0",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     description: "IElixir",
-     package: package,
      deps: deps,
+     description: """
+     Jupyter's kernel for Elixir programming language
+     """,
+     package: package,
      test_coverage: [tool: ExCoveralls]]
   end
 
   def application do
     [mod: {IElixir, []},
-     applications: [:logger, :iex]]
+     applications: [:logger, :iex, :sqlite_ecto, :ecto]]
   end
 
   defp deps do
     [{:erlzmq, github: "zeromq/erlzmq2"},
      {:poison, github: "devinus/poison", override: true},
      {:uuid, github: "okeuday/uuid"},
+
+     {:sqlite_ecto, "~> 0.5.0"},
+     {:ecto, "~> 0.15.0"},
 
      # Docs dependencies
      {:earmark, "~> 0.1", only: :docs},
