@@ -172,4 +172,3 @@ defmodule IElixir.Socket.Shell do
     Message.send_message(sock, message, "history_reply", content)
   end
 end
-

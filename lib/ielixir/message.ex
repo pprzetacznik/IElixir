@@ -9,7 +9,7 @@ defmodule IElixir.Message do
   require Logger
   alias IElixir.HMAC
 
-  defstruct uuid: nil,
+  defstruct uuids: nil,
     baddad42: nil,
     header: nil,
     parent_header: nil,
@@ -24,8 +24,7 @@ defmodule IElixir.Message do
     metadata = Poison.encode!(message.metadata)
     content = Poison.encode!(message.content)
 
-    message = [
-      message.uuid,
+    message = message.uuids ++ [
       "<IDS|MSG>",
       HMAC.compute_signature(header, parent_header, metadata, content),
       header,
@@ -38,8 +37,8 @@ defmodule IElixir.Message do
   end
 
   @doc false
-  def parse([uuid, "<IDS|MSG>", baddad42, header, parent_header, metadata, content | blob]) do
-    %IElixir.Message{uuid: uuid,
+  def parse(uuids, ["<IDS|MSG>", baddad42, header, parent_header, metadata, content | blob]) do
+    %IElixir.Message{uuids: uuids,
       baddad42: baddad42,
       header: Poison.Parser.parse!(header),
       parent_header: Poison.Parser.parse!(parent_header),
@@ -47,7 +46,7 @@ defmodule IElixir.Message do
       content: Poison.Parser.parse!(content),
       blob: blob}
   end
-  def parse(message) do
+  def parse(_, message) do
     Logger.warn("Invalid message on shell socket #{inspect message}")
   end
 
@@ -67,7 +66,8 @@ defmodule IElixir.Message do
     if :rcvmore in flags do
       {:buffer, message_buffer}
     else
-      {:msg, parse(Enum.reverse(message_buffer))}
+      {uuids, rest} = Enum.split_while(Enum.reverse(message_buffer), fn(x) -> x != "<IDS|MSG>" end)
+      {:msg, parse(uuids, rest)}
     end
   end
 
@@ -97,4 +97,3 @@ defmodule IElixir.Message do
     send_all(sock, other_messages)
   end
 end
-
