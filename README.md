@@ -89,9 +89,9 @@ $ mix docs
 
 Some useful articles:
 
-* [https://mattvonrocketstein.github.io/heredoc/ielixir-notebook-in-docker.html](IElixir Notebook in Docker)
-* [https://atom.io/packages/hydrogen](Hydrogen plugin for Atom)
-* [http://blog.jonharrington.org/elixir-and-jupyter/](Installation guide)
+* [IElixir Notebook in Docker](https://mattvonrocketstein.github.io/heredoc/ielixir-notebook-in-docker.html)
+* [Hydrogen plugin for Atom](https://atom.io/packages/hydrogen)
+* [Installation guide](http://blog.jonharrington.org/elixir-and-jupyter/)
 
 I was inspired by following codes and articles:
 
