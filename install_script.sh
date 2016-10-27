@@ -5,21 +5,11 @@ then
   export MIX_ENV=prod
 fi
 
-
-UNAMESTR=$(UNAME)
-KERNEL_DIR=""
-KERNEL=ielixir
-
 # Provide setup according to kernel-spec
 # https://jupyter-client.readthedocs.io/en/latest/kernels.html#kernel-specs
-if [[ "$UNAMESTR" == 'Linux' ]]; then
-	KERNEL_DIR=~/.local/share/jupyter/kernels
-elif [[ "$UNAMESTR" == 'Darwin' ]]; then
-	KERNEL_DIR=~/Library/Jupyter/kernels
-fi
 
-TARGET_DIR=$KERNEL_DIR/$KERNEL
-mkdir -p $TARGET_DIR
+UNAMESTR=$(UNAME)
+KERNEL_SPEC="./resources/ielixir"
 
 START_SCRIPT_PATH=$(cd `dirname "$0"` && pwd)/start_script.sh
 
@@ -27,9 +17,11 @@ START_SCRIPT_PATH=$(cd `dirname "$0"` && pwd)/start_script.sh
 # by the client
 CONTENT='{
    "argv": ["'${START_SCRIPT_PATH}'", "{connection_file}"],
-   "display_name": "'${KERNEL}'",
+   "display_name": "Elixir",
    "language": "Elixir"
 }'
-echo $CONTENT | python -m json.tool > $TARGET_DIR/kernel.json
+echo $CONTENT | python -m json.tool > $KERNEL_SPEC/kernel.json
 
+# for global install remove the --user flag
+jupyter kernelspec install --user --replace $KERNEL_SPEC
 mix ecto.migrate -r IElixir.Repo
