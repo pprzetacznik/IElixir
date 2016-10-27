@@ -12,7 +12,7 @@ KERNEL=ielixir
 
 # Provide setup according to kernel-spec
 # https://jupyter-client.readthedocs.io/en/latest/kernels.html#kernel-specs
-if [[ "$UNAMESTR" == 'linux' ]]; then
+if [[ "$UNAMESTR" == 'Linux' ]]; then
 	KERNEL_DIR=~/.local/share/jupyter/kernels
 elif [[ "$UNAMESTR" == 'Darwin' ]]; then
 	KERNEL_DIR=~/Library/Jupyter/kernels
