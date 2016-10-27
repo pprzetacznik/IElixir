@@ -22,7 +22,7 @@ $ cd notebook
 $ mkvirtualenv jupyter-env
 $ workon jupyter-env
 (jupyter-env) $ pip install --pre -e .
-(jupyter-env) $ pip install jupyter-console
+(jupyter-env) $ pip install jupyter
 ```
 
 ### Configure IElixir
@@ -36,24 +36,9 @@ $ mix test
 $ MIX_ENV=prod mix compile
 ```
 
-#### Prepare `kernel.json` file
+#### Install Kernel
 
-Create and edit `kernel.json` file
-```Bash
-$ mkdir ~/.ipython/kernels/ielixir
-$ vim ~/.ipython/kernels/ielixir/kernel.json
-```
-
-Put into the file following content:
-```Bash
-{
-  "argv": ["{PATH_TO_YOUR_IELIXIR_PROJECT}/start_script.sh", "{connection_file}"],
-  "display_name": "ielixir",
-  "language": "Elixir"
-}
-```
-
-or simply run installation script to create this file:
+Simply run installation script to create this file:
 ```Bash
 $ ./install_script.sh
 ```
