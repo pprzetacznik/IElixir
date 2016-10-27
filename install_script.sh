@@ -10,6 +10,7 @@ fi
 
 UNAMESTR=$(UNAME)
 KERNEL_SPEC="./resources/ielixir"
+NAME="ielixir"
 
 START_SCRIPT_PATH=$(cd `dirname "$0"` && pwd)/start_script.sh
 
@@ -23,5 +24,5 @@ CONTENT='{
 echo $CONTENT | python -m json.tool > $KERNEL_SPEC/kernel.json
 
 # for global install remove the --user flag
-jupyter kernelspec install --user --replace $KERNEL_SPEC
+jupyter kernelspec install --user --replace --name=$NAME $KERNEL_SPEC
 mix ecto.migrate -r IElixir.Repo
