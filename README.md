@@ -19,8 +19,8 @@ Please see generated documentation for implementation details: http://hexdocs.pm
 ```Bash
 $ git clone https://github.com/jupyter/notebook.git
 $ cd notebook
-$ mkvirtualenv jupyter-env
-$ workon jupyter-env
+$ virtualenv jupyter-env
+$ source jupyter-env/bin/activate
 (jupyter-env) $ pip install --pre -e .
 (jupyter-env) $ pip install jupyter-console
 ```
@@ -32,11 +32,17 @@ Clone IElixir repository and prepare the project
 $ git clone https://github.com/pprzetacznik/IElixir.git
 $ cd IElixir
 $ mix deps.get
+$ mix deps.compile
 $ mix test
 $ MIX_ENV=prod mix compile
 ```
 
-#### Prepare `kernel.json` file
+Generate jupyter kernel file by installation script:
+```Bash
+$ ./install_script.sh
+```
+
+Or do it manually
 
 Create and edit `kernel.json` file
 ```Bash
@@ -51,11 +57,6 @@ Put into the file following content:
   "display_name": "ielixir",
   "language": "Elixir"
 }
-```
-
-or simply run installation script to create this file:
-```Bash
-$ ./install_script.sh
 ```
 
 ### Use IElixir

@@ -20,8 +20,9 @@ defmodule IElixir.Utils do
   """
   @spec parse_connection_file(String.t) :: map
   def parse_connection_file(connection_file) do
-    File.read!(connection_file)
-      |> Poison.Parser.parse!
+    connection_file
+    |> File.read!(connection_file)
+    |> Poison.Parser.parse!
   end
 
   @doc false

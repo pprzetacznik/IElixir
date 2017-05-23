@@ -8,24 +8,24 @@ defmodule IElixir.Mixfile do
      version: @version,
      source_url: "https://github.com/pprzetacznik/IElixir",
      name: "IElixir",
-     elixir: ">= 1.1.0 and < 1.4.0",
+     elixir: ">= 1.1.0 and < 1.5.0",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     deps: deps,
+     deps: deps(),
      description: """
      Jupyter's kernel for Elixir programming language
      """,
-     package: package,
+     package: package(),
      test_coverage: [tool: ExCoveralls]]
   end
 
   def application do
     [mod: {IElixir, []},
-     applications: [:logger, :iex, :sqlite_ecto, :ecto]]
+     applications: [:logger, :iex, :sqlite_ecto, :ecto, :erlzmq, :poison, :uuid]]
   end
 
   defp deps do
-    [{:erlzmq, github: "zeromq/erlzmq2"},
+    [{:erlzmq, github: "zeromq/erlzmq2", compile: "make"},
      {:poison, github: "devinus/poison", override: true},
      {:uuid, github: "okeuday/uuid"},
 

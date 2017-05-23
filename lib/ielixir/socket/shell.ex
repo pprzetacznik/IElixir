@@ -51,7 +51,7 @@ defmodule IElixir.Socket.Shell do
         "version" => inspect(version),
         "mimetype" => "text/x-elixir",
         "file_extension" => "ex",
-        "pygments_lexer" => "pygments.lexers.erlang.ElixirLexer",
+        "pygments_lexer" => "elixir",
         "codemirror_mode" => "erlang",
         "nbconvert_exporter" => ""
       },
