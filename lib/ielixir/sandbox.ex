@@ -99,8 +99,11 @@ defmodule IElixir.Sandbox do
       iex> IElixir.Sandbox.execute_code(%{"code" => "hd []"})
       {:error, "ArgumentError", ["** (ArgumentError) \"argument error\""]}
 
-      iex> IElixir.Sandbox.execute_code(%{"code" => "\"a\" + 5"})
-      {:error, "ArithmeticError", ["** %ArithmeticError{}"]}
+      iex> abc = IElixir.Sandbox.execute_code(%{"code" => "\"a\" + 5"})
+      iex> elem(abc, 0)
+      :error
+      iex> elem(abc, 1)
+      "ArithmeticError"
 
   """
   @spec execute_code(map) :: execution_response
