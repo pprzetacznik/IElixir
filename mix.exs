@@ -29,8 +29,7 @@ defmodule IElixir.Mixfile do
      {:poison, github: "devinus/poison", override: true},
      {:uuid, github: "okeuday/uuid"},
 
-     {:sqlite_ecto, "~> 0.5.0"},
-     {:ecto, "~> 0.15.0"},
+     {:sqlite_ecto, "~> 1.0.0"},
 
      # Docs dependencies
      {:earmark, "~> 0.1", only: :docs},
