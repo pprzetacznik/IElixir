@@ -100,7 +100,7 @@ defmodule IElixir.Sandbox do
       {:error, "ArgumentError", ["** (ArgumentError) \"argument error\""]}
 
       iex> IElixir.Sandbox.execute_code(%{"code" => "\"a\" + 5"})
-      {:error, "ArithmeticError", ["** %ArithmeticError{}"]}
+      {:error, "ArithmeticError", ["** %ArithmeticError{message: \"bad argument in arithmetic expression\"}"]}
 
   """
   @spec execute_code(map) :: execution_response
