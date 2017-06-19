@@ -12,7 +12,7 @@ Hex: https://hex.pm/packages/ielixir.
 
 Please see generated documentation for implementation details: http://hexdocs.pm/ielixir/.
 
-##Getting Started
+## Getting Started
 
 ### Configure Jupyter
 
