@@ -12,17 +12,24 @@ Hex: https://hex.pm/packages/ielixir.
 
 Please see generated documentation for implementation details: http://hexdocs.pm/ielixir/.
 
-##Getting Started
+## Getting Started
 
 ### Configure Jupyter
 
+I recommend you to use `virtualenv` and `virtualenvwrapper` for this project to isolate dependencies between this and other projects however you may also work without this if you don't like this.
 ```Bash
-$ git clone https://github.com/jupyter/notebook.git
-$ cd notebook
+$ pip install virtualenv virtualenvwrapper
+```
+Now you need to load `virtualenvwrapper.sh` script into your current environment. I recommend you to add this like as well to the `~/.bash_profile.sh` script to have this script loaded every time you open fresh bash.
+```Bash
+$ source /usr/local/bin/virtualenvwrapper.sh
+```
+
+Now using our new tools we can easily create isolated virtual environment for jupyter installation.
+```Bash
 $ mkvirtualenv jupyter-env
 $ workon jupyter-env
-(jupyter-env) $ pip install --pre -e .
-(jupyter-env) $ pip install jupyter-console
+(jupyter-env) $ pip install jupyter
 ```
 
 ### Configure IElixir
@@ -36,24 +43,15 @@ $ mix test
 $ MIX_ENV=prod mix compile
 ```
 
-#### Prepare `kernel.json` file
-
-Create and edit `kernel.json` file
+There may be also need to install rebar before IElixir installation, you can do this with command:
 ```Bash
-$ mkdir ~/.ipython/kernels/ielixir
-$ vim ~/.ipython/kernels/ielixir/kernel.json
+mix local.rebar --force
 ```
+After this you may need to add `~/.mix/` to your `$PATH` variable if you don't have `rebar` visible yet outside `~/.mix/` directory.
 
-Put into the file following content:
-```Bash
-{
-  "argv": ["{PATH_TO_YOUR_IELIXIR_PROJECT}/start_script.sh", "{connection_file}"],
-  "display_name": "ielixir",
-  "language": "Elixir"
-}
-```
+#### Install Kernel
 
-or simply run installation script to create this file:
+Simply run installation script to create file `kernel.json` file in `./resouces` directory and bind it to the jupyter:
 ```Bash
 $ ./install_script.sh
 ```
@@ -78,12 +76,28 @@ Evaluate some commands in your new notebook:
 
 ![IElixir basics](/resources/jupyter_ielixir_basics.png?raw=true)
 
+### Developement mode
+
+If you want to see requests passing logs please use `dev` environment to see what is happening in the background.
+
+```Bash
+(jupyter-env) $ MIX_ENV=dev jupyter console --kernel ielixir
+```
+
 ### Generate documentation
 
 Run following command and see `doc` directory for generated documentation in HTML:
 ```Bash
 $ mix docs
 ```
+
+### Some issues
+
+There may be need to run IElixir kernel with specific erlang attribute which can be turned on by setting variable:
+```Bash
+ELIXIR_ERL_OPTIONS="-smp enable"
+```
+This option has been included inside `install_script.sh` and `start_script.sh` scripts.
 
 ### References
 

@@ -1,4 +1,5 @@
 language: elixir
+sudo: true
 elixir:
   - 1.1.0
   - 1.2.3
@@ -6,19 +7,28 @@ otp_release:
   - 17.5
   - 18.1
   - 18.2
-sudo: true
-before_script:
-  - yes | mix deps.get
-  - mix deps.compile
-  - sudo apt-get install python python-pip
+matrix:
+  include:
+    - otp_release: 19.2
+      elixir: 1.4
+    - otp_release: 19.3
+      elixir: 1.4
+python:
+  - "2.7"
+install:
   - sudo pip install virtualenv virtualenvwrapper
   - mkdir ~/.virtualenvs
   - export WORKON_HOME=~/.virtualenvs
   - source /usr/local/bin/virtualenvwrapper.sh
   - mkvirtualenv test_ielixir
   - workon test_ielixir
+  - pip install pip --upgrade
+  - pip install jupyter nose
+  - mix local.rebar --force
+before_script:
+  - yes | mix deps.get
+  - mix deps.compile
   - git clone -b ielixir https://github.com/pprzetacznik/jupyter_kernel_test.git
-  - pip install jupyter-console nose
   - MIX_ENV=dev ./install_script.sh
 script:
   - mix test

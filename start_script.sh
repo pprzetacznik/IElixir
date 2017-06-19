@@ -12,5 +12,4 @@ then
 fi
 IELIXIR_PATH=$(cd `dirname "$0"` && pwd)/
 cd $IELIXIR_PATH
-CONNECTION_FILE=$1 mix run --no-halt
-
+ELIXIR_ERL_OPTIONS="-smp enable" CONNECTION_FILE=$1 mix run --no-halt
