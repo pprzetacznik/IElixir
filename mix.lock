@@ -16,8 +16,8 @@
   "pipe": {:hex, :pipe, "0.0.2", "eff98a868b426745acef103081581093ff5c1b88100f8ff5949b4a30e81d0d9f", [:mix], []},
   "poison": {:git, "https://github.com/devinus/poison.git", "7a7882e8b9877c8868eabaa6b005c813f8d6dc6b", []},
   "poolboy": {:hex, :poolboy, "1.5.1", "6b46163901cfd0a1b43d692657ed9d7e599853b3b21b95ae5ae0a777cf9b6ca8", [:rebar], []},
-  "quickrand": {:hex, :quickrand, "1.5.2-rc1", "1345b1652dadc520692ee55f4d996d74d399a86c0265b53a24c8540803929cb4", [:rebar], []},
+  "quickrand": {:hex, :quickrand, "1.7.1", "b0c2a41d08c955f055c44bed357660de443cd9068a33aba530076910b7333659", [:rebar3], []},
   "sqlite_ecto": {:hex, :sqlite_ecto, "1.0.0", "63c1da849c5862c04207928b4a465bdf5e70e84151bed1cdc29d426bd8d8f2ee", [:mix], [{:ecto, "~> 1.0", [hex: :ecto, optional: false]}, {:poison, "~> 1.0", [hex: :poison, optional: false]}, {:sqlitex, "~> 0.8", [hex: :sqlitex, optional: false]}]},
   "sqlitex": {:hex, :sqlitex, "0.8.0", "e0013cc7b70723db22c2ac8d318fa434d062242075296499c4c76469b7c22e78", [:mix], [{:decimal, "~> 1.1.0", [hex: :decimal, optional: false]}, {:esqlite, "~> 0.2.0", [hex: :esqlite, optional: false]}, {:pipe, "~> 0.0.2", [hex: :pipe, optional: false]}]},
   "ssl_verify_fun": {:hex, :ssl_verify_fun, "1.1.0", "edee20847c42e379bf91261db474ffbe373f8acb56e9079acb6038d4e0bf414f", [:make, :rebar], []},
-  "uuid": {:git, "https://github.com/okeuday/uuid.git", "fdd2861e2f5049c25d44ff342c9756ce64a2a783", []}}
+  "uuid": {:git, "https://github.com/okeuday/uuid.git", "3b4a500963d42195db3ad4b90fda94d2fb75b7e9", []}}
