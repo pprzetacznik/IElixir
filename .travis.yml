@@ -11,6 +11,9 @@ matrix:
   include:
     - otp_release: 19.2
       elixir: 1.4
+  include:
+    - otp_release: 19.3
+      elixir: 1.4
 python:
   - "2.7"
 install:
