@@ -1,14 +1,14 @@
 defmodule IElixir.Mixfile do
   use Mix.Project
 
-  @version "0.9.6"
+  @version "0.9.7"
 
   def project do
     [app: :ielixir,
      version: @version,
      source_url: "https://github.com/pprzetacznik/IElixir",
      name: "IElixir",
-     elixir: ">= 1.1.0 and < 1.5.0",
+     elixir: ">= 1.1.0 and < 1.6.0",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps(),

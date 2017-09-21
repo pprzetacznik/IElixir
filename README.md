@@ -63,6 +63,8 @@ Run Jupyter console with following line:
 (jupyter-env) $ jupyter console --kernel ielixir
 ```
 
+To quit IElixir type `Ctrl-D`.
+
 Run Jupyter Notebook with following line:
 ```Bash
 (jupyter-env) $ jupyter notebook resources/example.ipynb
