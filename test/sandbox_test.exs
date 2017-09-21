@@ -8,6 +8,12 @@ defmodule SandboxTest do
     Sandbox.clean()
   end
 
+  test "complicated request starting with `re`" do
+    {:yes, "", recommentation_list} = Sandbox.get_code_completion("re")
+    assert true == Enum.member?(recommentation_list, "receive/1")
+    assert true == Enum.member?(recommentation_list, "require/2")
+  end
+
   test "lambdas" do
     {:ok, _result, output, line_number} = Sandbox.execute_code(prepare_request("function = fn x -> 2*x end"))
     assert {"", 1} == {output, line_number}

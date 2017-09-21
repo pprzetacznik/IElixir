@@ -46,8 +46,8 @@ defmodule IElixir.Sandbox do
       iex> IElixir.Sandbox.get_code_completion("asdf")
       {:no, "", []}
 
-      iex> IElixir.Sandbox.get_code_completion("re")
-      {:yes, "", ["receive/1", "require/2"]}
+      iex> IElixir.Sandbox.get_code_completion("q")
+      {:yes, "uote", []}
 
       iex> IElixir.Sandbox.get_code_completion("Enum")
       {:yes, "", ["Enum", "Enumerable"]}
