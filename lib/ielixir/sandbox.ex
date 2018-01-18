@@ -135,7 +135,7 @@ defmodule IElixir.Sandbox do
   end
 
   def handle_call({:get_code_completion, code}, _from, state) do
-    {status, hint, entries} = IEx.Autocomplete.expand(Enum.reverse(to_char_list(code)))
+    {status, hint, entries} = IEx.Autocomplete.expand(Enum.reverse(to_charlist(code)))
     result = {status, to_string(hint), Enum.map(entries, &to_string/1)}
     {:reply, result, state}
   end

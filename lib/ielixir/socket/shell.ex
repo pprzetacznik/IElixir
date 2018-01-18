@@ -41,6 +41,7 @@ defmodule IElixir.Socket.Shell do
 
   defp process("kernel_info_request", message, sock) do
     Logger.debug("Received kernel_info_request")
+    IOPub.send_status("busy", message)
     {:ok, version} = Version.parse(System.version)
     content = %{
       "protocol_version": "5.0",
@@ -68,11 +69,12 @@ defmodule IElixir.Socket.Shell do
       }]
     }
     Message.send_message(sock, message, "kernel_info_reply", content)
+    IOPub.send_status("idle", message)
   end
   defp process("execute_request", message, sock) do
     Logger.debug("Received execute_request: #{inspect message}")
-    execution_count = Sandbox.get_execution_count()
     IOPub.send_status("busy", message)
+    execution_count = Sandbox.get_execution_count()
     IOPub.send_execute_input(message, execution_count)
     case Sandbox.execute_code(message.content) do
       {:ok, result, output, execution_count} ->
@@ -109,12 +111,16 @@ defmodule IElixir.Socket.Shell do
   end
   defp process("is_complete_request", message, sock) do
     Logger.debug("Received is_complete_request: #{inspect message}")
+    IOPub.send_status("busy", message)
     status = Sandbox.is_complete_code(message.content["code"])
     send_is_complete_reply(sock, message, to_string(status))
+    IOPub.send_status("idle", message)
   end
   defp process("history_request", message, sock) do
     Logger.debug("History request: #{inspect message}")
+    IOPub.send_status("busy", message)
     send_history_reply(sock, message)
+    IOPub.send_status("idle", message)
   end
   defp process(msg_type, message, _sock) do
     Logger.debug("Received message of type: #{msg_type} @ shell socket: #{inspect message}")
