@@ -8,7 +8,7 @@ defmodule IElixir.Mixfile do
      version: @version,
      source_url: "https://github.com/pprzetacznik/IElixir",
      name: "IElixir",
-     elixir: ">= 1.1.0 and < 1.6.0",
+     elixir: ">= 1.1.0 and < 1.7.0",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps(),
@@ -26,11 +26,10 @@ defmodule IElixir.Mixfile do
 
   defp deps do
     [{:erlzmq, github: "zeromq/erlzmq2", compile: "make"},
-     # {:poison, github: "devinus/poison", override: true},
-     {:poison, "~> 3.1", override: true},
+     {:poison, "~> 1.0"},
      {:uuid, github: "okeuday/uuid"},
 
-     {:sqlite_ecto, "~> 1.0.0"},
+     {:sqlite_ecto, "~> 1.1.0"},
 
      # Docs dependencies
      {:earmark, "~> 0.1", only: :docs},
