@@ -24,7 +24,6 @@ matrix:
 python:
   - "2.7.10"
 install:
-  - sudo apt-get install libssl-dev
   - sudo pip install virtualenv virtualenvwrapper
   - mkdir ~/.virtualenvs
   - export WORKON_HOME=~/.virtualenvs
@@ -32,6 +31,7 @@ install:
   - mkvirtualenv test_ielixir
   - workon test_ielixir
   - pip install pip --upgrade
+  - pip install tornado==4.5.3
   - pip install jupyter nose
   - mix local.rebar --force
 before_script:
