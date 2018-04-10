@@ -24,6 +24,7 @@ matrix:
 python:
   - "2.7.10"
 install:
+  - sudo apt-get install libssl-dev
   - sudo pip install virtualenv virtualenvwrapper
   - mkdir ~/.virtualenvs
   - export WORKON_HOME=~/.virtualenvs
