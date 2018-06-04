@@ -52,8 +52,9 @@ defmodule IElixir.Queries do
 
   defp extract_tuple_from_history_entry(entry = %HistoryEntry{}) do
     case entry.output do
-      "" -> [entry.session, entry.line_number, entry.input]
-      _ -> [entry.session, entry.line_number, [entry.input, entry.output]]
+      # "" -> [entry.session, entry.line_number, entry.input]
+      # _ -> [entry.session, entry.line_number, [entry.input, entry.output]]
+      _ -> [entry.session, entry.line_number, entry.input]
     end
   end
 end
