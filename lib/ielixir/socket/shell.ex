@@ -173,7 +173,7 @@ defmodule IElixir.Socket.Shell do
 
   defp send_history_reply(sock, message) do
     content = %{
-      "history": Queries.get_entries_list()
+      "history": Queries.get_entries_list(message.content["output"])
     }
     Message.send_message(sock, message, "history_reply", content)
   end
