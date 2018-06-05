@@ -21,7 +21,8 @@ defmodule IElixir.Supervisor do
       worker(IElixir.Socket.Heartbeat, [opts]),
       worker(IElixir.Socket.IOPub, [opts]),
       worker(IElixir.Socket.Shell, [opts]),
-      worker(IElixir.Socket.StdIn, [opts])
+      worker(IElixir.Socket.StdIn, [opts]),
+      worker(IElixir.Boyle, [opts])
     ]
 
     supervise(children, strategy: :one_for_one)
