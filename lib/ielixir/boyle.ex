@@ -31,7 +31,8 @@ defmodule Boyle do
     File.mkdir_p(env_path)
     create_mix_exs_file(env_path)
     create_deps_lock_file(env_path)
-    reinstall(env_path)
+    activate(name)
+    deactivate()
     list()
   end
 
@@ -62,16 +63,20 @@ defmodule Boyle do
     Mix.ProjectStack.clear_cache()
     # Mix.ProjectStack.clear_stack()
     env_path_trimmed = Path.join("envs", active_env_name())
+    state = state()
+
     :code.get_path |> Enum.map(fn path ->
-      # if path not in state().initial_paths do
-      if String.contains?(to_string(path), env_path_trimmed) do
+      if path not in state().initial_paths and
+        String.contains?(to_string(path), env_path_trimmed) do
+
         Code.delete_path(path)
         Logger.debug("Removed path #{to_string(path)}")
       end
     end)
     :code.all_loaded |> Enum.map(fn {module, path} ->
-      # if {module, path} not in state().initial_modules and
-      if String.contains?(to_string(path), env_path_trimmed) do
+      if {module, path} not in state.initial_modules and
+        (String.contains?(to_string(path), env_path_trimmed) or "" == to_string(path)) do
+
         purge([module])
         Logger.debug("Purged module #{to_string(module)} : #{to_string(path)}")
       end
@@ -88,7 +93,10 @@ defmodule Boyle do
       File.cd!(environment_path(), fn ->
         write(new_deps_list)
       end)
-      reinstall()
+
+      env_name = active_env_name()
+      deactivate()
+      activate(env_name)
     end
   end
 
