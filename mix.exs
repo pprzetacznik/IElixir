@@ -11,6 +11,7 @@ defmodule IElixir.Mixfile do
      elixir: ">= 1.1.0 and < 1.7.0",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     consolidate_protocols: false,
      deps: deps(),
      description: """
      Jupyter's kernel for Elixir programming language
