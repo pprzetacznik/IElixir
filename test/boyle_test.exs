@@ -3,6 +3,7 @@ defmodule BoyleTest do
   require Logger
   doctest Boyle
 
+  # @tag :skip
   @tag timeout: 600_000
   test "creating new environment with some dependencies" do
     env_name = "sample_environment_with_number_module#{Enum.random(1..10_000)}"
@@ -29,8 +30,20 @@ defmodule BoyleTest do
     assert_that_env_is_not_on_the_list_of_envs(env_name)
   end
 
+  @tag timeout: 600_000
   @tag :skip
-  test "sth" do
+  @tag :long
+  test "sth2" do
+    env_name = "sample_environment_with_number_module#{Enum.random(1..10_000)}"
+    assert_that_env_is_not_on_the_list_of_envs(env_name)
+    Boyle.mk(env_name)
+    Boyle.activate(env_name)
+    Boyle.install({:matrex, github: "versilov/matrex"})
+    matrix_from_matrex = inspect Matrex.eye(3)
+    Logger.debug(matrix_from_matrex)
+    matrix = "\e[0m#Matrex[\e[33m3\e[0m×\e[33m3\e[0m]\n\e[0m┌                         ┐\n│\e[33m     1.0\e[38;5;102m     0.0\e[33m\e[38;5;102m     0.0\e[33m\e[0m │\n│\e[33m\e[38;5;102m     0.0\e[33m     1.0\e[38;5;102m     0.0\e[33m\e[0m │\n│\e[33m\e[38;5;102m     0.0\e[33m\e[38;5;102m     0.0\e[33m     1.0 \e[0m│\n\e[0m└                         ┘"
+    assert matrix == matrix_from_matrex
+    Boyle.rm(env_name)
   end
 
   defp assert_that_env_is_not_on_the_list_of_envs(env_name) do
@@ -59,7 +72,6 @@ defmodule BoyleTest do
     random_3 = Enum.random(10..99)
     full_number = random_1 * 1000 + random_2 + random_3/100
     full_number_string = "$#{random_1},#{random_2}.#{random_3}"
-    Logger.debug(full_number_string)
     assert full_number_string == Number.Currency.number_to_currency(full_number)
   end
 end

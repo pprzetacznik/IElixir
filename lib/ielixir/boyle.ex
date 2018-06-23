@@ -75,7 +75,8 @@ defmodule Boyle do
     end)
     :code.all_loaded |> Enum.map(fn {module, path} ->
       if {module, path} not in state.initial_modules and
-        (String.contains?(to_string(path), env_path_trimmed) or "" == to_string(path)) do
+        (String.contains?(to_string(path), env_path_trimmed) or "" == to_string(path)) and
+        not String.contains?(to_string(module), "Elixir.Boyle") do
 
         purge([module])
         Logger.debug("Purged module #{to_string(module)} : #{to_string(path)}")
@@ -98,9 +99,6 @@ defmodule Boyle do
       deactivate()
       activate(env_name)
     end
-  end
-
-  def clean do
   end
 
   def active_env_name do
@@ -225,10 +223,7 @@ defmodule Boyle do
   end
 
   defp create_deps_lock_file(env_path) do
-    File.write!(Path.join(env_path, "deps.lock"), """
-    []
-    """)
-    # [{:number, "~> 0.5.7"}]
+    File.write!(Path.join(env_path, "deps.lock"), "[]")
   end
 
   defp create_deps_lock_file_old(env_path) do
