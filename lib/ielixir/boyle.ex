@@ -27,11 +27,11 @@ defmodule Boyle do
   end
 
   def mk(name) do
-    env_path = Path.join("./envs/", name)
+    env_path = Path.join("./envs/", to_string(name))
     File.mkdir_p(env_path)
     create_mix_exs_file(env_path)
     create_deps_lock_file(env_path)
-    reinstall()
+    reinstall(env_path)
     list()
   end
 
@@ -52,32 +52,31 @@ defmodule Boyle do
 
   def activate(name) do
     GenServer.call(Boyle, {:activate, name})
-    # reinstall()
+    reinstall()
   end
 
   def deactivate do
-    GenServer.call(Boyle, {:activate, nil})
     Mix.Project.pop()
     Mix.Task.clear()
     # Mix.Shell.Process.flush()
     Mix.ProjectStack.clear_cache()
     # Mix.ProjectStack.clear_stack()
+    env_path_trimmed = Path.join("envs", active_env_name())
     :code.get_path |> Enum.map(fn path ->
-      if path not in state().initial_paths do
+      # if path not in state().initial_paths do
+      if String.contains?(to_string(path), env_path_trimmed) do
         Code.delete_path(path)
-        end
-    end)
-    :code.all_loaded |> Enum.map(fn {module, path} ->
-      if {module, path} not in state().initial_modules do
-        # IO.puts(to_string(module) <> " : " <> to_string(path))
-        purge([module])
+        Logger.debug("Removed path #{to_string(path)}")
       end
     end)
-    # :code.get_path() |> Enum.map(fn path ->
-		# 	if String.contains?(to_string(path), [environment_path()]) do
-		# 		Code.delete_path(path)
-		# 	end
-		# end)
+    :code.all_loaded |> Enum.map(fn {module, path} ->
+      # if {module, path} not in state().initial_modules and
+      if String.contains?(to_string(path), env_path_trimmed) do
+        purge([module])
+        Logger.debug("Purged module #{to_string(module)} : #{to_string(path)}")
+      end
+    end)
+    GenServer.call(Boyle, {:activate, nil})
   end
 
   def install(new_dep) do
@@ -108,18 +107,20 @@ defmodule Boyle do
     GenServer.call(Boyle, :get_state)
   end
 
-  def reinstall do
+  def reinstall(env_path) do
     Mix.start()
     Mix.Project.pop()
 
-    File.cd!(environment_path(), fn ->
-      # Code.require_file("mix.exs")
+    File.cd!(env_path, fn ->
       Code.load_file("mix.exs")
       # Mix.Project.push(CustomEnvironment)
       # IO.inspect(CustomEnvironment.project())
       Mix.Task.run("deps.get")
       Mix.Tasks.Deps.Compile.run([])
     end)
+  end
+  def reinstall() do
+    reinstall(environment_path())
   end
 
   def paths do
@@ -193,18 +194,6 @@ defmodule Boyle do
           deps
         end)
     end
-    # case File.read("deps.lock") do
-    #   {:ok, info} ->
-    #     assert_no_merge_conflicts_in_lockfile("deps.lock", info)
-    #
-    #     case Code.eval_string(info, [], file: "deps.lock") do
-    #       {lock, _binding} when is_map(lock) -> lock
-    #       {_, _binding} -> %{}
-    #     end
-    #
-    #   {:error, _} ->
-    #     %{}
-    # end
   end
 
   defp create_mix_exs_file(env_path) do
@@ -213,10 +202,10 @@ defmodule Boyle do
 			use Mix.Project
 
 			def project do
-				[build_per_environment: false,
-         deps: deps(),
-         app: :customenv,
-         version: "1.0.0"]
+        [app: :customenv,
+         version: "1.0.0",
+         build_per_environment: false,
+         deps: deps()]
 			end
 
 			def deps do
