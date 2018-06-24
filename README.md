@@ -43,6 +43,11 @@ $ mix test
 $ MIX_ENV=prod mix compile
 ```
 
+Running all tests, including longer ones that requires more time for evaluation:
+```Bash
+$ mix test --include skip
+```
+
 There may be also need to install rebar before IElixir installation, you can do this with command:
 ```Bash
 mix local.rebar --force
