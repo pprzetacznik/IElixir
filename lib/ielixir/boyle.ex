@@ -11,8 +11,10 @@ defmodule Boyle do
   end
 
   def init(_opts) do
-    File.mkdir_p("envs")
+    environment_dir_path = Path.join(File.cwd!(), "envs")
+    File.mkdir_p(environment_dir_path)
     {:ok, %{active_environment: nil,
+            environment_dir_path: environment_dir_path,
             environment_path: nil,
             initial_paths: :code.get_path(),
             initial_modules: :code.all_loaded()
@@ -20,14 +22,14 @@ defmodule Boyle do
   end
 
   def list do
-    {:ok, File.cwd!()
-            |> Path.join("envs/*")
-            |> Path.wildcard()
-            |> Enum.map(&List.last(String.split(&1, "/")))}
+    {:ok, state().environment_dir_path
+          |> Path.join("*")
+          |> Path.wildcard()
+          |> Enum.map(&List.last(String.split(&1, "/")))}
   end
 
   def mk(name) do
-    env_path = Path.join("./envs/", to_string(name))
+    env_path = Path.join(state().environment_dir_path, to_string(name))
     File.mkdir_p(env_path)
     create_mix_exs_file(env_path)
     create_deps_lock_file(env_path)
@@ -62,12 +64,12 @@ defmodule Boyle do
     # Mix.Shell.Process.flush()
     Mix.ProjectStack.clear_cache()
     # Mix.ProjectStack.clear_stack()
-    env_path_trimmed = Path.join("envs", active_env_name())
+    environment_path = environment_path()
     state = state()
 
     :code.get_path |> Enum.map(fn path ->
-      if path not in state().initial_paths and
-        String.contains?(to_string(path), env_path_trimmed) do
+      if path not in state.initial_paths and
+        String.contains?(to_string(path), environment_path) do
 
         Code.delete_path(path)
         Logger.debug("Removed path #{to_string(path)}")
@@ -75,7 +77,7 @@ defmodule Boyle do
     end)
     :code.all_loaded |> Enum.map(fn {module, path} ->
       if {module, path} not in state.initial_modules and
-        (String.contains?(to_string(path), env_path_trimmed) or "" == to_string(path)) and
+        (String.contains?(to_string(path), environment_path) or "" == to_string(path)) and
         not String.contains?(to_string(module), ["Elixir.Boyle", "Elixir.IElixir"]) do
 
         purge([module])
@@ -142,13 +144,13 @@ defmodule Boyle do
     end)
   end
 
-  def handle_call({:activate, new_name}, _from, state) do
+  def handle_call({:activate, new_name}, _from, state = %{environment_dir_path: environment_dir_path}) do
     new_state = Map.put(state, :active_environment, new_name)
     new_state =
       if nil == new_name do
         Map.put(new_state, :environment_path, nil)
       else
-        Map.put(new_state, :environment_path, Path.join("./envs", new_name))
+        Map.put(new_state, :environment_path, Path.join(environment_dir_path, new_name))
       end
     {:reply, new_name, new_state}
   end
@@ -166,12 +168,15 @@ defmodule Boyle do
   end
 
   defp remove_environment(name) do
-    envs_path = File.cwd!() |> Path.join("envs")
-    final_path = envs_path |> Path.join(name) |> Path.wildcard()
+    envs_path = state().environment_dir_path
+    final_path = envs_path
+                 |> Path.join(name)
+                 |> Path.wildcard()
     if not String.contains?(name, ["..", "\\", "/"]) and
        name != "" and
        final_path != [] and
        String.starts_with?(hd(final_path), envs_path) do
+
       case File.rm_rf(hd(final_path)) do
         {:ok, _} -> :ok
         _ -> :error
