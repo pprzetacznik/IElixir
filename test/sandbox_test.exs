@@ -1,4 +1,4 @@
-defmodule SandboxTest do
+defmodule IElixir.SandboxTest do
   use ExUnit.Case, async: false
   alias IElixir.Sandbox
   require Logger

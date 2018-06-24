@@ -1,9 +1,8 @@
-defmodule BoyleTest do
+defmodule IElixir.BoyleTest do
   use ExUnit.Case, async: false
   require Logger
   doctest Boyle
 
-  # @tag :skip
   @tag timeout: 600_000
   test "creating new environment with some dependencies" do
     env_name = "sample_environment_with_number_module#{Enum.random(1..10_000)}"
@@ -31,9 +30,9 @@ defmodule BoyleTest do
   end
 
   @tag timeout: 600_000
-  @tag :skip
+  @tag skip: "time consuming test"
   @tag :long
-  test "sth2" do
+  test "installing matrex" do
     env_name = "sample_environment_with_number_module#{Enum.random(1..10_000)}"
     assert_that_env_is_not_on_the_list_of_envs(env_name)
     Boyle.mk(env_name)

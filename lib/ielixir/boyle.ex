@@ -76,7 +76,7 @@ defmodule Boyle do
     :code.all_loaded |> Enum.map(fn {module, path} ->
       if {module, path} not in state.initial_modules and
         (String.contains?(to_string(path), env_path_trimmed) or "" == to_string(path)) and
-        not String.contains?(to_string(module), "Elixir.Boyle") do
+        not String.contains?(to_string(module), ["Elixir.Boyle", "Elixir.IElixir"]) do
 
         purge([module])
         Logger.debug("Purged module #{to_string(module)} : #{to_string(path)}")

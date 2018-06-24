@@ -1,4 +1,4 @@
-defmodule HMACTest do
+defmodule IElixir.HMACTest do
   use ExUnit.Case
   doctest IElixir.HMAC
 end
