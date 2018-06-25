@@ -23,7 +23,7 @@ defmodule IElixir.Supervisor do
       worker(IElixir.Socket.IOPub, [opts]),
       worker(IElixir.Socket.Shell, [opts]),
       worker(IElixir.Socket.StdIn, [opts]),
-      worker(Boyle, [opts])
+      worker(Boyle, [[]])
     ]
 
     supervise(children, strategy: :one_for_one)
