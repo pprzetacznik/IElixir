@@ -59,32 +59,36 @@ defmodule Boyle do
   end
 
   def deactivate do
-    Mix.Project.pop()
-    Mix.Task.clear()
-    # Mix.Shell.Process.flush()
-    Mix.ProjectStack.clear_cache()
-    # Mix.ProjectStack.clear_stack()
-    environment_path = environment_path()
-    state = state()
+    if active_env_name() do
+      Mix.Project.pop()
+      Mix.Task.clear()
+      # Mix.Shell.Process.flush()
+      Mix.ProjectStack.clear_cache()
+      # Mix.ProjectStack.clear_stack()
+      environment_path = environment_path()
+      state = state()
 
-    :code.get_path |> Enum.map(fn path ->
-      if path not in state.initial_paths and
-        String.contains?(to_string(path), environment_path) do
+      :code.get_path |> Enum.map(fn path ->
+        if path not in state.initial_paths and
+          String.contains?(to_string(path), environment_path) do
 
-        Code.delete_path(path)
-        Logger.debug("Removed path #{to_string(path)}")
-      end
-    end)
-    :code.all_loaded |> Enum.map(fn {module, path} ->
-      if {module, path} not in state.initial_modules and
-        (String.contains?(to_string(path), environment_path) or "" == to_string(path)) and
-        not String.contains?(to_string(module), ["Elixir.Boyle", "Elixir.IElixir"]) do
+          Code.delete_path(path)
+          Logger.debug("Removed path #{to_string(path)}")
+        end
+      end)
+      :code.all_loaded |> Enum.map(fn {module, path} ->
+        if {module, path} not in state.initial_modules and
+          (String.contains?(to_string(path), environment_path) or "" == to_string(path)) and
+          not String.contains?(to_string(module), ["Elixir.Boyle", "Elixir.IElixir"]) do
 
-        purge([module])
-        Logger.debug("Purged module #{to_string(module)} : #{to_string(path)}")
-      end
-    end)
-    GenServer.call(Boyle, {:activate, nil})
+          purge([module])
+          Logger.debug("Purged module #{to_string(module)} : #{to_string(path)}")
+        end
+      end)
+      GenServer.call(Boyle, {:activate, nil})
+    else
+      :ok
+    end
   end
 
   def install(new_dep) do
@@ -144,14 +148,14 @@ defmodule Boyle do
     end)
   end
 
+  def handle_call({:activate, nil}, _from, state) do
+    new_state = Map.put(state, :active_environment, nil)
+    new_state = Map.put(new_state, :environment_path, nil)
+    {:reply, :ok, new_state}
+  end
   def handle_call({:activate, new_name}, _from, state = %{environment_dir_path: environment_dir_path}) do
     new_state = Map.put(state, :active_environment, new_name)
-    new_state =
-      if nil == new_name do
-        Map.put(new_state, :environment_path, nil)
-      else
-        Map.put(new_state, :environment_path, Path.join(environment_dir_path, new_name))
-      end
+    new_state = Map.put(new_state, :environment_path, Path.join(environment_dir_path, new_name))
     {:reply, new_name, new_state}
   end
 
