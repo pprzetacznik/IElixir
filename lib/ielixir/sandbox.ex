@@ -108,7 +108,7 @@ defmodule IElixir.Sandbox do
   """
   @spec execute_code(map) :: execution_response
   def execute_code(request) do
-    GenServer.call(Sandbox, {:execute_code, request})
+    GenServer.call(Sandbox, {:execute_code, request}, :infinity)
   end
 
   @doc """
