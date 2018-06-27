@@ -83,6 +83,51 @@ Evaluate some commands in your new notebook:
 
 ![IElixir basics](/resources/jupyter_ielixir_basics.png?raw=true)
 
+### Packages management with Boyle
+
+You can manage your packages in runtime with Boyle. Name of the package honours remarkable chemist, Robert Boyle. This package allows you to manage your Elixir virtual enviromnent without need of restarting erlang virtual machine. Boyle installs environment into `./envs/you_new_environment` directory and creates new mix project there with requested dependencies. It keeps takes care of fetching, compiling and loading/unloading modules from dependencies list of that environment.
+
+You can also use this environment as a separate mix project and run it interactively with `iex -S mix` from the environment directory.
+
+
+Creating new Elixir virtual environment
+```Elixir
+iex> Boyle.mk("my_new_environment")
+{:ok, ["my_new_environment"]}
+```
+
+List available virtual environments
+```Elixir
+iex> Boyle.list()
+{:ok, ["my_new_environment"]}
+```
+
+Activate virtual environment
+```Elixir
+iex> Boyle.activate("my_new_env")
+:ok
+```
+
+Install new package in virtual environment and use new package
+```Elixir
+iex> Boyle.install({:number, "~> 0.5.7"})
+:ok
+iex> Number.Currency.number_to_currency(2034.46)
+"$2,034.46"
+```
+
+Deactivate virtual environment and unload packages installed within that virtual environment
+```Elixir
+iex> Boyle.deactivate()
+:ok
+iex> Number.Currency.number_to_currency(2034.46)
+** %UndefinedFunctionError{arity: 1, exports: nil, function: :number_to_currency, module: Number.Currency, reason: nil}
+```
+
+Additional resources:
+* [Notebook with Boyle examples](https://github.com/pprzetacznik/IElixir/blob/master/resources/boyle%20example.ipynb)
+* [Notebook with Boyle examples with usage of Matrex library](https://github.com/pprzetacznik/IElixir/blob/master/resources/boyle%20example%20-%20matrex%20installation%20and%20usage.ipynb)
+
 ### Developement mode
 
 If you want to see requests passing logs please use `dev` environment to see what is happening in the background.
@@ -95,7 +140,7 @@ If you want to see requests passing logs please use `dev` environment to see wha
 
 Run following command and see `doc` directory for generated documentation in HTML:
 ```Bash
-$ mix docs
+$ MIX_ENV=docs mix docs
 ```
 
 ### Some issues

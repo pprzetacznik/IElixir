@@ -1,4 +1,10 @@
 defmodule Boyle do
+  @moduledoc """
+  This module is responsible for runtime package management. Name of the package honours remarkable chemist, Robert Boyle. This package allows you to manage your Elixir virtual enviromnent without need of restarting erlang virtual machine. Boyle installs environment into `./envs/you_new_environment` directory and creates new mix project there with requested dependencies. It keeps takes care of fetching, compiling and loading/unloading modules from dependencies list of that environment.
+
+  You can also use this environment as a separate mix project and run it interactively with `iex -S mix` from the environment directory.
+  """
+
   @typedoc "Return values of `start*` functions"
   @type on_start :: {:ok, pid} | :ignore | {:error, {:already_started, pid} | term}
 
@@ -17,10 +23,19 @@ defmodule Boyle do
             environment_dir_path: environment_dir_path,
             environment_path: nil,
             initial_paths: :code.get_path(),
-            initial_modules: :code.all_loaded()
-    }}
+            initial_modules: :code.all_loaded()}}
   end
 
+  @doc """
+  List all available environemnts created in the past.
+
+  ## Examples
+
+    iex> {:ok, envs_list} = Boyle.list()
+    iex> "boyle_test_env" in envs_list
+    true
+
+  """
   def list do
     {:ok, state().environment_dir_path
           |> Path.join("*")
@@ -28,6 +43,16 @@ defmodule Boyle do
           |> Enum.map(&List.last(String.split(&1, "/")))}
   end
 
+  @doc """
+  Create new virtual environment where your modules will be stored and compiled.
+
+  ## Examples
+
+      iex> {:ok, envs_list} = Boyle.mk("test_env")
+      iex> "test_env" in envs_list
+      true
+
+  """
   def mk(name) do
     env_path = Path.join(state().environment_dir_path, to_string(name))
     File.mkdir_p(env_path)
@@ -38,6 +63,16 @@ defmodule Boyle do
     list()
   end
 
+  @doc """
+  Remove existing environment.
+
+  ## Examples
+
+      iex> {:ok, envs_list} = Boyle.rm("test_env_for_removal")
+      iex> "test_env_for_removal" in envs_list
+      false
+
+  """
   def rm(name) do
     if active_env_name() == name do
       deactivate()
@@ -47,17 +82,60 @@ defmodule Boyle do
     {result, list}
   end
 
+  @doc """
+  Show detailed dependencies in the current environment stored in `mix.lock` file created for the environment.
+
+  ## Examples
+
+      iex> Boyle.activate("boyle_test_env")
+      :ok
+      iex> Boyle.freeze()
+      {%{decimal:
+        {:hex,
+          :decimal,
+          "1.5.0",
+          "b0433a36d0e2430e3d50291b1c65f53c37d56f83665b43d79963684865beab68",
+          [:mix],
+          [],
+          "hexpm"}},
+        []}
+      iex> Boyle.deactivate()
+      :ok
+
+  """
   def freeze do
     lockfile_path = Path.join(environment_path(), "mix.lock")
     {deps, bindings} = Code.eval_file(lockfile_path)
     {deps, bindings}
   end
 
+  @doc """
+  Activate environment and load all modules that are installed within this module.
+
+  ## Examples
+
+      iex> Boyle.activate("boyle_test_env")
+      :ok
+      iex> Boyle.deactivate()
+      :ok
+
+  """
   def activate(name) do
     GenServer.call(Boyle, {:activate, name})
     reinstall()
   end
 
+  @doc """
+  Activate environment and unload all modules that are installed within this module.
+
+  ## Examples
+
+      iex> Boyle.activate("boyle_test_env")
+      :ok
+      iex> Boyle.deactivate()
+      :ok
+
+  """
   def deactivate do
     if active_env_name() do
       Mix.Project.pop()
@@ -91,6 +169,19 @@ defmodule Boyle do
     end
   end
 
+  @doc """
+  Activate environment and unload all modules that are installed within this module.
+
+  ## Examples
+
+      iex> Boyle.activate("boyle_test_env")
+      :ok
+      iex> Boyle.install({:decimal, "~> 1.5.0"})
+      :ok
+      iex> Boyle.deactivate()
+      :ok
+
+  """
   def install(new_dep) do
     deps_list = read()
     app_names = for dep <- deps_list, do: elem(dep, 0)
@@ -104,22 +195,47 @@ defmodule Boyle do
       env_name = active_env_name()
       deactivate()
       activate(env_name)
+    else
+      :ok
     end
   end
 
+  @doc """
+  Get name of active environment.
+
+  ## Examples
+
+      iex> Boyle.activate("boyle_test_env")
+      :ok
+      iex> Boyle.active_env_name()
+      "boyle_test_env"
+
+  """
   def active_env_name do
     GenServer.call(Boyle, :get_active_env_name)
   end
 
+  @doc """
+  Get absolute path of active environment.
+  """
   def environment_path do
     GenServer.call(Boyle, :get_environment_path)
   end
 
+  @doc """
+  Get state of Boyle module, some internal paths userful for loaded modules management.
+  """
   def state do
     GenServer.call(Boyle, :get_state)
   end
 
-  def reinstall(env_path) do
+  @doc """
+  Make sure all dependencies are fetched, compiled and loaded.
+  """
+  def reinstall() do
+    reinstall(environment_path())
+  end
+  defp reinstall(env_path) do
     Mix.start()
     Mix.Project.pop()
 
@@ -131,10 +247,10 @@ defmodule Boyle do
       Mix.Tasks.Deps.Compile.run([])
     end)
   end
-  def reinstall() do
-    reinstall(environment_path())
-  end
 
+  @doc """
+  Print list of modules paths and loaded modules.
+  """
   def paths do
     :code.get_path()
     |> Enum.map(&IO.puts(&1))
@@ -190,8 +306,7 @@ defmodule Boyle do
     end
   end
 
-  @spec write(map) :: :ok
-  def write(map) do
+  defp write(map) do
     lines =
       for {app, rev} <- Enum.sort(map), rev != nil do
         ~s("#{app}": #{inspect(rev, limit: :infinity)},\n)
@@ -200,7 +315,7 @@ defmodule Boyle do
     :ok
   end
 
-  def read() do
+  defp read() do
     case active_env_name() do
       nil -> nil
       _env_name ->
@@ -244,7 +359,7 @@ defmodule Boyle do
     """)
   end
 
-  def purge(modules) do
+  defp purge(modules) do
     Enum.each(modules, fn module ->
       :code.purge(module)
       :code.delete(module)

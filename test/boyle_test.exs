@@ -3,6 +3,20 @@ defmodule IElixir.BoyleTest do
   require Logger
   doctest Boyle
 
+  setup_all do
+    {:ok, _} = Boyle.mk("boyle_test_env")
+    :ok = Boyle.activate("boyle_test_env")
+    :ok = Boyle.install({:decimal, "~> 1.5.0"})
+    :ok = Boyle.deactivate()
+    {:ok, _} = Boyle.mk("test_env_for_removal")
+
+    on_exit fn ->
+      :ok
+      {:ok, _} = Boyle.rm("test_env")
+      {:ok, _} = Boyle.rm("boyle_test_env")
+    end
+  end
+
   @tag timeout: 600_000
   test "creating new environment with some dependencies" do
     env_name = "sample_environment_with_number_module#{Enum.random(1..10_000)}"
