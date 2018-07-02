@@ -163,6 +163,7 @@ defmodule Boyle do
           Logger.debug("Purged module #{to_string(module)} : #{to_string(path)}")
         end
       end)
+      Code.load_file("mix.exs")
       GenServer.call(Boyle, {:activate, nil})
     else
       :ok
