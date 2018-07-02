@@ -1,18 +1,7 @@
 language: elixir
 sudo: true
-elixir:
-  - 1.1.0
-  - 1.2.3
-otp_release:
-  - 17.5
-  - 18.1
-  - 18.2
 matrix:
   include:
-    - otp_release: 19.2
-      elixir: 1.4
-    - otp_release: 19.3
-      elixir: 1.4
     - otp_release: 19.3
       elixir: 1.5.1
     - otp_release: 20.0
@@ -21,6 +10,8 @@ matrix:
       elixir: 1.5.2
     - otp_release: 20.2
       elixir: 1.6.0
+    - otp_release: 21
+      elixir: 1.6.6
 python:
   - "2.7.10"
 install:
