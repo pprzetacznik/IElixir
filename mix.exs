@@ -36,7 +36,7 @@ defmodule IElixir.Mixfile do
      # Docs dependencies
      {:earmark, "~> 0.1", only: :docs},
      {:ex_doc, "~> 0.7", only: :docs},
-     {:inch_ex, "0.4.0", only: :docs},
+     {:inch_ex, "~> 0.5", only: :docs},
 
      # Test dependencies
      {:excoveralls, "~> 0.8", only: :test}]
