@@ -40,4 +40,3 @@ after_script:
   - MIX_ENV=docs mix docs
   - MIX_ENV=docs mix inch.report
   - MIX_ENV=test mix coveralls.travis
-  - MIX_ENV=dev mix coveralls.travis

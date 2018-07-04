@@ -17,7 +17,8 @@ defmodule IElixir.Mixfile do
      Jupyter's kernel for Elixir programming language
      """,
      package: package(),
-     test_coverage: [tool: ExCoveralls]]
+     test_coverage: [tool: ExCoveralls],
+     preferred_cli_env: ["coveralls": :test, "coveralls.detail": :test, "coveralls.post": :test, "coveralls.html": :test]]
   end
 
   def application do
@@ -38,11 +39,20 @@ defmodule IElixir.Mixfile do
      {:inch_ex, "0.4.0", only: :docs},
 
      # Test dependencies
-     {:excoveralls, "~> 0.3.11", only: :test}]
+     {:excoveralls, "~> 0.8", only: :test}]
   end
 
   defp package do
-     [files: ["config", "lib", "priv", "resources", "mix.exs", "README.md", "LICENSE", "install_script.sh", "start_script.sh", ".travis.yml"],
+    [files: ["config",
+             "lib",
+             "priv",
+             "resources",
+             "mix.exs",
+             "README.md",
+             "LICENSE",
+             "install_script.sh",
+             "start_script.sh",
+             ".travis.yml"],
      maintainers: ["Piotr Przetacznik"],
      licenses: ["Apache 2.0"],
      links: %{"GitHub" => "https://github.com/pprzetacznik/ielixir",
