@@ -143,6 +143,24 @@ Run following command and see `doc` directory for generated documentation in HTM
 $ MIX_ENV=docs mix docs
 ```
 
+### Docker
+
+You can find docker image at [pprzetacznik/ielixir](https://hub.docker.com/r/pprzetacznik/ielixir).
+
+Running jupyter notebook:
+```
+$ docker run -p 8888:8888 --hostname localhost -v /my/workspace:/home/jovyan/work pprzetacznik/ielixir
+```
+
+Docker image is based on following images:
+* [jupyter/base-notebook image](https://hub.docker.com/r/jupyter/base-notebook/) - this is image use as a base for ielixir image,
+* [elixir image](https://hub.docker.com/_/elixir/) - some installation parts were taken from dockerfile used for this image,
+* [pprzetacznik/ielixir-requirements image](https://hub.docker.com/r/pprzetacznik/ielixir-requirements/) - this image resolves all dependencies for jupyter and elixir so only IElixir installation is left.
+
+If you would like to make some changes to the images you can find dockerfiles in:
+* docker/ielixir - for dockerfile source of pprzetacznik/ielixir image,
+* docker/ielixir-requirements - for dockerfile source of pprzetacznik/ielixir-requirements image.
+
 ### Some issues
 
 There may be need to run IElixir kernel with specific erlang attribute which can be turned on by setting variable:
