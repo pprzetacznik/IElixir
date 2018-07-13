@@ -16,17 +16,17 @@ Please see generated documentation for implementation details: http://hexdocs.pm
 
 ### Table of contents
 
-* [Configure Jupyter](https://github.com/pprzetacznik/IElixir#configure-jupyter)
-* [Configure IElixir](https://github.com/pprzetacznik/IElixir#configure-ielixir)
-* [Install Kernel](https://github.com/pprzetacznik/IElixir#install-kernel)
-* [Use IElixir](https://github.com/pprzetacznik/IElixir#use-ielixir)
-* [Package management with Boyle](https://github.com/pprzetacznik/IElixir#package-management-with-boyle)
-* [Developement mode](https://github.com/pprzetacznik/IElixir#developement-mode)
-* [Generate documentation](https://github.com/pprzetacznik/IElixir#generate-documentation)
-* [Docker](https://github.com/pprzetacznik/IElixir#docker)
-* [Some issues](https://github.com/pprzetacznik/IElixir#some-issues)
-* [References](https://github.com/pprzetacznik/IElixir#references)
-* [License](https://github.com/pprzetacznik/IElixir#license)
+* [Configure Jupyter](#configure-jupyter)
+* [Configure IElixir](#configure-ielixir)
+* [Install Kernel](#install-kernel)
+* [Use IElixir](#use-ielixir)
+* [Package management with Boyle](#package-management-with-boyle)
+* [Developement mode](#developement-mode)
+* [Generate documentation](#generate-documentation)
+* [Docker](#docker)
+* [Some issues](#some-issues)
+* [References](#references)
+* [License](#license)
 
 ### Configure Jupyter
 
