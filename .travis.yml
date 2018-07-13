@@ -10,7 +10,7 @@ matrix:
       elixir: 1.5.2
     - otp_release: 20.2
       elixir: 1.6.0
-    - otp_release: 21
+    - otp_release: 20.2
       elixir: 1.6.6
 python:
   - "2.7.10"
@@ -26,7 +26,9 @@ install:
   - pip install jupyter nose
   - mix local.rebar --force
 before_script:
-  - yes | mix deps.get
+  - mix local.hex --force
+  - mix local.rebar --force
+  - mix deps.get
   - mix deps.compile
   - git clone -b ielixir https://github.com/pprzetacznik/jupyter_kernel_test.git
   - MIX_ENV=dev ./install_script.sh
