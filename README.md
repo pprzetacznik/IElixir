@@ -14,6 +14,20 @@ Please see generated documentation for implementation details: http://hexdocs.pm
 
 ## Getting Started
 
+### Table of contents
+
+* [Configure Jupyter](https://github.com/pprzetacznik/IElixir#configure-jupyter)
+* [Configure IElixir](https://github.com/pprzetacznik/IElixir#configure-ielixir)
+* [Install Kernel](https://github.com/pprzetacznik/IElixir#install-kernel)
+* [Use IElixir](https://github.com/pprzetacznik/IElixir#use-ielixir)
+* [Package management with Boyle](https://github.com/pprzetacznik/IElixir#package-management-with-boyle)
+* [Developement mode](https://github.com/pprzetacznik/IElixir#developement-mode)
+* [Generate documentation](https://github.com/pprzetacznik/IElixir#generate-documentation)
+* [Docker](https://github.com/pprzetacznik/IElixir#docker)
+* [Some issues](https://github.com/pprzetacznik/IElixir#some-issues)
+* [References](https://github.com/pprzetacznik/IElixir#references)
+* [License](https://github.com/pprzetacznik/IElixir#license)
+
 ### Configure Jupyter
 
 I recommend you to use `virtualenv` and `virtualenvwrapper` for this project to isolate dependencies between this and other projects however you may also work without this if you don't like this.
@@ -54,7 +68,7 @@ mix local.rebar --force
 ```
 After this you may need to add `~/.mix/` to your `$PATH` variable if you don't have `rebar` visible yet outside `~/.mix/` directory.
 
-#### Install Kernel
+### Install Kernel
 
 Simply run installation script to create file `kernel.json` file in `./resouces` directory and bind it to the jupyter:
 ```Bash
@@ -83,7 +97,7 @@ Evaluate some commands in your new notebook:
 
 ![IElixir basics](/resources/jupyter_ielixir_basics.png?raw=true)
 
-### Packages management with Boyle
+### Package management with Boyle
 
 You can manage your packages in runtime with Boyle. Name of the package honours remarkable chemist, Robert Boyle. This package allows you to manage your Elixir virtual enviromnent without need of restarting erlang virtual machine. Boyle installs environment into `./envs/you_new_environment` directory and creates new mix project there with requested dependencies. It keeps takes care of fetching, compiling and loading/unloading modules from dependencies list of that environment.
 
