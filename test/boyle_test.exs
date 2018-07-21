@@ -52,6 +52,7 @@ defmodule IElixir.BoyleTest do
     Boyle.mk(env_name)
     Boyle.activate(env_name)
     Boyle.install({:matrex, github: "versilov/matrex"})
+    Boyle.install({:gen_stage, "~> 0.14"})
     matrix_from_matrex = inspect Matrex.eye(3)
     Logger.debug(matrix_from_matrex)
     matrix = "\e[0m#Matrex[\e[33m3\e[0m×\e[33m3\e[0m]\n\e[0m┌                         ┐\n│\e[33m     1.0\e[38;5;102m     0.0\e[33m\e[38;5;102m     0.0\e[33m\e[0m │\n│\e[33m\e[38;5;102m     0.0\e[33m     1.0\e[38;5;102m     0.0\e[33m\e[0m │\n│\e[33m\e[38;5;102m     0.0\e[33m\e[38;5;102m     0.0\e[33m     1.0 \e[0m│\n\e[0m└                         ┘"

@@ -308,11 +308,10 @@ defmodule Boyle do
   end
 
   defp write(map) do
-    lines =
-      for {app, rev} <- Enum.sort(map), rev != nil do
-        ~s("#{app}": #{inspect(rev, limit: :infinity)},\n)
-      end
-    File.write!("deps.lock", ["%{\n", lines, "}\n"])
+    deps = Enum.sort(map)
+           |> Enum.map(fn a -> inspect a end)
+           |> Enum.join(",\n")
+    File.write!("deps.lock", "[" <> deps <> "]\n")
     :ok
   end
 
