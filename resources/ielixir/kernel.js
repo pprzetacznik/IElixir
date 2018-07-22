@@ -161,7 +161,7 @@ define(["codemirror/lib/codemirror", "base/js/namespace"], function(
               stream.eatWhile(/[\da-fA-F]/);
             } else if (stream.eat("b")) {
               stream.eatWhile(/[01]/);
-            } else {
+            } else if (stream.eat("o")) {
               stream.eatWhile(/[0-7]/);
             }
             return "number";
