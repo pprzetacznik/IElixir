@@ -95,7 +95,7 @@ Go to [http://localhost:8888/](http://localhost:8888/) site (by default) in your
 
 Evaluate some commands in your new notebook:
 
-![IElixir basics](/resources/jupyter_ielixir_basics.png?raw=true)
+![IElixir basics](/resources/jupyter_ielixir_matrex_demo.png?raw=true)
 
 ### Package management with Boyle
 
