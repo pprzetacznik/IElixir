@@ -175,6 +175,10 @@ If you would like to make some changes to the images you can find dockerfiles in
 * docker/ielixir - for dockerfile source of pprzetacznik/ielixir image,
 * docker/ielixir-requirements - for dockerfile source of pprzetacznik/ielixir-requirements image.
 
+#### Other docker images worth seeing
+
+* [Dockerfile for smaller image based on alpine](https://github.com/cprieto/jupyter-images/blob/master/elixir/Dockerfile)
+
 ### Some issues
 
 There may be need to run IElixir kernel with specific erlang attribute which can be turned on by setting variable:
