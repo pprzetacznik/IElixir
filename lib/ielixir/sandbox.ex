@@ -8,8 +8,9 @@ defmodule IElixir.Sandbox do
   @typedoc "Execution response"
   @type execution_response :: {
     status :: :ok,
-    result :: any(),
-    output :: String.t,
+    result :: :"this is raw html" | :"do not show this result in output" | String.t,
+    stdout :: String.t,
+    stderr :: String.t,
     execution_count :: integer}
 | {
     status          :: :error,
@@ -75,7 +76,7 @@ defmodule IElixir.Sandbox do
       iex> IElixir.Sandbox.get_execution_count()
       1
       iex> IElixir.Sandbox.execute_code(%{"code" => "a=10"})
-      {:ok, "10", "", 1}
+      {:ok, "10", "", "", 1}
       iex> IElixir.Sandbox.get_execution_count()
       2
 
@@ -91,16 +92,18 @@ defmodule IElixir.Sandbox do
   ### Examples
 
       iex> IElixir.Sandbox.execute_code(%{"code" => "a=10"})
-      {:ok, "10", "", 1}
+      {:ok, "10", "", "", 1}
       iex> IElixir.Sandbox.execute_code(%{"code" => "b=25"})
-      {:ok, "25", "", 2}
+      {:ok, "25", "", "", 2}
       iex> IElixir.Sandbox.execute_code(%{"code" => "IO.puts(a+b)"})
-      {:ok, ":ok", "35\n", 3}
-      iex> IElixir.Sandbox.execute_code(%{"code" => "a+b"})
-      {:ok, "35", "", 4}
+      {:ok, ":ok", "35\n", "", 3}
+      iex> IElixir.Sandbox.execute_code(%{"code" => ~S[IO.puts(:stderr, "boom"); a+b]})
+      {:ok, "35", "", "boom\n", 4}
+      iex> IElixir.Sandbox.execute_code(%{"code" => ~S[IO.puts("one"); IO.puts(:stderr, "boom"); IO.puts(a+b)]})
+      {:ok, ":ok", "one\n35\n", "boom\n", 5}
 
       iex> IElixir.Sandbox.execute_code(%{"code" => ":sampleatom"})
-      {:ok, ":sampleatom", "", 1}
+      {:ok, ":sampleatom", "", "", 1}
 
       iex> IElixir.Sandbox.execute_code(%{"code" => "asdf"})
       {:error, "CompileError", ["** (CompileError) console:1 \"undefined function asdf/0\""], 1}
@@ -169,7 +172,7 @@ defmodule IElixir.Sandbox do
     Logger.debug("Executing request: #{inspect request}, count #{state.execution_count}")
 
     try do
-      {{result, binding, env, scope}, stdout, _stderr} = IElixir.CaptureIO.capture(
+      {{result, binding, env, scope}, stdout, stderr} = IElixir.CaptureIO.capture(
         fn ->
           {:ok, quoted} = Code.string_to_quoted(request["code"])
           :elixir.eval_forms(quoted, state.binding, state.env, state.scope)
@@ -181,7 +184,7 @@ defmodule IElixir.Sandbox do
       new_state = %{execution_count: count+1, binding: binding, env: env, scope: scope}
       # Logger.debug("State: #{inspect new_state}")
 
-      {:reply, {:ok, maybe_inspect(result), stdout, count}, new_state}
+      {:reply, {:ok, maybe_inspect(result), stdout, stderr, count}, new_state}
 
       # case result do
       #   :"do not show this result in output" ->

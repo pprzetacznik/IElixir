@@ -15,9 +15,9 @@ defmodule IElixir.SandboxTest do
   end
 
   test "lambdas" do
-    {:ok, _result, output, line_number} = Sandbox.execute_code(prepare_request("function = fn x -> 2*x end"))
-    assert {"", 1} == {output, line_number}
-    assert {:ok, "4", "", 2} == Sandbox.execute_code(prepare_request("function.(2)"))
+    {:ok, _result, stdout, stderr, line_number} = Sandbox.execute_code(prepare_request("function = fn x -> 2*x end"))
+    assert {"", "", 1} == {stdout, stderr, line_number}
+    assert {:ok, "4", "", "", 2} == Sandbox.execute_code(prepare_request("function.(2)"))
   end
 
   # now handled in shell.ex

@@ -32,12 +32,12 @@ defmodule IElixir.Queries do
 
   ### Example
 
-      iex> {:ok, _result, output, line_number} = IElixir.Sandbox.execute_code(%{"code" => "a=10"})
-      {:ok, "10", "", 1}
+      iex> {:ok, _result, output, "", line_number} = IElixir.Sandbox.execute_code(%{"code" => "a=10"})
+      {:ok, "10", "", "", 1}
       iex> IElixir.Queries.insert("cd8ad0b7-09fa-49b7-be7d-987845b4be63", line_number, "a=10", output)
       :ok
-      iex> {:ok, _result, output, line_number} = IElixir.Sandbox.execute_code(%{"code" => "IO.puts(\"aaa\")"})
-      {:ok, ":ok", "aaa\n", 2}
+      iex> {:ok, _result, output, "", line_number} = IElixir.Sandbox.execute_code(%{"code" => "IO.puts(\"aaa\")"})
+      {:ok, ":ok", "aaa\n", "", 2}
       iex> IElixir.Queries.insert("cd8ad0b7-09fa-49b7-be7d-987845b4be63", line_number, "IO.puts(\"aaa\")", output)
       :ok
       iex> IElixir.Queries.get_entries_list(false)
@@ -58,4 +58,3 @@ defmodule IElixir.Queries do
              end)
   end
 end
-

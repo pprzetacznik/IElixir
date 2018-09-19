@@ -46,8 +46,8 @@ defmodule IElixir.Socket.IOPub do
   @doc """
   Send stream message. This is used for sending output of code execution.
   """
-  def send_stream(message, text) do
-    GenServer.cast(IOPub, {:send_stream, message, text})
+  def send_stream(message, text, stream_name \\ "stdout") do
+    GenServer.cast(IOPub, {:send_stream, message, text, stream_name})
   end
 
   @doc """
@@ -80,10 +80,10 @@ defmodule IElixir.Socket.IOPub do
     {:noreply, sock}
   end
 
-  def handle_cast({:send_stream, message, text}, sock) do
+  def handle_cast({:send_stream, message, text, stream_name}, sock) do
     content = %{
        text: text,
-       name: "stdout",
+       name: stream_name,
     }
     Message.send_message(sock, message, "stream", content)
     {:noreply, sock}

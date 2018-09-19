@@ -86,6 +86,7 @@ defmodule IElixir.Socket.Shell do
     Sandbox.execute_code(message.content)
     |> wrap_with(message, sock)
     |> publish_output()
+    |> publish_stderr()
     |> publish_execute_response()
     |> update_history()
     |> send_execute_reply()
@@ -130,11 +131,12 @@ defmodule IElixir.Socket.Shell do
 
   # Helpers for execute_request
 
-  defp wrap_with({ :ok, result, output, count }, message, sock) do
+  defp wrap_with({ :ok, result, output, stderr, count }, message, sock) do
     %{
       status:  :ok,
       result:  result,
       output:  output,
+      stderr:  stderr,
       message: message,
       sock:    sock,
       count:   count,
@@ -163,19 +165,29 @@ defmodule IElixir.Socket.Shell do
   end
 
   defp publish_output(response = %{ output: "" }) do
-    IO.inspect(HTML_empty: response)
     response
   end
 
   defp publish_output(response = %{ result: :"this is raw html"  }) do
-    IO.inspect(HTML_raw: response)
     IOPub.send_html(response.message, response.output)
     response
   end
 
   defp publish_output(response) do
-    IO.inspect(NOT_HTML: response)
     IOPub.send_stream(response.message, response.output)
+    response
+  end
+
+  defp publish_stderr(response = %{ status: :error }) do
+    response
+  end
+
+  defp publish_stderr(response = %{ stderr: "" }) do
+    response
+  end
+
+  defp publish_stderr(response) do
+    IOPub.send_stream(response.message, response.stderr, "stderr")
     response
   end
 
