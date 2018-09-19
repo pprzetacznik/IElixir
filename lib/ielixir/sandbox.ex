@@ -103,10 +103,10 @@ defmodule IElixir.Sandbox do
       {:ok, ":sampleatom", "", 1}
 
       iex> IElixir.Sandbox.execute_code(%{"code" => "asdf"})
-      {:error, "CompileError", ["** (CompileError) console:1 \"undefined function asdf/0\""]}
+      {:error, "CompileError", ["** (CompileError) console:1 \"undefined function asdf/0\""], 1}
 
       iex> IElixir.Sandbox.execute_code(%{"code" => "hd []"})
-      {:error, "ArgumentError", ["** (ArgumentError) \"argument error\""]}
+      {:error, "ArgumentError", ["** (ArgumentError) \"argument error\""], 1}
 
       iex> abc = IElixir.Sandbox.execute_code(%{"code" => "\"a\" + 5"})
       iex> elem(abc, 0)
@@ -166,22 +166,22 @@ defmodule IElixir.Sandbox do
   # Execute code
 
   def handle_call({:execute_code, request}, _from, state) do
-    Logger.debug("Executing request: #{inspect request}")
+    Logger.debug("Executing request: #{inspect request}, count #{state.execution_count}")
 
     try do
-      {{result, binding, env, scope}, stdout, stderr} = IElixir.CaptureIO.capture(
+      {{result, binding, env, scope}, stdout, _stderr} = IElixir.CaptureIO.capture(
         fn ->
           {:ok, quoted} = Code.string_to_quoted(request["code"])
           :elixir.eval_forms(quoted, state.binding, state.env, state.scope)
         end
       )
 
-      count = state.execution_count + 1
+      count = state.execution_count
 
-      new_state = %{execution_count: count, binding: binding, env: env, scope: scope}
-      Logger.debug("State: #{inspect new_state}")
+      new_state = %{execution_count: count+1, binding: binding, env: env, scope: scope}
+      # Logger.debug("State: #{inspect new_state}")
 
-      {:reply, {:ok, result, stdout, count}, new_state}
+      {:reply, {:ok, maybe_inspect(result), stdout, count}, new_state}
 
       # case result do
       #   :"do not show this result in output" ->
@@ -195,13 +195,13 @@ defmodule IElixir.Sandbox do
     rescue
       error in ArgumentError ->
         error_message = "** (#{inspect error.__struct__}) #{inspect error.message}"
-        {:reply, {:error, inspect(error.__struct__), [error_message], state.executon_count}, state}
+        {:reply, {:error, inspect(error.__struct__), [error_message], state.execution_count}, state}
       error in CompileError ->
         error_message = "** (#{inspect error.__struct__}) console:#{inspect error.line} #{inspect error.description}"
-        {:reply, {:error, inspect(error.__struct__), [error_message], state.executon_count}, state}
+        {:reply, {:error, inspect(error.__struct__), [error_message], state.execution_count}, state}
       error ->
         error_message = "** #{inspect error}"
-        {:reply, {:error, inspect(error.__struct__), [error_message], state.executon_count}, state}
+        {:reply, {:error, inspect(error.__struct__), [error_message], state.execution_count}, state}
     end
   end
 
@@ -224,5 +224,11 @@ defmodule IElixir.Sandbox do
     %{execution_count: 1, binding: binding, env: env, scope: scope}
   end
 
+  defp maybe_inspect(result) when result in [ :"this is raw html", :"do not show this result in output" ] do
+    result
+  end
 
+  defp maybe_inspect(result) do
+    inspect(result)
+  end
 end

@@ -20,10 +20,11 @@ defmodule IElixir.SandboxTest do
     assert {:ok, "4", "", 2} == Sandbox.execute_code(prepare_request("function.(2)"))
   end
 
-  test "IEx.Helpers methods in console" do
-    {:ok, result, _output, line_number} = Sandbox.execute_code(prepare_request("h()"))
-    assert {"", 1} == {result, line_number}
-  end
+  # now handled in shell.ex
+  # test "IEx.Helpers methods in console" do
+  #   {:ok, result, _output, line_number} = Sandbox.execute_code(prepare_request("h()"))
+  #   assert {"", 1} == {result, line_number}
+  # end
 
   defp prepare_request(code) do
     %{
