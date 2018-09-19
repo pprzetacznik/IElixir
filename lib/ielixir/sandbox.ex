@@ -169,7 +169,7 @@ defmodule IElixir.Sandbox do
     Logger.debug("Executing request: #{inspect request}")
 
     try do
-      {{result, binding, env, scope}, {_, output}} = do_capture_io(
+      {{result, binding, env, scope}, stdout, stderr} = IElixir.CaptureIO.capture(
         fn ->
           {:ok, quoted} = Code.string_to_quoted(request["code"])
           :elixir.eval_forms(quoted, state.binding, state.env, state.scope)
@@ -181,7 +181,7 @@ defmodule IElixir.Sandbox do
       new_state = %{execution_count: count, binding: binding, env: env, scope: scope}
       Logger.debug("State: #{inspect new_state}")
 
-      {:reply, {:ok, result, output, count}, new_state}
+      {:reply, {:ok, result, stdout, count}, new_state}
 
       # case result do
       #   :"do not show this result in output" ->
@@ -224,30 +224,5 @@ defmodule IElixir.Sandbox do
     %{execution_count: 1, binding: binding, env: env, scope: scope}
   end
 
-  defp do_capture_io(fun) do
-    original_gl = Process.group_leader()
-    {:ok, capture_gl} = StringIO.open("", capture_prompt: true)
-    try do
-      Process.group_leader(self(), capture_gl)
-      do_capture_io(capture_gl, fun)
-    after
-      Process.group_leader(self(), original_gl)
-    end
-  end
 
-  defp do_capture_io(string_io, fun) do
-    try do
-      returned_value = fun.()
-      {:ok, returned_value}
-    catch
-      kind, reason ->
-        stack = System.stacktrace()
-        _ = StringIO.close(string_io)
-        :erlang.raise(kind, reason, stack)
-    else
-      {:ok, returned_value} ->
-        {:ok, output} = StringIO.close(string_io)
-        {returned_value, output}
-    end
-  end
 end

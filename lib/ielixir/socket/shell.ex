@@ -138,6 +138,7 @@ defmodule IElixir.Socket.Shell do
       message: message,
       sock:    sock,
       count:   count,
+      silent:  message.content["silent"],
     }
   end
 
@@ -149,10 +150,15 @@ defmodule IElixir.Socket.Shell do
       message:   message,
       sock:      sock,
       count:     count,
+      silent:    message.content["silent"],
     }
   end
 
   defp publish_output(response = %{ status: :error }) do
+    response
+  end
+
+  defp publish_output(response = %{ silent: true }) do
     response
   end
 
@@ -178,11 +184,13 @@ defmodule IElixir.Socket.Shell do
     response
   end
 
-  # todo: this seems the wrong way around. shouldn't silent mean no output?
+  # I thing the originsl was wrong here: it was "or-ing" witn the silent flag
+
   defp publish_execute_response(response = %{ result: "" }) do
-    if response.message.content["silent"] == true do
-      IOPub.send_execute_result(response.message, {inspect(""), response.count})
-    end
+    response
+  end
+
+  defp publish_execute_response(response = %{ silent: true }) do
     response
   end
 
@@ -196,6 +204,10 @@ defmodule IElixir.Socket.Shell do
   end
 
   defp update_history(response = %{ status: :error }) do
+    response
+  end
+
+  defp update_history(response = %{ silent: true }) do
     response
   end
 
