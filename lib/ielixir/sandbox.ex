@@ -6,7 +6,16 @@ defmodule IElixir.Sandbox do
   @type yes_or_no :: :yes | :no
 
   @typedoc "Execution response"
-  @type execution_response :: {:ok, String.t, String.t, integer} | {:error, String.t, [String.t]}
+  @type execution_response :: {
+    status :: :ok,
+    result :: any(),
+    output :: String.t,
+    execution_count :: integer}
+| {
+    status          :: :error,
+    exception_name  :: String.t,
+    traceback       :: [String.t],
+    execution_count :: integer}
 
   use GenServer
   require Logger
@@ -130,20 +139,35 @@ defmodule IElixir.Sandbox do
     GenServer.call(Sandbox, {:is_complete_code, code})
   end
 
+
+  ###############################################################################################
+
+
+  # Clean
+
   def handle_cast(:clean, _state) do
     {:noreply, prepare_clear_state()}
   end
 
+  # Get code completion
+
   def handle_call({:get_code_completion, code}, _from, state) do
-    {status, hint, entries} = IEx.Autocomplete.expand(Enum.reverse(to_char_list(code)))
+    {status, hint, entries} = IEx.Autocomplete.expand(Enum.reverse(to_charlist(code)))
     result = {status, to_string(hint), Enum.map(entries, &to_string/1)}
     {:reply, result, state}
   end
+
+  # Get execution count
+
   def handle_call(:get_execution_count, _from, state = %{execution_count: execution_count}) do
     {:reply, execution_count, state}
   end
+
+  # Execute code
+
   def handle_call({:execute_code, request}, _from, state) do
     Logger.debug("Executing request: #{inspect request}")
+
     try do
       {{result, binding, env, scope}, {_, output}} = do_capture_io(
         fn ->
@@ -151,26 +175,38 @@ defmodule IElixir.Sandbox do
           :elixir.eval_forms(quoted, state.binding, state.env, state.scope)
         end
       )
-      new_state = %{execution_count: state.execution_count + 1, binding: binding, env: env, scope: scope}
+
+      count = state.execution_count + 1
+
+      new_state = %{execution_count: count, binding: binding, env: env, scope: scope}
       Logger.debug("State: #{inspect new_state}")
-      case result do
-        :"do not show this result in output" ->
-          {:reply, {:ok, "", output, state.execution_count}, new_state}
-        _ ->
-          {:reply, {:ok, inspect(result), output, state.execution_count}, new_state}
-      end
+
+      {:reply, {:ok, result, output, count}, new_state}
+
+      # case result do
+      #   :"do not show this result in output" ->
+      #     {:reply, {:ok, "", output, state.execution_count}, new_state}
+      #   :"this is raw HTML" ->
+      #     {:reply, {:ok, "", { :raw, output }, state.execution_count}, new_state}
+      #   _ ->
+      #     {:reply, {:ok, inspect(result), output, state.execution_count}, new_state}
+      # end
+
     rescue
       error in ArgumentError ->
         error_message = "** (#{inspect error.__struct__}) #{inspect error.message}"
-        {:reply, {:error, inspect(error.__struct__), [error_message]}, state}
+        {:reply, {:error, inspect(error.__struct__), [error_message], state.executon_count}, state}
       error in CompileError ->
         error_message = "** (#{inspect error.__struct__}) console:#{inspect error.line} #{inspect error.description}"
-        {:reply, {:error, inspect(error.__struct__), [error_message]}, state}
+        {:reply, {:error, inspect(error.__struct__), [error_message], state.executon_count}, state}
       error ->
         error_message = "** #{inspect error}"
-        {:reply, {:error, inspect(error.__struct__), [error_message]}, state}
+        {:reply, {:error, inspect(error.__struct__), [error_message], state.executon_count}, state}
     end
   end
+
+  # Is complete code
+
   def handle_call({:is_complete_code, code}, _from, state) do
     try do
       Code.eval_string(code, state.binding)
@@ -215,4 +251,3 @@ defmodule IElixir.Sandbox do
     end
   end
 end
-

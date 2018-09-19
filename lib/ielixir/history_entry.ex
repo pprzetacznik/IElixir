@@ -6,7 +6,6 @@ defmodule IElixir.HistoryEntry do
     field :output
     field :session
     field :line_number, :integer
-    timestamps
+    timestamps()
   end
 end
-

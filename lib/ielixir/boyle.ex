@@ -350,14 +350,6 @@ defmodule Boyle do
     File.write!(Path.join(env_path, "deps.lock"), "[]")
   end
 
-  defp create_deps_lock_file_old(env_path) do
-    File.write!(Path.join(env_path, "deps.lock"), """
-    [
-      {:matrex, github: "versilov/matrex"},
-      {:ielixir, github: "pprzetacznik/ielixir"}
-    ]
-    """)
-  end
 
   defp purge(modules) do
     Enum.each(modules, fn module ->
