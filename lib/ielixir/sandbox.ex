@@ -151,6 +151,14 @@ defmodule IElixir.Sandbox do
           :elixir.eval_forms(quoted, state.binding, state.env, state.scope)
         end
       )
+      binding = case result do
+        :"do not show this result in output" ->
+          binding
+        _ ->
+          binding
+          |> Keyword.put(:ans, result)
+          |> Keyword.update(:out, %{state.execution_count => result}, &Map.put(&1, state.execution_count, result))
+      end
       new_state = %{execution_count: state.execution_count + 1, binding: binding, env: env, scope: scope}
       Logger.debug("State: #{inspect new_state}")
       case result do
