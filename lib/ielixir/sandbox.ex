@@ -20,6 +20,7 @@ defmodule IElixir.Sandbox do
 
   use GenServer
   require Logger
+  require IElixir.CaptureIO, as: CaptureIO
 
   @doc false
   def start_link(opts) do
@@ -142,17 +143,9 @@ defmodule IElixir.Sandbox do
     GenServer.call(Sandbox, {:is_complete_code, code})
   end
 
-
-  ###############################################################################################
-
-
-  # Clean
-
   def handle_cast(:clean, _state) do
     {:noreply, prepare_clear_state()}
   end
-
-  # Get code completion
 
   def handle_call({:get_code_completion, code}, _from, state) do
     {status, hint, entries} = IEx.Autocomplete.expand(Enum.reverse(to_charlist(code)))
@@ -160,36 +153,28 @@ defmodule IElixir.Sandbox do
     {:reply, result, state}
   end
 
-  # Get execution count
-
   def handle_call(:get_execution_count, _from, state = %{execution_count: execution_count}) do
     {:reply, execution_count, state}
   end
-
-  # Execute code
 
   def handle_call({:execute_code, request}, _from, state) do
     Logger.debug("Executing request: #{inspect request}, count #{state.execution_count}")
 
     try do
-      {{result, binding, env, scope}, stdout, stderr} = IElixir.CaptureIO.capture(
-        fn ->
-          {:ok, quoted} = Code.string_to_quoted(request["code"])
-          :elixir.eval_forms(quoted, state.binding, state.env, state.scope)
-        end
-      )
+      {{result, binding, env, scope}, stdout, stderr} = CaptureIO.capture do
+        {:ok, quoted} = Code.string_to_quoted(request["code"])
+        :elixir.eval_forms(quoted, state.binding, state.env, state.scope)
+      end
 
-      count = state.execution_count
+      new_state = %{execution_count: state.execution_count+1, binding: binding, env: env, scope: scope}
+      Logger.debug("State: #{inspect new_state}")
 
-      new_state = %{execution_count: count+1, binding: binding, env: env, scope: scope}
-      # Logger.debug("State: #{inspect new_state}")
-
-      {:reply, {:ok, maybe_inspect(result), stdout, stderr, count}, new_state}
+      {:reply, {:ok, maybe_inspect(result), stdout, stderr, state.execution_count}, new_state}
 
       # case result do
       #   :"do not show this result in output" ->
       #     {:reply, {:ok, "", output, state.execution_count}, new_state}
-      #   :"this is raw HTML" ->
+      #   :"this is raw html" ->
       #     {:reply, {:ok, "", { :raw, output }, state.execution_count}, new_state}
       #   _ ->
       #     {:reply, {:ok, inspect(result), output, state.execution_count}, new_state}
@@ -208,8 +193,6 @@ defmodule IElixir.Sandbox do
     end
   end
 
-  # Is complete code
-
   def handle_call({:is_complete_code, code}, _from, state) do
     try do
       Code.eval_string(code, state.binding)
@@ -227,10 +210,9 @@ defmodule IElixir.Sandbox do
     %{execution_count: 1, binding: binding, env: env, scope: scope}
   end
 
-  defp maybe_inspect(result) when result in [ :"this is raw html", :"do not show this result in output" ] do
-    result
+  defp maybe_inspect(result) when result in [:"this is raw html", :"do not show this result in output"] do
+    ""
   end
-
   defp maybe_inspect(result) do
     inspect(result)
   end

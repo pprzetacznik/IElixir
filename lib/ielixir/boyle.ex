@@ -350,7 +350,6 @@ defmodule Boyle do
     File.write!(Path.join(env_path, "deps.lock"), "[]")
   end
 
-
   defp purge(modules) do
     Enum.each(modules, fn module ->
       :code.purge(module)

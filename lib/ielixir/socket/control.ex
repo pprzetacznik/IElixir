@@ -29,7 +29,7 @@ defmodule IElixir.Socket.Control do
   end
 
   defp process("shutdown_request", message, sock) do
-    Message.send_message(sock, message, "shutdown_reply", %{ restart: true})
+    Message.send_message(sock, message, "shutdown_reply", %{restart: true})
     Logger.info("Stopping application")
     :erlzmq.close(sock)
     Application.stop(:ielixir)

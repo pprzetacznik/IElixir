@@ -61,12 +61,10 @@ defmodule IElixir.Socket.Shell do
         %{
           "text" => "Elixir Getting Started !!!",
           "url" => "http://elixir-lang.org/getting-started/introduction.html"
-       },
-       %{
+        }, %{
           "text" => "Elixir Documentation",
           "url" => "http://elixir-lang.org/docs.html"
-      },
-       %{
+        }, %{
           "text" => "Elixir Sources",
           "url" => "https://github.com/elixir-lang/elixir"
         }
@@ -76,7 +74,6 @@ defmodule IElixir.Socket.Shell do
     Message.send_message(sock, message, "kernel_info_reply", content)
     IOPub.send_status("idle", message)
   end
-
   defp process("execute_request", message, sock) do
     Logger.debug("Received execute_request: #{inspect message}")
     IOPub.send_status("busy", message)
@@ -93,7 +90,6 @@ defmodule IElixir.Socket.Shell do
 
     IOPub.send_status("idle", message)
   end
-
   defp process("complete_request", message, sock) do
     Logger.debug("Received complete_request: #{inspect message}")
     IOPub.send_status("busy", message)
@@ -108,7 +104,6 @@ defmodule IElixir.Socket.Shell do
     end
     IOPub.send_status("idle", message)
   end
-
   defp process("is_complete_request", message, sock) do
     Logger.debug("Received is_complete_request: #{inspect message}")
     IOPub.send_status("busy", message)
@@ -116,22 +111,17 @@ defmodule IElixir.Socket.Shell do
     send_is_complete_reply(sock, message, to_string(status))
     IOPub.send_status("idle", message)
   end
-
   defp process("history_request", message, sock) do
     Logger.debug("History request: #{inspect message}")
     IOPub.send_status("busy", message)
     send_history_reply(sock, message)
     IOPub.send_status("idle", message)
   end
-
   defp process(msg_type, message, _sock) do
     Logger.debug("Received message of type: #{msg_type} @ shell socket: #{inspect message}")
   end
 
-
-  # Helpers for execute_request
-
-  defp wrap_with({ :ok, result, output, stderr, count }, message, sock) do
+  defp wrap_with({:ok, result, output, stderr, count}, message, sock) do
     %{
       status:  :ok,
       result:  result,
@@ -143,8 +133,7 @@ defmodule IElixir.Socket.Shell do
       silent:  message.content["silent"],
     }
   end
-
-  defp wrap_with({ :error, exception_name, traceback, count }, message, sock) do
+  defp wrap_with({:error, exception_name, traceback, count}, message, sock) do
     %{
       status:    :error,
       exception: exception_name,
@@ -156,74 +145,60 @@ defmodule IElixir.Socket.Shell do
     }
   end
 
-  defp publish_output(response = %{ status: :error }) do
+  defp publish_output(response = %{status: :error}) do
     response
   end
-
-  defp publish_output(response = %{ silent: true }) do
+  defp publish_output(response = %{silent: true}) do
     response
   end
-
-  defp publish_output(response = %{ output: "" }) do
+  defp publish_output(response = %{output: ""}) do
     response
   end
-
-  defp publish_output(response = %{ result: :"this is raw html"  }) do
+  defp publish_output(response = %{result: :"this is raw html"}) do
     IOPub.send_html(response.message, response.output)
     response
   end
-
   defp publish_output(response) do
     IOPub.send_stream(response.message, response.output)
     response
   end
 
-  defp publish_stderr(response = %{ status: :error }) do
+  defp publish_stderr(response = %{status: :error}) do
     response
   end
-
-  defp publish_stderr(response = %{ stderr: "" }) do
+  defp publish_stderr(response = %{stderr: ""}) do
     response
   end
-
   defp publish_stderr(response) do
     IOPub.send_stream(response.message, response.stderr, "stderr")
     response
   end
 
-  defp publish_execute_response(response = %{ status: :error }) do
+  defp publish_execute_response(response = %{status: :error}) do
     IOPub.send_error(response.message, response.count, response.exception, response.traceback)
     response
   end
-
-  # I thing the originsl was wrong here: it was "or-ing" witn the silent flag
-
-  defp publish_execute_response(response = %{ result: "" }) do
+  defp publish_execute_response(response = %{result: ""}) do
     response
   end
-
-  defp publish_execute_response(response = %{ silent: true }) do
+  defp publish_execute_response(response = %{result: :"this is raw html"}) do
     response
   end
-
-  defp publish_execute_response(response = %{ result: :"this is raw html" }) do
+  defp publish_execute_response(response = %{silent: true}) do
     response
   end
-
   defp publish_execute_response(response = %{}) do
-    IOPub.send_execute_result(response.message, { inspect(response.result), response.count})
+    IOPub.send_execute_result(response.message, {response.result, response.count})
     response
   end
 
-  defp update_history(response = %{ status: :error }) do
+  defp update_history(response = %{status: :error}) do
     response
   end
-
-  defp update_history(response = %{ silent: true }) do
+  defp update_history(response = %{silent: true}) do
     response
   end
-
-  defp update_history(response = %{ status: :ok }) do
+  defp update_history(response = %{status: :ok}) do
     Queries.insert(response.message.header["session"],
                    response.count,
                    response.message.content["code"],
@@ -231,39 +206,34 @@ defmodule IElixir.Socket.Shell do
     response
   end
 
-
-  defp send_execute_reply(response = %{ status: :ok }) do
+  defp send_execute_reply(response = %{status: :ok}) do
     content = %{
-      status:           "ok",
-      execution_count:  response.count,
-      payload:          [],
+      status: "ok",
+      execution_count: response.count,
+      payload: [],
       user_expressions: %{}
     }
     Message.send_message(response.sock, response.message, "execute_reply", content)
     response
   end
-
-  defp send_execute_reply(response = %{ status: :error }) do
+  defp send_execute_reply(response = %{status: :error}) do
     content = %{
-      status:          "error",
+      status: "error",
       execution_count: response.count,
-      ename:           response.exception,
-      evalue:          "1",
-      traceback:       response.traceback,
+      ename: response.exception,
+      evalue: "1",
+      traceback: response.traceback,
     }
     Message.send_message(response.sock, response.message, "execute_reply", content)
     response
   end
-
-
-
   defp send_complete_reply(sock, message, {list, cursor_start, cursor_end}) do
     content = %{
-      matches:      list,
+      matches: list,
       cursor_start: cursor_start,
-      cursor_end:   cursor_end,
-      metadata:     %{},
-      status:       "ok"
+      cursor_end: cursor_end,
+      metadata: %{},
+      status: "ok"
     }
     Message.send_message(sock, message, "complete_reply", content)
   end
@@ -275,7 +245,6 @@ defmodule IElixir.Socket.Shell do
     }
     Message.send_message(sock, message, "is_complete_reply", content)
   end
-
   defp send_is_complete_reply(sock, message, status) do
     content = %{
       status: status

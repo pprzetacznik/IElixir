@@ -74,7 +74,7 @@ defmodule IElixir.Socket.IOPub do
   def handle_cast({:send_execute_input, message, execution_count}, sock) do
     content = %{
       execution_count: execution_count,
-      code:            message.content["code"]
+      code: message.content["code"]
     }
     Message.send_message(sock, message, "execute_input", content)
     {:noreply, sock}
@@ -82,8 +82,8 @@ defmodule IElixir.Socket.IOPub do
 
   def handle_cast({:send_stream, message, text, stream_name}, sock) do
     content = %{
-       text: text,
-       name: stream_name,
+      name: stream_name,
+      text: text
     }
     Message.send_message(sock, message, "stream", content)
     {:noreply, sock}
@@ -113,7 +113,7 @@ defmodule IElixir.Socket.IOPub do
   end
 
   def handle_cast({:send_status, status, message}, sock) do
-    content = %{ execution_state: status}
+    content = %{execution_state: status}
     Message.send_message(sock, message, "status", content)
     {:noreply, sock}
   end
@@ -121,9 +121,9 @@ defmodule IElixir.Socket.IOPub do
   def handle_cast({:send_error, message, execution_count, exception_name, traceback}, sock) do
     content = %{
       execution_count: execution_count,
-      ename:           exception_name,
-      evalue:          "1",
-      traceback:       traceback,
+      ename: exception_name,
+      evalue: "1",
+      traceback: traceback,
     }
     Message.send_message(sock, message, "error", content)
     {:noreply, sock}

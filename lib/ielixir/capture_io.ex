@@ -1,44 +1,42 @@
 defmodule IElixir.CaptureIO do
+  @moduledoc """
+  Macro used for capturing stdin and stderr of evalued code.
+  """
 
-  def capture(fun) do
-    { { result, error_stream }, output_stream } = capture_stdout(fn ->
-      capture_stderr(fun)
-    end)
-    { result, output_stream, error_stream }
-  end
+  @doc ~S"""
+  Capture evaluated expression. Returns stdout and stderr.
 
-  defp capture_stdout(fun) do
-    original_gl = Process.group_leader()
-    {:ok, capture_gl} = StringIO.open("", capture_prompt: true)
-    try do
-      Process.group_leader(self(), capture_gl)
-      result = fun.()
-      { :ok, { _, output }} = StringIO.close(capture_gl)
-      { result, output }
-    after
-      Process.group_leader(self(), original_gl)
-    end
-  end
+  ## Examples
 
-  defp capture_stderr(fun) do
-    original_err = Process.whereis(:standard_error)
-    {:ok, capture_err} = StringIO.open("", capture_prompt: true)
-    Process.unregister(:standard_error)
-    try do
-      Process.register(capture_err, :standard_error)
-      result = fun.()
-      { _, output } = StringIO.contents(capture_err)
-      { result, output }
-    rescue
-      error ->
-        raise(error)
-    else
-      result ->
+    iex> IElixir.CaptureIO.capture do: IO.puts("sdf") |> (&(IO.puts(:stderr, &1))).()
+    {:ok, "sdf\n", "ok\n"}
+
+  """
+  defmacro capture(do: expression) do
+    quote do
+      original_gl = Process.group_leader()
+      {:ok, capture_gl} = StringIO.open("", capture_prompt: true)
+      original_err = Process.whereis(:standard_error)
+      {:ok, capture_err} = StringIO.open("", capture_prompt: true)
+
+      try do
+        Process.group_leader(self(), capture_gl)
+        Process.unregister(:standard_error)
+        Process.register(capture_err, :standard_error)
+
+        result = unquote(expression)
+
+        {:ok, {_, output_string}} = StringIO.close(capture_gl)
+        {_, error_string} = StringIO.contents(capture_err)
+
+        {result, output_string, error_string}
+      after
+        Process.group_leader(self(), original_gl)
+
         Process.unregister(:standard_error)
         StringIO.close(capture_err)
         Process.register(original_err, :standard_error)
-        result
+      end
     end
   end
-
 end
