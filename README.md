@@ -25,6 +25,7 @@ Please see generated documentation for implementation details: http://hexdocs.pm
 * [Generate documentation](#generate-documentation)
 * [Docker](#docker)
 * [Some issues](#some-issues)
+* [Contribution](#contribution)
 * [References](#references)
 * [License](#license)
 
@@ -186,6 +187,13 @@ There may be need to run IElixir kernel with specific erlang attribute which can
 ELIXIR_ERL_OPTIONS="-smp enable"
 ```
 This option has been included inside `install_script.sh` and `start_script.sh` scripts.
+
+### Contribution
+
+* Try to write some description of the feature or bug fix you're working in pull request's description and concise description of new modules or functions in moduledoc annotations,
+* Please follow Elixir style guides to keep style clear, consider Elixir and Phoenix source code as the style ground truth,
+* Keep as little comments as you can, comments tend to expire so try to use doctests instead to show how your code works,
+* Write some unit tests for your code but don't try to test private functions, class tests are bad and units tests are good - https://blog.arkency.com/2014/09/unit-tests-vs-class-tests/
 
 ### References
 

@@ -1,14 +1,14 @@
 defmodule IElixir.Mixfile do
   use Mix.Project
 
-  @version "0.9.14"
+  @version "0.9.15"
 
   def project do
     [app: :ielixir,
      version: @version,
      source_url: "https://github.com/pprzetacznik/IElixir",
      name: "IElixir",
-     elixir: ">= 1.1.0 and < 1.7.0",
+     elixir: ">= 1.5.0",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      consolidate_protocols: false,
@@ -18,7 +18,12 @@ defmodule IElixir.Mixfile do
      """,
      package: package(),
      test_coverage: [tool: ExCoveralls],
-     preferred_cli_env: ["coveralls": :test, "coveralls.detail": :test, "coveralls.post": :test, "coveralls.html": :test]]
+     preferred_cli_env: [
+       "coveralls": :test,
+       "coveralls.detail": :test,
+       "coveralls.post": :test,
+       "coveralls.html": :test
+     ]]
   end
 
   def application do
