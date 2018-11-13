@@ -202,6 +202,7 @@ Some useful articles:
 * [IElixir Notebook in Docker](https://mattvonrocketstein.github.io/heredoc/ielixir-notebook-in-docker.html)
 * [Hydrogen plugin for Atom](https://atom.io/packages/hydrogen)
 * [Installation guide](http://blog.jonharrington.org/elixir-and-jupyter/)
+* [Jupyter Notebooks with Elixir and RDF](https://medium.com/@tonyhammond/jupyter-notebooks-with-elixir-and-rdf-598689c2dad3)
 
 I was inspired by following codes and articles:
 
