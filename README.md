@@ -182,6 +182,17 @@ If you would like to make some changes to the images you can find dockerfiles in
 
 ### Some issues
 
+#### Problem with rebar
+
+If you see following error after running `install_script.sh` script then you should check if you have properly installed and visible rebar in `mix` and in your local environment.
+```
+make: rebar: Command not found
+make: *** [compile] Error 127
+** (Mix) Could not compile dependency :erlzmq, "make" command failed. You can recompile this dependency with "mix deps.compile erlzmq", update it with "mix deps.update erlzmq" or clean it with "mix deps.clean erlzmq"
+```
+
+#### Erlang configuration
+
 There may be need to run IElixir kernel with specific erlang attribute which can be turned on by setting variable:
 ```Bash
 ELIXIR_ERL_OPTIONS="-smp enable"
