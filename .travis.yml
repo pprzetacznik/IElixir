@@ -12,6 +12,8 @@ matrix:
       elixir: 1.6.0
     - otp_release: 20.2
       elixir: 1.6.6
+    - otp_release: 20.2
+      elixir: 1.7.4
 python:
   - "2.7.10"
 install:
