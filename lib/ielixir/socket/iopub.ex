@@ -46,8 +46,16 @@ defmodule IElixir.Socket.IOPub do
   @doc """
   Send stream message. This is used for sending output of code execution.
   """
-  def send_stream(message, text) do
-    GenServer.cast(IOPub, {:send_stream, message, text})
+  def send_stream(message, text, stream_name \\ "stdout") do
+    GenServer.cast(IOPub, {:send_stream, message, text, stream_name})
+  end
+
+  @doc """
+  Send stream message but with a mime type of HTML, so the content
+  is interpolated into the result
+  """
+  def send_html(message, text) do
+    GenServer.cast(IOPub, {:send_html, message, text})
   end
 
   @doc """
@@ -65,45 +73,60 @@ defmodule IElixir.Socket.IOPub do
 
   def handle_cast({:send_execute_input, message, execution_count}, sock) do
     content = %{
-      "execution_count": execution_count,
-      "code": message.content["code"]
+      execution_count: execution_count,
+      code: message.content["code"]
     }
     Message.send_message(sock, message, "execute_input", content)
     {:noreply, sock}
   end
-  def handle_cast({:send_stream, message, text}, sock) do
+
+  def handle_cast({:send_stream, message, text, stream_name}, sock) do
     content = %{
-      "name": "stdout",
-      "text": text
+      name: stream_name,
+      text: text
     }
     Message.send_message(sock, message, "stream", content)
     {:noreply, sock}
   end
+
+  def handle_cast({:send_html, message, text}, sock) do
+    content = %{
+      data: %{
+        "text/html" => text,
+      }
+    }
+    Message.send_message(sock, message, "display_data", content)
+    {:noreply, sock}
+  end
+
   def handle_cast({:send_execute_result, message, {text, execution_count}}, sock) do
     content = %{
-      "execution_count": execution_count,
-      "data": %{
+      data: %{
         "text/plain": text
       },
-      "metadata": %{}
+      metadata: %{},
+      execution_count: execution_count,
     }
+
     Message.send_message(sock, message, "execute_result", content)
     {:noreply, sock}
   end
+
   def handle_cast({:send_status, status, message}, sock) do
-    content = %{"execution_state": status}
+    content = %{execution_state: status}
     Message.send_message(sock, message, "status", content)
     {:noreply, sock}
   end
+
   def handle_cast({:send_error, message, execution_count, exception_name, traceback}, sock) do
     content = %{
-      "execution_count": execution_count,
-      "ename": exception_name,
-      "evalue": "1",
-      "traceback": traceback,
+      execution_count: execution_count,
+      ename: exception_name,
+      evalue: "1",
+      traceback: traceback,
     }
     Message.send_message(sock, message, "error", content)
     {:noreply, sock}
   end
-end
 
+end

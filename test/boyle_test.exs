@@ -72,12 +72,13 @@ defmodule IElixir.BoyleTest do
       rescue
         error -> error
       end
+
     assert error == %UndefinedFunctionError{
       arity: 1,
-      exports: nil,
       function: :number_to_currency,
       module: Number.Currency,
-      reason: nil}
+      reason: nil,
+    }
   end
 
   defp assert_that_number_module_works_properly() do

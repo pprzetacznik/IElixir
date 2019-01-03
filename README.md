@@ -25,6 +25,7 @@ Please see generated documentation for implementation details: http://hexdocs.pm
 * [Generate documentation](#generate-documentation)
 * [Docker](#docker)
 * [Some issues](#some-issues)
+* [Contribution](#contribution)
 * [References](#references)
 * [License](#license)
 
@@ -181,11 +182,29 @@ If you would like to make some changes to the images you can find dockerfiles in
 
 ### Some issues
 
+#### Problem with rebar
+
+If you see following error after running `install_script.sh` script then you should check if you have properly installed and visible rebar in `mix` and in your local environment.
+```
+make: rebar: Command not found
+make: *** [compile] Error 127
+** (Mix) Could not compile dependency :erlzmq, "make" command failed. You can recompile this dependency with "mix deps.compile erlzmq", update it with "mix deps.update erlzmq" or clean it with "mix deps.clean erlzmq"
+```
+
+#### Erlang configuration
+
 There may be need to run IElixir kernel with specific erlang attribute which can be turned on by setting variable:
 ```Bash
 ELIXIR_ERL_OPTIONS="-smp enable"
 ```
 This option has been included inside `install_script.sh` and `start_script.sh` scripts.
+
+### Contribution
+
+* Try to write some description of the feature or bug fix you're working in pull request's description and concise description of new modules or functions in moduledoc annotations,
+* Please follow Elixir style guides to keep style clear, consider Elixir and Phoenix source code as the style ground truth,
+* Keep as little comments as you can, comments tend to expire so try to use doctests instead to show how your code works,
+* Write some unit tests for your code but don't try to test private functions, class tests are bad and units tests are good - https://blog.arkency.com/2014/09/unit-tests-vs-class-tests/
 
 ### References
 
@@ -194,6 +213,7 @@ Some useful articles:
 * [IElixir Notebook in Docker](https://mattvonrocketstein.github.io/heredoc/ielixir-notebook-in-docker.html)
 * [Hydrogen plugin for Atom](https://atom.io/packages/hydrogen)
 * [Installation guide](http://blog.jonharrington.org/elixir-and-jupyter/)
+* [Jupyter Notebooks with Elixir and RDF](https://medium.com/@tonyhammond/jupyter-notebooks-with-elixir-and-rdf-598689c2dad3)
 
 I was inspired by following codes and articles:
 
@@ -205,16 +225,4 @@ I was inspired by following codes and articles:
 
 ### License
 
-Copyright 2015 Piotr Przetacznik
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+Copyright 2015 Piotr Przetacznik. IElixir source code is released under Apache 2 License. Check [NOTICE](NOTICE) and [LICENSE](LICENSE) files for more information.
