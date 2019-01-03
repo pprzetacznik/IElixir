@@ -98,6 +98,10 @@ Evaluate some commands in your new notebook:
 
 ![IElixir basics](/resources/jupyter_ielixir_matrex_demo.png?raw=true)
 
+### Magic commands
+
+You can also use `ans` variable to access output of previous cell. Moreover, if you want to access any cell which you can do it using it's number by calling `out` map, eg. `out[1]`.
+
 ### Package management with Boyle
 
 You can manage your packages in runtime with Boyle. Name of the package honours remarkable chemist, Robert Boyle. This package allows you to manage your Elixir virtual enviromnent without need of restarting erlang virtual machine. Boyle installs environment into `./envs/you_new_environment` directory and creates new mix project there with requested dependencies. It keeps takes care of fetching, compiling and loading/unloading modules from dependencies list of that environment.
@@ -225,4 +229,6 @@ I was inspired by following codes and articles:
 
 ### License
 
-Copyright 2015 Piotr Przetacznik. IElixir source code is released under Apache 2 License. Check [NOTICE](NOTICE) and [LICENSE](LICENSE) files for more information.
+Copyright 2015 Piotr Przetacznik.
+IElixir source code is released under Apache 2 License.
+Check [NOTICE](NOTICE) and [LICENSE](LICENSE) files for more information.
