@@ -123,7 +123,7 @@ iex> Boyle.list()
 
 Activate virtual environment
 ```Elixir
-iex> Boyle.activate("my_new_env")
+iex> Boyle.activate("my_new_environment")
 :ok
 ```
 
