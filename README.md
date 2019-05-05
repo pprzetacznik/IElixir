@@ -146,6 +146,7 @@ iex> Number.Currency.number_to_currency(2034.46)
 Additional resources:
 * [Notebook with Boyle examples](https://github.com/pprzetacznik/IElixir/blob/master/resources/boyle%20example.ipynb)
 * [Notebook with Boyle examples with usage of Matrex library](https://github.com/pprzetacznik/IElixir/blob/master/resources/boyle%20example%20-%20matrex%20installation%20and%20usage.ipynb)
+* [Notebook with inline image examples with usage of Gnuplot library](https://github.com/pprzetacznik/IElixir/blob/master/resources/inlineplot%20example%20-%20gnuplot.ipynb)
 
 ### Developement mode
 

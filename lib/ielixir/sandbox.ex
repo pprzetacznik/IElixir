@@ -8,7 +8,7 @@ defmodule IElixir.Sandbox do
   @typedoc "Execution response"
   @type execution_response :: {
     status :: :ok,
-    result :: :"this is raw html" | :"do not show this result in output" | String.t,
+    result :: :"this is raw html" | :"do not show this result in output" | :"this is an inline image" | {:"this is an inline image",Keyword.t} | String.t,
     stdout :: String.t,
     stderr :: String.t,
     execution_count :: integer}
@@ -168,6 +168,10 @@ defmodule IElixir.Sandbox do
       binding = case result do
          :"do not show this result in output" ->
            binding
+         :"this is an inline image" ->
+           binding
+         {:"this is an inline image",_} ->
+           binding
          _ ->
            binding
            |> Keyword.put(:ans, result)
@@ -219,6 +223,12 @@ defmodule IElixir.Sandbox do
 
   defp maybe_inspect(result) when result in [:"this is raw html", :"do not show this result in output"] do
     ""
+  end
+  defp maybe_inspect(result = {:"this is an inline image",_}) do
+    result
+  end
+  defp maybe_inspect(result = :"this is an inline image") do
+    result
   end
   defp maybe_inspect(result) do
     inspect(result)
