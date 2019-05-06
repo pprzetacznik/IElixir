@@ -59,6 +59,14 @@ defmodule IElixir.Socket.IOPub do
   end
 
   @doc """
+  Send stream message but with a mime type of IMAGE, so the content
+  is interpolated into the result
+  """
+  def send_image(message, execution_count, image) do
+    GenServer.cast(IOPub, {:send_image, message, execution_count, image})
+  end
+
+  @doc """
   Send error message. Send traceback so client can have information about what
   went wrong.
   """
@@ -94,6 +102,31 @@ defmodule IElixir.Socket.IOPub do
       data: %{
         "text/html" => text,
       }
+    }
+    Message.send_message(sock, message, "display_data", content)
+    {:noreply, sock}
+  end
+  def handle_cast({:send_image, message, execution_count, {:file,kw}}, sock) do
+    try do
+      raw64 = File.read!(kw[:src]) |> Base.encode64
+      content = %{
+        data: %{
+          "image/png" => raw64,
+        },
+      }
+      Message.send_message(sock, message, "display_data", content)
+      {:noreply, sock}
+    rescue
+      error ->
+        traceback = System.stacktrace() |> Enum.map(&"#{inspect &1}")
+        handle_cast({:send_error,message,execution_count,IO.inspect(error),traceback}, sock)
+    end
+  end
+  def handle_cast({:send_image, message, _execution_count, {:raw,raw64}}, sock) do
+    content = %{
+      data: %{
+        "image/png" => raw64,
+      },
     }
     Message.send_message(sock, message, "display_data", content)
     {:noreply, sock}

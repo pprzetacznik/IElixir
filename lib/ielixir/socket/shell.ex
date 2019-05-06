@@ -158,6 +158,13 @@ defmodule IElixir.Socket.Shell do
     IOPub.send_html(response.message, response.output)
     response
   end
+  defp publish_output(response = %{result: {:"this is an inline image",_}}) do
+    response
+  end
+  defp publish_output(response = %{result: :"this is an inline image"}) do
+    IOPub.send_image(response.message, response.count, {:raw, response.output})
+    response
+  end
   defp publish_output(response) do
     IOPub.send_stream(response.message, response.output)
     response
@@ -182,6 +189,13 @@ defmodule IElixir.Socket.Shell do
     response
   end
   defp publish_execute_response(response = %{result: :"this is raw html"}) do
+    response
+  end
+  defp publish_execute_response(response = %{result: {:"this is an inline image",kw}}) do
+    IOPub.send_image(response.message, response.count, {:file, kw})
+    response
+  end
+  defp publish_execute_response(response = %{result: :"this is an inline image"}) do
     response
   end
   defp publish_execute_response(response = %{silent: true}) do
