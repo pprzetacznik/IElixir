@@ -1,9 +1,9 @@
 %{
   "certifi": {:hex, :certifi, "2.3.1", "d0f424232390bf47d82da8478022301c561cf6445b5b5fb6a84d49a9e76d2639", [:rebar3], [{:parse_trans, "3.2.0", [hex: :parse_trans, repo: "hexpm", optional: false]}], "hexpm"},
-  "decimal": {:hex, :decimal, "1.1.2", "79a769d4657b2d537b51ef3c02d29ab7141d2b486b516c109642d453ee08e00c", [:mix], [], "hexpm"},
+  "decimal": {:hex, :decimal, "1.7.0", "30d6b52c88541f9a66637359ddf85016df9eb266170d53105f02e4a67e00c5aa", [:mix], [], "hexpm"},
   "earmark": {:hex, :earmark, "0.2.1", "ba6d26ceb16106d069b289df66751734802777a3cbb6787026dd800ffeb850f3", [:mix], [], "hexpm"},
   "ecto": {:hex, :ecto, "1.1.9", "6f30e4662d540c794048e62a04926c1d3c892a2ba4704fe1e19d4a9b5b2f881e", [:mix], [{:decimal, "~> 1.0", [hex: :decimal, optional: false]}, {:mariaex, "~> 0.5.0 or ~> 0.6.0", [hex: :mariaex, optional: true]}, {:poison, "~> 1.0 or ~> 2.0", [hex: :poison, optional: true]}, {:poolboy, "~> 1.4", [hex: :poolboy, optional: false]}, {:postgrex, "~> 0.11.0", [hex: :postgrex, optional: true]}, {:sbroker, "~> 0.7", [hex: :sbroker, optional: true]}]},
-  "erlzmq": {:git, "https://github.com/zeromq/erlzmq2.git", "573d583930c4b1134e504bec83926d188112b401", []},
+  "erlzmq": {:hex, :erlzmq, "3.0.1", "bbd882d65f6c8f9d29c0f2502df2e77531de9622b47eaeaac5178d8a254dcc57", [:rebar3], [], "hexpm"},
   "esqlite": {:hex, :esqlite, "0.2.3", "1a8b60877fdd3d50a8a84b342db04032c0231cc27ecff4ddd0d934485d4c0cd5", [:rebar3], [], "hexpm"},
   "ex_doc": {:hex, :ex_doc, "0.12.0", "b774aabfede4af31c0301aece12371cbd25995a21bb3d71d66f5c2fe074c603f", [:mix], [{:earmark, "~> 0.2", [repo: "hexpm", hex: :earmark, optional: false]}], "hexpm"},
   "excoveralls": {:hex, :excoveralls, "0.9.1", "14fd20fac51ab98d8e79615814cc9811888d2d7b28e85aa90ff2e30dcf3191d6", [:mix], [{:hackney, ">= 0.12.0", [hex: :hackney, repo: "hexpm", optional: false]}, {:jason, "~> 1.0", [hex: :jason, repo: "hexpm", optional: false]}], "hexpm"},
