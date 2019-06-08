@@ -17,8 +17,11 @@ matrix:
 python:
   - "2.7.10"
 
-pre_install:
-  - apt-get update && apt-get -y install libczmq-dev libzmq3-dev libzmq5-dev
+addons:
+  apt:
+    packages:
+      - libzmq3-dev
+
 install:
   - sudo pip install virtualenv virtualenvwrapper
   - mkdir ~/.virtualenvs
