@@ -3,6 +3,7 @@ defmodule IElixir.Supervisor do
   This is supervisor module. Takes care if everything is working.
   """
 
+  alias IElixir
   use Supervisor
   require Logger
 
@@ -21,7 +22,8 @@ defmodule IElixir.Supervisor do
       worker(IElixir.Socket.Heartbeat, [opts]),
       worker(IElixir.Socket.IOPub, [opts]),
       worker(IElixir.Socket.Shell, [opts]),
-      worker(IElixir.Socket.StdIn, [opts])
+      worker(IElixir.Socket.StdIn, [opts]),
+      worker(Boyle, [[]])
     ]
 
     supervise(children, strategy: :one_for_one)

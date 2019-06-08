@@ -42,32 +42,35 @@ defmodule IElixir.Socket.Shell do
   defp process("kernel_info_request", message, sock) do
     Logger.debug("Received kernel_info_request")
     IOPub.send_status("busy", message)
-    {:ok, version} = Version.parse(System.version)
+
     content = %{
-      "protocol_version": "5.0",
-      "implementation": "ielixir",
-      "implementation_version": "1.0",
-      "language_info": %{
-        "name" => "elixir",
-        "version" => inspect(version),
-        "mimetype" => "text/x-elixir",
-        "file_extension" => "ex",
-        "pygments_lexer" => "elixir",
-        "codemirror_mode" => "elixir",
+      protocol_version:       "5.0",
+      implementation:         "ielixir",
+      implementation_version: "1.0",
+      language_info: %{
+        "name"               => "elixir",
+        "version"            => System.version,
+        "mimetype"           => "text/x-elixir",
+        "file_extension"     => "ex",
+        "pygments_lexer"     => "elixir",
+        "codemirror_mode"    => "elixir",
         "nbconvert_exporter" => ""
       },
-      "banner": "Welcome to IElixir!",
-      "help_links": [%{
-        "text" => "Elixir Getting Started",
-        "url" => "http://elixir-lang.org/getting-started/introduction.html"
-      }, %{
-        "text" => "Elixir Documentation",
-        "url" => "http://elixir-lang.org/docs.html"
-      }, %{
-        "text" => "Elixir Sources",
-        "url" => "https://github.com/elixir-lang/elixir"
-      }]
+      banner: "   Welcome to IElixir!",
+      help_links: [
+        %{
+          "text" => "Elixir Getting Started !!!",
+          "url" => "http://elixir-lang.org/getting-started/introduction.html"
+        }, %{
+          "text" => "Elixir Documentation",
+          "url" => "http://elixir-lang.org/docs.html"
+        }, %{
+          "text" => "Elixir Sources",
+          "url" => "https://github.com/elixir-lang/elixir"
+        }
+      ]
     }
+
     Message.send_message(sock, message, "kernel_info_reply", content)
     IOPub.send_status("idle", message)
   end
@@ -76,23 +79,15 @@ defmodule IElixir.Socket.Shell do
     IOPub.send_status("busy", message)
     execution_count = Sandbox.get_execution_count()
     IOPub.send_execute_input(message, execution_count)
-    case Sandbox.execute_code(message.content) do
-      {:ok, result, output, execution_count} ->
-        if output != "" do
-          IOPub.send_stream(message, output)
-        end
-        if result != "" or message.content["silent"] == true do
-          IOPub.send_execute_result(message, {result, execution_count})
-        end
-        Queries.insert(message.header["session"],
-          execution_count,
-          message.content["code"],
-          output)
-        send_execute_reply(sock, message, execution_count)
-      {:error, exception_name, traceback} ->
-        IOPub.send_error(message, execution_count, exception_name, traceback)
-        send_execute_reply(sock, message, execution_count, exception_name, traceback)
-    end
+
+    Sandbox.execute_code(message.content)
+    |> wrap_with(message, sock)
+    |> publish_output()
+    |> publish_stderr()
+    |> publish_execute_response()
+    |> update_history()
+    |> send_execute_reply()
+
     IOPub.send_status("idle", message)
   end
   defp process("complete_request", message, sock) do
@@ -126,54 +121,154 @@ defmodule IElixir.Socket.Shell do
     Logger.debug("Received message of type: #{msg_type} @ shell socket: #{inspect message}")
   end
 
-  defp send_execute_reply(sock, message, execution_count) do
-    content = %{
-      "status": "ok",
-      "execution_count": execution_count,
-      "payload": [],
-      "user_expressions": %{}
+  defp wrap_with({:ok, result, output, stderr, count}, message, sock) do
+    %{
+      status:  :ok,
+      result:  result,
+      output:  output,
+      stderr:  stderr,
+      message: message,
+      sock:    sock,
+      count:   count,
+      silent:  message.content["silent"],
     }
-    Message.send_message(sock, message, "execute_reply", content)
   end
-  defp send_execute_reply(sock, message, execution_count, exception_name, traceback) do
-    content = %{
-      "status": "error",
-      "execution_count": execution_count,
-      "ename": exception_name,
-      "evalue": "1",
-      "traceback": traceback,
+  defp wrap_with({:error, exception_name, traceback, count}, message, sock) do
+    %{
+      status:    :error,
+      exception: exception_name,
+      traceback: traceback,
+      message:   message,
+      sock:      sock,
+      count:     count,
+      silent:    message.content["silent"],
     }
-    Message.send_message(sock, message, "execute_reply", content)
   end
 
+  defp publish_output(response = %{status: :error}) do
+    response
+  end
+  defp publish_output(response = %{silent: true}) do
+    response
+  end
+  defp publish_output(response = %{output: ""}) do
+    response
+  end
+  defp publish_output(response = %{result: :"this is raw html"}) do
+    IOPub.send_html(response.message, response.output)
+    response
+  end
+  defp publish_output(response = %{result: {:"this is an inline image",_}}) do
+    response
+  end
+  defp publish_output(response = %{result: :"this is an inline image"}) do
+    IOPub.send_image(response.message, response.count, {:raw, response.output})
+    response
+  end
+  defp publish_output(response) do
+    IOPub.send_stream(response.message, response.output)
+    response
+  end
+
+  defp publish_stderr(response = %{status: :error}) do
+    response
+  end
+  defp publish_stderr(response = %{stderr: ""}) do
+    response
+  end
+  defp publish_stderr(response) do
+    IOPub.send_stream(response.message, response.stderr, "stderr")
+    response
+  end
+
+  defp publish_execute_response(response = %{status: :error}) do
+    IOPub.send_error(response.message, response.count, response.exception, response.traceback)
+    response
+  end
+  defp publish_execute_response(response = %{result: ""}) do
+    response
+  end
+  defp publish_execute_response(response = %{result: :"this is raw html"}) do
+    response
+  end
+  defp publish_execute_response(response = %{result: {:"this is an inline image",kw}}) do
+    IOPub.send_image(response.message, response.count, {:file, kw})
+    response
+  end
+  defp publish_execute_response(response = %{result: :"this is an inline image"}) do
+    response
+  end
+  defp publish_execute_response(response = %{silent: true}) do
+    response
+  end
+  defp publish_execute_response(response = %{}) do
+    IOPub.send_execute_result(response.message, {response.result, response.count})
+    response
+  end
+
+  defp update_history(response = %{status: :error}) do
+    response
+  end
+  defp update_history(response = %{silent: true}) do
+    response
+  end
+  defp update_history(response = %{status: :ok}) do
+    Queries.insert(response.message.header["session"],
+                   response.count,
+                   response.message.content["code"],
+                   response.output)
+    response
+  end
+
+  defp send_execute_reply(response = %{status: :ok}) do
+    content = %{
+      status: "ok",
+      execution_count: response.count,
+      payload: [],
+      user_expressions: %{}
+    }
+    Message.send_message(response.sock, response.message, "execute_reply", content)
+    response
+  end
+  defp send_execute_reply(response = %{status: :error}) do
+    content = %{
+      status: "error",
+      execution_count: response.count,
+      ename: response.exception,
+      evalue: "1",
+      traceback: response.traceback,
+    }
+    Message.send_message(response.sock, response.message, "execute_reply", content)
+    response
+  end
   defp send_complete_reply(sock, message, {list, cursor_start, cursor_end}) do
     content = %{
-      "matches": list,
-      "cursor_start": cursor_start,
-      "cursor_end": cursor_end,
-      "metadata": %{},
-      "status": "ok"
+      matches: list,
+      cursor_start: cursor_start,
+      cursor_end: cursor_end,
+      metadata: %{},
+      status: "ok"
     }
     Message.send_message(sock, message, "complete_reply", content)
   end
 
   defp send_is_complete_reply(sock, message, status = "incomplete") do
     content = %{
-      "status": status,
-      "indent": "  "
+      status: status,
+      indent: "  "
     }
     Message.send_message(sock, message, "is_complete_reply", content)
   end
   defp send_is_complete_reply(sock, message, status) do
     content = %{
-      "status": status
+      status: status
     }
     Message.send_message(sock, message, "is_complete_reply", content)
   end
 
   defp send_history_reply(sock, message) do
     content = %{
-      "history": Queries.get_entries_list()
+      history: Queries.get_entries_list(message.content["output"])
     }
     Message.send_message(sock, message, "history_reply", content)
   end

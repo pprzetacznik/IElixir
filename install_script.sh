@@ -8,7 +8,6 @@ fi
 # Provide setup according to kernel-spec
 # https://jupyter-client.readthedocs.io/en/latest/kernels.html#kernel-specs
 
-UNAMESTR=$(UNAME)
 KERNEL_SPEC="./resources/ielixir"
 NAME="ielixir"
 
@@ -26,3 +25,5 @@ echo $CONTENT | python -m json.tool > $KERNEL_SPEC/kernel.json
 # for global install remove the --user flag
 jupyter kernelspec install --user --replace --name=$NAME $KERNEL_SPEC
 ELIXIR_ERL_OPTIONS="-smp enable" mix ecto.migrate -r IElixir.Repo
+
+echo "* Installation completed"

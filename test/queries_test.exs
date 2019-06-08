@@ -1,4 +1,4 @@
-defmodule QueriesTest do
+defmodule IElixir.QueriesTest do
   use ExUnit.Case
   doctest IElixir.Queries
 

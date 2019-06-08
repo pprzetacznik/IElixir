@@ -1,26 +1,21 @@
 language: elixir
 sudo: true
-elixir:
-  - 1.1.0
-  - 1.2.3
-otp_release:
-  - 17.5
-  - 18.1
-  - 18.2
 matrix:
   include:
-    - otp_release: 19.2
-      elixir: 1.4
-    - otp_release: 19.3
-      elixir: 1.4
     - otp_release: 19.3
       elixir: 1.5.1
     - otp_release: 20.0
       elixir: 1.5.1
+    - otp_release: 20.0
+      elixir: 1.5.2
     - otp_release: 20.2
       elixir: 1.6.0
+    - otp_release: 20.2
+      elixir: 1.6.6
+    - otp_release: 20.2
+      elixir: 1.7.4
 python:
-  - "2.7"
+  - "2.7.10"
 install:
   - sudo pip install virtualenv virtualenvwrapper
   - mkdir ~/.virtualenvs
@@ -29,10 +24,13 @@ install:
   - mkvirtualenv test_ielixir
   - workon test_ielixir
   - pip install pip --upgrade
+  - pip install tornado==4.5.3
   - pip install jupyter nose
   - mix local.rebar --force
 before_script:
-  - yes | mix deps.get
+  - mix local.hex --force
+  - mix local.rebar --force
+  - mix deps.get
   - mix deps.compile
   - git clone -b ielixir https://github.com/pprzetacznik/jupyter_kernel_test.git
   - MIX_ENV=dev ./install_script.sh
@@ -46,4 +44,3 @@ after_script:
   - MIX_ENV=docs mix docs
   - MIX_ENV=docs mix inch.report
   - MIX_ENV=test mix coveralls.travis
-  - MIX_ENV=dev mix coveralls.travis

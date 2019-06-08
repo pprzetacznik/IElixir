@@ -23,7 +23,7 @@ defmodule IElixir.Socket.Heartbeat do
   end
 
   def handle_info({:zmq, _, data, []}, sock) do
-    Logger.debug("Heartbeat ping received")
+    # Logger.debug("Heartbeat ping received")
     :erlzmq.send(sock, data)
     {:noreply, sock}
   end

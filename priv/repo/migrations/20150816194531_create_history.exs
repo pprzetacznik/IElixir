@@ -7,7 +7,7 @@ defmodule IElixir.Repo.Migrations.CreateHistory do
       add :output, :string
       add :session, :string
       add :line_number, :integer
-      timestamps
+      timestamps()
     end
   end
 end

@@ -3,7 +3,7 @@ IElixir
 
 Jupyter's kernel for Elixir
 
-[![Build Status](https://travis-ci.org/pprzetacznik/IElixir.svg)](https://travis-ci.org/pprzetacznik/IElixir)
+[![Build Status](https://travis-ci.org/pprzetacznik/IElixir.svg?branch=master)](https://travis-ci.org/pprzetacznik/IElixir)
 [![Inline docs](http://inch-ci.org/github/pprzetacznik/IElixir.svg?branch=master)](http://inch-ci.org/github/pprzetacznik/IElixir)
 [![Coverage Status](https://coveralls.io/repos/github/pprzetacznik/IElixir/badge.svg?branch=master)](https://coveralls.io/github/pprzetacznik/IElixir?branch=master)
 [![Join the chat at https://gitter.im/pprzetacznik/IElixir](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pprzetacznik/IElixir?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -13,6 +13,21 @@ Hex: https://hex.pm/packages/ielixir.
 Please see generated documentation for implementation details: http://hexdocs.pm/ielixir/.
 
 ## Getting Started
+
+### Table of contents
+
+* [Configure Jupyter](#configure-jupyter)
+* [Configure IElixir](#configure-ielixir)
+* [Install Kernel](#install-kernel)
+* [Use IElixir](#use-ielixir)
+* [Package management with Boyle](#package-management-with-boyle)
+* [Developement mode](#developement-mode)
+* [Generate documentation](#generate-documentation)
+* [Docker](#docker)
+* [Some issues](#some-issues)
+* [Contribution](#contribution)
+* [References](#references)
+* [License](#license)
 
 ### Configure Jupyter
 
@@ -43,13 +58,18 @@ $ mix test
 $ MIX_ENV=prod mix compile
 ```
 
+Running all tests, including longer ones that requires more time for evaluation:
+```Bash
+$ mix test --include skip
+```
+
 There may be also need to install rebar before IElixir installation, you can do this with command:
 ```Bash
 mix local.rebar --force
 ```
 After this you may need to add `~/.mix/` to your `$PATH` variable if you don't have `rebar` visible yet outside `~/.mix/` directory.
 
-#### Install Kernel
+### Install Kernel
 
 Simply run installation script to create file `kernel.json` file in `./resouces` directory and bind it to the jupyter:
 ```Bash
@@ -76,7 +96,57 @@ Go to [http://localhost:8888/](http://localhost:8888/) site (by default) in your
 
 Evaluate some commands in your new notebook:
 
-![IElixir basics](/resources/jupyter_ielixir_basics.png?raw=true)
+![IElixir basics](/resources/jupyter_ielixir_matrex_demo.png?raw=true)
+
+### Magic commands
+
+You can also use `ans` variable to access output of previous cell. Moreover, if you want to access any cell which you can do it using it's number by calling `out` map, eg. `out[1]`.
+
+### Package management with Boyle
+
+You can manage your packages in runtime with Boyle. Name of the package honours remarkable chemist, Robert Boyle. This package allows you to manage your Elixir virtual enviromnent without need of restarting erlang virtual machine. Boyle installs environment into `./envs/you_new_environment` directory and creates new mix project there with requested dependencies. It keeps takes care of fetching, compiling and loading/unloading modules from dependencies list of that environment.
+
+You can also use this environment as a separate mix project and run it interactively with `iex -S mix` from the environment directory.
+
+
+Creating new Elixir virtual environment
+```Elixir
+iex> Boyle.mk("my_new_environment")
+{:ok, ["my_new_environment"]}
+```
+
+List available virtual environments
+```Elixir
+iex> Boyle.list()
+{:ok, ["my_new_environment"]}
+```
+
+Activate virtual environment
+```Elixir
+iex> Boyle.activate("my_new_environment")
+:ok
+```
+
+Install new package in virtual environment and use new package
+```Elixir
+iex> Boyle.install({:number, "~> 0.5.7"})
+:ok
+iex> Number.Currency.number_to_currency(2034.46)
+"$2,034.46"
+```
+
+Deactivate virtual environment and unload packages installed within that virtual environment
+```Elixir
+iex> Boyle.deactivate()
+:ok
+iex> Number.Currency.number_to_currency(2034.46)
+** %UndefinedFunctionError{arity: 1, exports: nil, function: :number_to_currency, module: Number.Currency, reason: nil}
+```
+
+Additional resources:
+* [Notebook with Boyle examples](https://github.com/pprzetacznik/IElixir/blob/master/resources/boyle%20example.ipynb)
+* [Notebook with Boyle examples with usage of Matrex library](https://github.com/pprzetacznik/IElixir/blob/master/resources/boyle%20example%20-%20matrex%20installation%20and%20usage.ipynb)
+* [Notebook with inline image examples with usage of Gnuplot library](https://github.com/pprzetacznik/IElixir/blob/master/resources/inlineplot%20example%20-%20gnuplot.ipynb)
 
 ### Developement mode
 
@@ -90,16 +160,56 @@ If you want to see requests passing logs please use `dev` environment to see wha
 
 Run following command and see `doc` directory for generated documentation in HTML:
 ```Bash
-$ mix docs
+$ MIX_ENV=docs mix docs
 ```
 
+### Docker
+
+You can find docker image at [pprzetacznik/ielixir](https://hub.docker.com/r/pprzetacznik/ielixir).
+
+Running jupyter notebook:
+```
+$ docker run -p 8888:8888 --hostname localhost -v /my/workspace:/home/jovyan/work pprzetacznik/ielixir
+```
+
+Docker image is based on following images:
+* [jupyter/base-notebook image](https://hub.docker.com/r/jupyter/base-notebook/) - this is image use as a base for ielixir image,
+* [elixir image](https://hub.docker.com/_/elixir/) - some installation parts were taken from dockerfile used for this image,
+* [pprzetacznik/ielixir-requirements image](https://hub.docker.com/r/pprzetacznik/ielixir-requirements/) - this image resolves all dependencies for jupyter and elixir so only IElixir installation is left.
+
+If you would like to make some changes to the images you can find dockerfiles in:
+* docker/ielixir - for dockerfile source of pprzetacznik/ielixir image,
+* docker/ielixir-requirements - for dockerfile source of pprzetacznik/ielixir-requirements image.
+
+#### Other docker images worth seeing
+
+* [Dockerfile for smaller image based on alpine](https://github.com/cprieto/jupyter-images/blob/master/elixir/Dockerfile)
+
 ### Some issues
+
+#### Problem with rebar
+
+If you see following error after running `install_script.sh` script then you should check if you have properly installed and visible rebar in `mix` and in your local environment.
+```
+make: rebar: Command not found
+make: *** [compile] Error 127
+** (Mix) Could not compile dependency :erlzmq, "make" command failed. You can recompile this dependency with "mix deps.compile erlzmq", update it with "mix deps.update erlzmq" or clean it with "mix deps.clean erlzmq"
+```
+
+#### Erlang configuration
 
 There may be need to run IElixir kernel with specific erlang attribute which can be turned on by setting variable:
 ```Bash
 ELIXIR_ERL_OPTIONS="-smp enable"
 ```
 This option has been included inside `install_script.sh` and `start_script.sh` scripts.
+
+### Contribution
+
+* Try to write some description of the feature or bug fix you're working in pull request's description and concise description of new modules or functions in moduledoc annotations,
+* Please follow Elixir style guides to keep style clear, consider Elixir and Phoenix source code as the style ground truth,
+* Keep as little comments as you can, comments tend to expire so try to use doctests instead to show how your code works,
+* Write some unit tests for your code but don't try to test private functions, class tests are bad and units tests are good - https://blog.arkency.com/2014/09/unit-tests-vs-class-tests/
 
 ### References
 
@@ -108,6 +218,7 @@ Some useful articles:
 * [IElixir Notebook in Docker](https://mattvonrocketstein.github.io/heredoc/ielixir-notebook-in-docker.html)
 * [Hydrogen plugin for Atom](https://atom.io/packages/hydrogen)
 * [Installation guide](http://blog.jonharrington.org/elixir-and-jupyter/)
+* [Jupyter Notebooks with Elixir and RDF](https://medium.com/@tonyhammond/jupyter-notebooks-with-elixir-and-rdf-598689c2dad3)
 
 I was inspired by following codes and articles:
 
@@ -119,16 +230,6 @@ I was inspired by following codes and articles:
 
 ### License
 
-Copyright 2015 Piotr Przetacznik
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+Copyright 2015 Piotr Przetacznik.
+IElixir source code is released under Apache 2 License.
+Check [NOTICE](NOTICE) and [LICENSE](LICENSE) files for more information.
