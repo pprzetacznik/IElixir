@@ -1,7 +1,7 @@
 defmodule IElixir.Mixfile do
   use Mix.Project
 
-  @version "0.9.16"
+  @version "0.9.17"
 
   def project do
     [app: :ielixir,
@@ -34,15 +34,12 @@ defmodule IElixir.Mixfile do
   defp deps do
     [{:erlzmq, "~> 3.0"},
      {:poison, "~> 1.0"},
-     {:uuid, github: "okeuday/uuid"},
-
-     {:decimal, "~> 1.7",override: true}, 
+     {:uuid_erl, "~> 1.7.5", app: false},
      {:sqlite_ecto, "~> 1.1.0"},
 
-
      # Docs dependencies
-     {:earmark, "~> 0.1", only: :docs},
-     {:ex_doc, "~> 0.7", only: :docs},
+     {:earmark, "~> 1.3.2", only: :docs},
+     {:ex_doc, "~> 0.20", only: :docs},
      {:inch_ex, "~> 0.5", only: :docs},
 
      # Test dependencies
@@ -60,6 +57,8 @@ defmodule IElixir.Mixfile do
              "install_script.sh",
              "start_script.sh",
              ".travis.yml"],
+     exclude_patterns: ["resources/.ipynb_checkpoints",
+                        "resources/*.ex"],
      maintainers: ["Piotr Przetacznik"],
      licenses: ["Apache 2.0"],
      links: %{"GitHub" => "https://github.com/pprzetacznik/ielixir",
