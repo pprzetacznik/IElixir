@@ -28,14 +28,14 @@ defmodule IElixir.Mixfile do
 
   def application do
     [mod: {IElixir, []},
-     applications: [:logger, :iex, :sqlite_ecto, :ecto, :erlzmq, :poison, :uuid]]
+     applications: [:logger, :iex, :ecto, :erlzmq, :poison, :uuid]]
   end
 
   defp deps do
     [{:erlzmq, "~> 3.0"},
-     {:poison, "~> 1.0"},
+     {:poison, "~> 3.0"},
      {:uuid_erl, "~> 1.7.5", app: false},
-     {:sqlite_ecto, "~> 1.1.0"},
+     {:sqlite_ecto2, "~> 2.4.0"},
 
      # Docs dependencies
      {:earmark, "~> 1.3.2", only: :docs},

@@ -1,5 +1,5 @@
 defmodule IElixir.HistoryEntry do
-  use Ecto.Model
+  use Ecto.Schema
 
   schema "history" do
     field :input

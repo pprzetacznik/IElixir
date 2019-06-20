@@ -58,6 +58,8 @@ $ mix test
 $ MIX_ENV=prod mix compile
 ```
 
+If you're meeting problem with missing zeromq header files then you should install it. [More](#zeromq-header-files-missing).
+
 Running all tests, including longer ones that requires more time for evaluation:
 ```Bash
 $ mix test --include skip
@@ -187,7 +189,7 @@ If you would like to make some changes to the images you can find dockerfiles in
 
 ### Some issues
 
-#### ZeroMQ header files missing
+#### ZeroMQ header files missing
 
 ```
 ===> /home/travis/build/bryanhuntesl/IElixir/deps/erlzmq/c_src/erlzmq_nif.c:24:17: fatal error: zmq.h: No such file or directory
@@ -196,8 +198,9 @@ If you would like to make some changes to the images you can find dockerfiles in
 compilation terminated.
 ```
 
-Install ZeroMQ development package for you operating system. 
+Install ZeroMQ development package for you operating system.
 
+* On RHEL/Centos/Fedora `dnf install zeromq-devel`
 * On OSX `brew install zmq`
 * On Ubuntu `apt-get install libzmq3-dev`
 * On Alpine Linux `apk add zeromq-dev`
