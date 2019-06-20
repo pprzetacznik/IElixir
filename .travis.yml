@@ -21,6 +21,7 @@ addons:
   apt:
     packages:
       - libzmq3-dev
+      - libsqlite3-dev
 
 install:
   - sudo pip install virtualenv virtualenvwrapper
