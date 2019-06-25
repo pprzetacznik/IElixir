@@ -6,7 +6,7 @@ defmodule IElixir.BoyleTest do
   setup_all do
     {:ok, _} = Boyle.mk("boyle_test_env")
     :ok = Boyle.activate("boyle_test_env")
-    :ok = Boyle.install({:decimal, "~> 1.5.0"})
+    :ok = Boyle.install({:decimal, "~> 1.7.0", app: false})
     :ok = Boyle.deactivate()
     {:ok, _} = Boyle.mk("test_env_for_removal")
 

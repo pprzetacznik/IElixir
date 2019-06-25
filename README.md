@@ -58,6 +58,8 @@ $ mix test
 $ MIX_ENV=prod mix compile
 ```
 
+If you're meeting problem with missing zeromq header files then you should install it. [More](#zeromq-header-files-missing).
+
 Running all tests, including longer ones that requires more time for evaluation:
 ```Bash
 $ mix test --include skip
@@ -187,14 +189,21 @@ If you would like to make some changes to the images you can find dockerfiles in
 
 ### Some issues
 
-#### Problem with rebar
+#### ZeroMQ header files missing
 
-If you see following error after running `install_script.sh` script then you should check if you have properly installed and visible rebar in `mix` and in your local environment.
 ```
-make: rebar: Command not found
-make: *** [compile] Error 127
-** (Mix) Could not compile dependency :erlzmq, "make" command failed. You can recompile this dependency with "mix deps.compile erlzmq", update it with "mix deps.update erlzmq" or clean it with "mix deps.clean erlzmq"
+===> /home/travis/build/bryanhuntesl/IElixir/deps/erlzmq/c_src/erlzmq_nif.c:24:17: fatal error: zmq.h: No such file or directory
+ #include "zmq.h"
+                 ^
+compilation terminated.
 ```
+
+Install ZeroMQ development package for you operating system.
+
+* On RHEL/Centos/Fedora `dnf install zeromq-devel`
+* On OSX `brew install zmq`
+* On Ubuntu `apt-get install libzmq3-dev`
+* On Alpine Linux `apk add zeromq-dev`
 
 #### Erlang configuration
 

@@ -18,6 +18,13 @@ matrix:
       elixir: 1.8.2
 python:
   - "2.7.10"
+
+addons:
+  apt:
+    packages:
+      - libzmq3-dev
+      - libsqlite3-dev
+
 install:
   - sudo pip install virtualenv virtualenvwrapper
   - mkdir ~/.virtualenvs
