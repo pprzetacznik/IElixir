@@ -58,8 +58,8 @@ defmodule Boyle do
     File.mkdir_p(env_path)
     create_mix_exs_file(env_path)
     create_deps_lock_file(env_path)
-    activate(name)
-    deactivate()
+    :ok = activate(name)
+    :ok = deactivate()
     list()
   end
 
@@ -75,7 +75,7 @@ defmodule Boyle do
   """
   def rm(name) do
     if active_env_name() == name do
-      deactivate()
+      :ok = deactivate()
     end
     result = remove_environment(name)
     {_, list} = list()
@@ -93,8 +93,8 @@ defmodule Boyle do
       {%{decimal:
         {:hex,
           :decimal,
-          "1.5.0",
-          "b0433a36d0e2430e3d50291b1c65f53c37d56f83665b43d79963684865beab68",
+          "1.7.0",
+          "30d6b52c88541f9a66637359ddf85016df9eb266170d53105f02e4a67e00c5aa",
           [:mix],
           [],
           "hexpm"}},
@@ -194,8 +194,8 @@ defmodule Boyle do
       end)
 
       env_name = active_env_name()
-      deactivate()
-      activate(env_name)
+      :ok = deactivate()
+      :ok = activate(env_name)
     else
       :ok
     end
@@ -224,7 +224,7 @@ defmodule Boyle do
   end
 
   @doc """
-  Get state of Boyle module, some internal paths userful for loaded modules management.
+  Get state of Boyle module, some internal paths useful for loaded modules management.
   """
   def state do
     GenServer.call(Boyle, :get_state)
@@ -247,6 +247,7 @@ defmodule Boyle do
       Mix.Task.run("deps.get")
       Mix.Tasks.Deps.Compile.run([])
     end)
+    :ok
   end
 
   @doc """
