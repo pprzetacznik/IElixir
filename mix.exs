@@ -1,7 +1,7 @@
 defmodule IElixir.Mixfile do
   use Mix.Project
 
-  @version "0.9.17"
+  @version "0.9.18"
 
   def project do
     [app: :ielixir,
@@ -58,7 +58,7 @@ defmodule IElixir.Mixfile do
              "start_script.sh",
              ".travis.yml"],
      exclude_patterns: ["resources/.ipynb_checkpoints",
-                        "resources/*.ex"],
+                        "resources/macro.ex"],
      maintainers: ["Piotr Przetacznik"],
      licenses: ["Apache 2.0"],
      links: %{"GitHub" => "https://github.com/pprzetacznik/ielixir",
