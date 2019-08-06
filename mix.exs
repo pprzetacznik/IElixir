@@ -28,19 +28,23 @@ defmodule IElixir.Mixfile do
 
   def application do
     [mod: {IElixir, []},
-     applications: [:logger, :iex, :ecto, :erlzmq, :poison, :uuid]]
+     extra_applications: [:logger, :runtime_tools, :logger, :iex, :ecto, :erlzmq, :poison, :uuid]]
   end
 
   defp deps do
     [{:erlzmq, "~> 3.0"},
      {:poison, "~> 3.0"},
      {:uuid_erl, "~> 1.7.5", app: false},
-     {:sqlite_ecto2, "~> 2.4.0"},
+     {:ecto_sql, "~> 3.0"},
+     {:postgrex, ">= 0.0.0"},
+
+     #Rukh as a dependency:
+     #{:rukh, path: "/home/harun/Lana-Labs/Backend/lana-backend-scala/rukh" , runtime: false},
 
      # Docs dependencies
      {:earmark, "~> 1.3.2", only: :docs},
      {:ex_doc, "~> 0.20", only: :docs},
-     {:inch_ex, "~> 0.5", only: :docs},
+     {:inch_ex, "~> 2.0", only: :docs},
 
      # Test dependencies
      {:excoveralls, "~> 0.8", only: :test}]

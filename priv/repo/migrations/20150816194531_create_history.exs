@@ -3,8 +3,8 @@ defmodule IElixir.Repo.Migrations.CreateHistory do
 
   def change do
     create table(:history) do
-      add :input, :string
-      add :output, :string
+      add :input, :text
+      add :output, :text
       add :session, :string
       add :line_number, :integer
       timestamps()

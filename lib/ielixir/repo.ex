@@ -1,6 +1,8 @@
 defmodule IElixir.Repo do
   use Ecto.Repo,
     otp_app: :ielixir,
-    adapter: Sqlite.Ecto2
+    adapter: Ecto.Adapters.Postgres
+
+    @dialyzer {:nowarn_function, rollback: 1}
 end
 

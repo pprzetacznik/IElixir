@@ -6,6 +6,6 @@ config :logger,
 config :ielixir, connection_file: "test/test_connection_file"
 
 config :ielixir, IElixir.Repo,
-  adapter: Sqlite.Ecto,
-  database: "test_db.sqlite3"
+  adapter: Ecto.Adapters.Postgres,
+  database: "ielixir"
 
