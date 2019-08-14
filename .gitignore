@@ -9,3 +9,7 @@ erl_crash.dump
 test_db.sqlite3
 .DS_store
 resources/ielixir/kernel.json
+
+.elixir_ls
+*.sqlite3
+envs

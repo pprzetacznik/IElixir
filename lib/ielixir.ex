@@ -11,7 +11,8 @@ defmodule IElixir do
     conn_info = Application.get_env(:ielixir, :connection_file)
                 |> Utils.parse_connection_file
     {:ok, ctx} = :erlzmq.context()
-    IElixir.Supervisor.start_link([conn_info: conn_info, ctx: ctx])
+    on_start = IElixir.Supervisor.start_link([conn_info: conn_info, ctx: ctx])
+    File.cd!(Application.get_env(:ielixir, :working_directory, File.cwd!))
+    on_start
   end
 end
-
