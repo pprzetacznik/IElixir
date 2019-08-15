@@ -40,4 +40,3 @@ defmodule IElixir.Utils do
     sock
   end
 end
-

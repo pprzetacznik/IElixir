@@ -10,4 +10,3 @@ config :ielixir,
 config :ielixir, IElixir.Repo,
   adapter: Sqlite.Ecto,
   database: "prod_db.sqlite3"
-
