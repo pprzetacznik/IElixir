@@ -15,8 +15,9 @@ defmodule IElixir do
     freeze_db_config()
 
     {:ok, ctx} = :erlzmq.context()
+    ielixir_path  = File.cwd!()
     File.cd!(Application.get_env(:ielixir, :working_directory, File.cwd!()))
-    IElixir.Supervisor.start_link(conn_info: conn_info, ctx: ctx)
+    IElixir.Supervisor.start_link(conn_info: conn_info, ctx: ctx, starting_path: ielixir_path)
   end
 
   # SQLite relative pathes are resolved before change for an working directory
