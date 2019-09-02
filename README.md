@@ -228,6 +228,7 @@ Some useful articles:
 * [Hydrogen plugin for Atom](https://atom.io/packages/hydrogen)
 * [Installation guide](http://blog.jonharrington.org/elixir-and-jupyter/)
 * [Jupyter Notebooks with Elixir and RDF](https://medium.com/@tonyhammond/jupyter-notebooks-with-elixir-and-rdf-598689c2dad3)
+* [Making Graphs using Elixir inside Jupyter Notebook](http://aipotato.com/2019/04/making-graphs-using-elixir-inside-jupyter-notebook/)
 
 I was inspired by following codes and articles:
 
