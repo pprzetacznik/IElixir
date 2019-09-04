@@ -11,5 +11,6 @@ then
   export MIX_ENV=prod
 fi
 IELIXIR_PATH=$(cd `dirname "$0"` && pwd)/
+WORKING_DIRECTORY=$(pwd)
 cd $IELIXIR_PATH
-ELIXIR_ERL_OPTIONS="-smp enable" CONNECTION_FILE=$1 mix run --no-halt
+ELIXIR_ERL_OPTIONS="-smp enable" CONNECTION_FILE=$1 WORKING_DIRECTORY=$WORKING_DIRECTORY mix run --no-halt

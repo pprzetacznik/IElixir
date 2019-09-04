@@ -3,4 +3,3 @@ defmodule IElixir.Repo do
     otp_app: :ielixir,
     adapter: Sqlite.Ecto2
 end
-

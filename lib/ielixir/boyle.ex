@@ -16,12 +16,13 @@ defmodule Boyle do
     GenServer.start_link(__MODULE__, opts, name: Boyle)
   end
 
-  def init(_opts) do
-    environment_dir_path = Path.join(File.cwd!(), "envs")
+  def init(opts) do
+    environment_dir_path = Path.join(opts[:starting_path], "envs")
     File.mkdir_p(environment_dir_path)
     {:ok, %{active_environment: nil,
             environment_dir_path: environment_dir_path,
             environment_path: nil,
+            starting_path: opts[:starting_path],
             initial_paths: :code.get_path(),
             initial_modules: :code.all_loaded()}}
   end
@@ -137,37 +138,39 @@ defmodule Boyle do
 
   """
   def deactivate do
-    if active_env_name() do
-      Mix.Project.pop()
-      Mix.Task.clear()
-      # Mix.Shell.Process.flush()
-      Mix.ProjectStack.clear_cache()
-      # Mix.ProjectStack.clear_stack()
-      environment_path = environment_path()
-      state = state()
+    File.cd!(state()[:starting_path], fn ->
+      if active_env_name() do
+        Mix.Project.pop()
+        Mix.Task.clear()
+        # Mix.Shell.Process.flush()
+        Mix.ProjectStack.clear_cache()
+        # Mix.ProjectStack.clear_stack()
+        environment_path = environment_path()
+        state = state()
 
-      :code.get_path |> Enum.map(fn path ->
-        if path not in state.initial_paths and
-          String.contains?(to_string(path), environment_path) do
+        :code.get_path |> Enum.map(fn path ->
+          if path not in state.initial_paths and
+            String.contains?(to_string(path), environment_path) do
 
-          Code.delete_path(path)
-          Logger.debug("Removed path #{to_string(path)}")
-        end
-      end)
-      :code.all_loaded |> Enum.map(fn {module, path} ->
-        if {module, path} not in state.initial_modules and
-          (String.contains?(to_string(path), environment_path) or "" == to_string(path)) and
-          not String.contains?(to_string(module), ["Elixir.Boyle", "Elixir.IElixir"]) do
+            Code.delete_path(path)
+            Logger.debug("Removed path #{to_string(path)}")
+          end
+        end)
+        :code.all_loaded |> Enum.map(fn {module, path} ->
+          if {module, path} not in state.initial_modules and
+            (String.contains?(to_string(path), environment_path) or "" == to_string(path)) and
+            not String.contains?(to_string(module), ["Elixir.Boyle", "Elixir.IElixir"]) do
 
-          purge([module])
-          Logger.debug("Purged module #{to_string(module)} : #{to_string(path)}")
-        end
-      end)
-      Code.load_file("mix.exs")
-      GenServer.call(Boyle, {:activate, nil})
-    else
-      :ok
-    end
+            purge([module])
+            Logger.debug("Purged module #{to_string(module)} : #{to_string(path)}")
+          end
+        end)
+        Code.load_file("mix.exs")
+        GenServer.call(Boyle, {:activate, nil})
+      else
+        :ok
+      end
+    end)
   end
 
   @doc """
@@ -237,17 +240,21 @@ defmodule Boyle do
     reinstall(environment_path())
   end
   defp reinstall(env_path) do
-    Mix.start()
-    Mix.Project.pop()
+    File.cd!(state()[:starting_path], fn ->
+      :code.purge(IElixir.Mixfile)
+      :code.delete(IElixir.Mixfile)
+      Mix.start()
+      Mix.Project.pop()
 
-    File.cd!(env_path, fn ->
-      Code.load_file("mix.exs")
-      # Mix.Project.push(CustomEnvironment)
-      # IO.inspect(CustomEnvironment.project())
-      Mix.Task.run("deps.get")
-      Mix.Tasks.Deps.Compile.run([])
+      File.cd!(env_path, fn ->
+        Code.load_file("mix.exs")
+        # Mix.Project.push(CustomEnvironment)
+        # IO.inspect(CustomEnvironment.project())
+        Mix.Task.run("deps.get")
+        Mix.Tasks.Deps.Compile.run([])
+      end)
+      :ok
     end)
-    :ok
   end
 
   @doc """
