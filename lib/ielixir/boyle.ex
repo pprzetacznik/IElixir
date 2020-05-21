@@ -143,7 +143,7 @@ defmodule Boyle do
         Mix.Project.pop()
         Mix.Task.clear()
         # Mix.Shell.Process.flush()
-        Mix.ProjectStack.clear_cache()
+        Mix.State.clear_cache()
         # Mix.ProjectStack.clear_stack()
         environment_path = environment_path()
         state = state()

@@ -163,7 +163,7 @@ defmodule IElixir.Sandbox do
     try do
       {{result, binding, env, scope}, stdout, stderr} = CaptureIO.capture do
         {:ok, quoted} = Code.string_to_quoted(request["code"])
-        :elixir.eval_forms(quoted, state.binding, state.env, state.scope)
+        eval_forms(quoted, state.binding, state.env, state.scope)
       end
       binding = case result do
          :"do not show this result in output" ->
@@ -217,7 +217,7 @@ defmodule IElixir.Sandbox do
   end
 
   defp prepare_clear_state() do
-    {_, binding, env, scope} = :elixir.eval('import IEx.Helpers', [])
+    {_, binding, env, scope} = eval('import IEx.Helpers', [])
     %{execution_count: 1, binding: binding, env: env, scope: scope}
   end
 
@@ -232,5 +232,27 @@ defmodule IElixir.Sandbox do
   end
   defp maybe_inspect(result) do
     inspect(result)
+  end
+
+  defp eval(string, binding) do
+    eval(string, binding, [])
+  end
+
+  defp eval(string, binding, opts) when is_list(opts) do
+    eval(string, binding, :elixir.env_for_eval(opts))
+  end
+  defp eval(string, binding, %{line: line, file: file} = e) when
+      is_list(string) and is_list(binding) and is_integer(line) and is_binary(file) do
+    forms = :elixir.string_to_quoted!(string, line, file, [])
+    eval_forms(forms, binding, e)
+  end
+
+  defp eval_forms(forms, binding, e, scope) do
+    :elixir.eval_forms(forms, binding, e)
+    |> Tuple.append(scope)
+  end
+  defp eval_forms(forms, binding, e) do
+    :elixir.eval_forms(forms, binding, e)
+    |> Tuple.append(:elixir_env.env_to_scope(e))
   end
 end
