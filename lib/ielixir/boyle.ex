@@ -98,7 +98,9 @@ defmodule Boyle do
           "30d6b52c88541f9a66637359ddf85016df9eb266170d53105f02e4a67e00c5aa",
           [:mix],
           [],
-          "hexpm"}},
+          "hexpm",
+          "771ea78576e5fa505ad58a834f57915c7f5f9df11c87a598a01fdf6065ccfb5d"
+        }},
         []}
       iex> Boyle.deactivate()
       :ok
