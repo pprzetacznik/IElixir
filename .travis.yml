@@ -14,12 +14,10 @@ addons:
       - libsqlite3-dev
 
 install:
-  - sudo pip install virtualenv virtualenvwrapper
+  - sudo pip install virtualenv
+  - virtualenv ~/test_ielixir
+  - source ~/test_ielixir/bin/activate
   - mkdir ~/.virtualenvs
-  - export WORKON_HOME=~/.virtualenvs
-  - source /usr/local/bin/virtualenvwrapper.sh
-  - mkvirtualenv test_ielixir
-  - workon test_ielixir
   - pip install pip --upgrade
   - pip install tornado==4.5.3
   - pip install jupyter nose
