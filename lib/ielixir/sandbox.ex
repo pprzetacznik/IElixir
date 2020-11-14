@@ -243,7 +243,7 @@ defmodule IElixir.Sandbox do
   end
   defp eval(string, binding, %{line: line, file: file} = e) when
       is_list(string) and is_list(binding) and is_integer(line) and is_binary(file) do
-    forms = :elixir.string_to_quoted!(string, line, 1, file, [])
+    forms = Code.string_to_quoted!(string, file: file, line: line)
     eval_forms(forms, binding, e)
   end
 
