@@ -4,8 +4,12 @@ matrix:
   include:
     - otp_release: 23.0
       elixir: 1.10.3
+    - otp_release: 23.1.2
+      elixir: 1.11.2
 python:
   - "2.7.10"
+  - "3.6"
+  - "3.8"
 
 addons:
   apt:
