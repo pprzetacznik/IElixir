@@ -38,11 +38,20 @@ jobs:
         path: deps
         key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
         restore-keys: ${{ runner.os }}-mix-
-    - name: Install dependencies
-      run: mix deps.get
+    - name: Install elixir dependencies
+      run: |
+        mix deps.get
+        mix deps.compile
+        MIX_ENV=dev ./install_script.sh
     - name: Run tests
       run: |
-        MIX_ENV=dev ./install_script.sh
         mix test
-        cd jupyter_kernel_test
+        pushd jupyter_kernel_test
         MIX_ENV=dev python test_ipython.py
+        popd
+    - name: Generate documentation
+      run: |
+        MIX_ENV=docs mix deps.get
+        MIX_ENV=docs mix docs
+        MIX_ENV=docs mix inch.report
+
