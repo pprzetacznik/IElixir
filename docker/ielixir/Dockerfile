@@ -21,7 +21,7 @@ RUN set -xe \
   && cd ielixir \
   && ls -alh \
   && mix local.hex --force \
-  && mix local.rebar --forcea \
+  && mix local.rebar --force \
   && mix deps.get \
   && mix deps.compile \
   && ./install_script.sh \
