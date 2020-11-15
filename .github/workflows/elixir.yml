@@ -14,8 +14,8 @@ jobs:
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04]
         elixir-version: ['1.10.3', '1.11.2']
-        otp-version: ['22.3', '23.0', '23.1']
-        python-version: ['2.7', '3.6', '3.8']
+        otp-version: ['22.3', '23.1']
+        python-version: ['2.7', '3.8']
     steps:
     - uses: actions/checkout@v2
     - name: Install prerequisites
@@ -42,7 +42,7 @@ jobs:
         path: deps
         key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
         restore-keys: ${{ runner.os }}-mix-
-    - name: Install elixir dependencies
+    - name: Compile IElixir and install
       run: |
         mix deps.get
         mix deps.compile
@@ -53,10 +53,24 @@ jobs:
         pushd jupyter_kernel_test
         MIX_ENV=dev python test_ipython.py
         popd
+
+  docs:
+    name: Documentation and coverage reports
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install prerequisites
+      run: |
+        sudo apt install -y libzmq3-dev libsqlite3-dev libssl-dev
+    - name: Set up Elixir
+      uses: actions/setup-elixir@v1
+      with:
+        elixir-version: '1.11.2'
+        otp-version: '23.1'
     - name: Generate documentation
       run: |
         MIX_ENV=docs mix deps.get
         MIX_ENV=docs mix compile
         MIX_ENV=docs mix docs
         MIX_ENV=docs mix inch.report
-
+        MIX_ENV=test mix coveralls.github

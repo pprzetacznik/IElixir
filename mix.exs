@@ -43,7 +43,7 @@ defmodule IElixir.Mixfile do
      {:inch_ex, "~> 2.0.0", only: :docs},
 
      # Test dependencies
-     {:excoveralls, "~> 0.8", only: :test}]
+     {:excoveralls, "~> 0.13.3", only: :test}]
   end
 
   defp package do
