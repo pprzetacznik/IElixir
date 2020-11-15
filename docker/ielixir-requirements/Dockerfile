@@ -10,7 +10,7 @@ ENV PATH=$ERL_TOP/target/bin:$ELIXIR_TOP/bin:$PATH \
     ELIXIR_VERSION=1.11.2
 
 RUN set -xe \
-  && apt-get update
+  && apt-get update \
   && apt install -y --no-install-recommends \
     git \
     curl \
