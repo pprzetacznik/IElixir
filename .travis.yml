@@ -15,7 +15,6 @@ install:
   - pip install --user virtualenv
   - virtualenv ~/test_ielixir
   - source ~/test_ielixir/bin/activate
-  - mkdir ~/.virtualenvs
   - pip install pip --upgrade
   - pip install tornado==4.5.3
   - pip install jupyter nose
