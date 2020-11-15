@@ -8,7 +8,7 @@ defmodule IElixir.Mixfile do
      version: @version,
      source_url: "https://github.com/pprzetacznik/IElixir",
      name: "IElixir",
-     elixir: ">= 1.5.0",
+     elixir: ">= 1.10.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      consolidate_protocols: false,
