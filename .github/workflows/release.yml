@@ -1,0 +1,43 @@
+name: IElixir Release
+
+on:
+  push:
+    branches: [ master ]
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Documentation and coverage reports
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install prerequisites
+      run: |
+        sudo apt install -y libzmq3-dev libsqlite3-dev libssl-dev
+    - name: Set up Elixir
+      uses: actions/setup-elixir@v1
+      with:
+        elixir-version: '1.11.2'
+        otp-version: '23.1'
+    - name: Generate documentation
+      run: |
+        mix hex.config api_key $HEX_API_KEY
+        MIX_ENV=docs mix hex.publish package
+        MIX_ENV=docs mix hex.publish docs
+    - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this Release
+            - ${{ github.event.head_commit.message }}
+          draft: true
+          prerelease: false
