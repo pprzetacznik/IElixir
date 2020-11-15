@@ -6,7 +6,7 @@ USER root
 
 RUN apt install -y \
     libzmq3-dev \
-    libsqlite3-dev \
+    libsqlite3-dev
 
 RUN set -xe \
   && curl -s https://api.github.com/repos/pprzetacznik/IElixir/releases/latest | grep "tarball_url" | sed -n -e 's/.*tarball_url": "\(.*\)".*/\1/p' | xargs -t curl -fSL -o ielixir.tar.gz \
