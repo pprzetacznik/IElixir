@@ -4,6 +4,9 @@ elixir:
   - "1.10.3"
   - "1.11.2"
 otp_release: 23.0
+env:
+  - PYTHON_VERSION=`which python2.7`
+  - PYTHON_VERSION=`which python3.6`
 
 addons:
   apt:
@@ -13,7 +16,7 @@ addons:
 
 install:
   - pip install --user virtualenv
-  - virtualenv ~/test_ielixir
+  - virtualenv -p $PYTHON_VERSION ~/test_ielixir
   - source ~/test_ielixir/bin/activate
   - pip install pip --upgrade
   - pip install tornado==4.5.3
