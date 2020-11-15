@@ -30,7 +30,7 @@ jobs:
         MIX_ENV=docs mix inch.report
         MIX_ENV=test mix coveralls.github
         mix hex.config api_key $HEX_API_KEY
-        mix hex.publish package
+        mix hex.publish package --yes
         MIX_ENV=docs mix hex.publish docs
     - name: Create Release
       id: create_release
