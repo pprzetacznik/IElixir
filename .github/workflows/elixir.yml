@@ -23,6 +23,15 @@ jobs:
       with:
         elixir-version: ${{ matrix.elixir-version }}
         otp-version: ${{ matrix.otp-version }}
+    - name: Install prerequisites
+      run: |
+        sudo apt install -y libzmq3-dev libsqlite3-dev
+    - name: Install python packages
+      run: |
+        pip install pip --upgrade
+        pip install tornado==4.5.3
+        pip install jupyter nose
+        git clone -b ielixir https://github.com/pprzetacznik/jupyter_kernel_test.git
     - name: Restore dependencies cache
       uses: actions/cache@v2
       with:
@@ -32,4 +41,8 @@ jobs:
     - name: Install dependencies
       run: mix deps.get
     - name: Run tests
-      run: mix test
+      run: |
+        MIX_ENV=dev ./install_script.sh
+        mix test
+        cd jupyter_kernel_test
+        MIX_ENV=dev python test_ipython.py
