@@ -21,7 +21,6 @@ install:
   - pip install pip --upgrade
   - pip install tornado==4.5.3
   - pip install jupyter nose
-  - mix local.rebar --force
 before_script:
   - mix local.hex --force
   - mix local.rebar --force
