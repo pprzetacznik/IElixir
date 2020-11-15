@@ -1,17 +1,12 @@
 FROM pprzetacznik/ielixir-requirements
 
+ENV WORK_DIR=/opt
+
 USER root
 
-RUN set -ex; \
-		apt-get update; \
-		apt-get install -y --no-install-recommends \
-# Install Blas
-    libblas-dev \
-    liblapack-dev \
-    libatlas-base-dev \
-	&& rm -rf /var/lib/apt/lists/*
-
-USER $NB_UID
+RUN apt install -y \
+    libzmq3-dev \
+    libsqlite3-dev \
 
 RUN set -xe \
   && curl -s https://api.github.com/repos/pprzetacznik/IElixir/releases/latest | grep "tarball_url" | sed -n -e 's/.*tarball_url": "\(.*\)".*/\1/p' | xargs -t curl -fSL -o ielixir.tar.gz \
@@ -26,5 +21,7 @@ RUN set -xe \
   && mix deps.compile \
   && ./install_script.sh \
   && conda install --quiet --yes 'jupyter_console'
+
+USER $NB_UID
 
 CMD ["start-notebook.sh"]
