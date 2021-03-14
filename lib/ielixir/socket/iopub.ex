@@ -84,6 +84,7 @@ defmodule IElixir.Socket.IOPub do
       execution_count: execution_count,
       code: message.content["code"]
     }
+
     Message.send_message(sock, message, "execute_input", content)
     {:noreply, sock}
   end
@@ -93,6 +94,7 @@ defmodule IElixir.Socket.IOPub do
       name: stream_name,
       text: text
     }
+
     Message.send_message(sock, message, "stream", content)
     {:noreply, sock}
   end
@@ -100,45 +102,58 @@ defmodule IElixir.Socket.IOPub do
   def handle_cast({:send_html, message, text}, sock) do
     content = %{
       data: %{
-        "text/html" => text,
-      }
+        "text/html" => text
+      },
+      metadata: %{}
     }
+
+    Logger.warn(content)
+
     Message.send_message(sock, message, "display_data", content)
     {:noreply, sock}
   end
-  def handle_cast({:send_image, message, execution_count, {:file,kw}}, sock) do
+
+  def handle_cast({:send_image, message, execution_count, {:file, kw}}, sock) do
     try do
-      raw64 = File.read!(kw[:src]) |> Base.encode64
+      raw64 = File.read!(kw[:src]) |> Base.encode64()
+
       content = %{
         data: %{
-          "image/png" => raw64,
-        },
+          "image/png" => raw64
+        }
       }
+
       Message.send_message(sock, message, "display_data", content)
       {:noreply, sock}
     rescue
       error ->
-        traceback = System.stacktrace() |> Enum.map(&"#{inspect &1}")
-        handle_cast({:send_error,message,execution_count,IO.inspect(error),traceback}, sock)
+        traceback = __STACKTRACE__ |> Enum.map(&"#{inspect(&1)}")
+        handle_cast({:send_error, message, execution_count, IO.inspect(error), traceback}, sock)
     end
   end
-  def handle_cast({:send_image, message, _execution_count, {:raw,raw64}}, sock) do
+
+  def handle_cast({:send_image, message, _execution_count, {:raw, raw64}}, sock) do
     content = %{
       data: %{
-        "image/png" => raw64,
-      },
+        "image/png" => raw64
+      }
     }
+
     Message.send_message(sock, message, "display_data", content)
     {:noreply, sock}
   end
 
   def handle_cast({:send_execute_result, message, {text, execution_count}}, sock) do
+    data =
+      case Floki.parse_fragment(text) do
+        {:ok, [_v]} -> %{"text/plain": text}
+        _ -> %{"text/html": text}
+      end
+
     content = %{
-      data: %{
-        "text/plain": text
-      },
+      data: data,
       metadata: %{},
-      execution_count: execution_count,
+      execution_count: execution_count
     }
 
     Message.send_message(sock, message, "execute_result", content)
@@ -156,10 +171,10 @@ defmodule IElixir.Socket.IOPub do
       execution_count: execution_count,
       ename: exception_name,
       evalue: "1",
-      traceback: traceback,
+      traceback: traceback
     }
+
     Message.send_message(sock, message, "error", content)
     {:noreply, sock}
   end
-
 end

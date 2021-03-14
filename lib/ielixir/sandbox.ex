@@ -6,17 +6,26 @@ defmodule IElixir.Sandbox do
   @type yes_or_no :: :yes | :no
 
   @typedoc "Execution response"
-  @type execution_response :: {
-    status :: :ok,
-    result :: :"this is raw html" | :"do not show this result in output" | :"this is an inline image" | {:"this is an inline image",Keyword.t} | String.t,
-    stdout :: String.t,
-    stderr :: String.t,
-    execution_count :: integer}
-| {
-    status          :: :error,
-    exception_name  :: String.t,
-    traceback       :: [String.t],
-    execution_count :: integer}
+  @type execution_response ::
+          {
+            status :: :ok,
+            result ::
+              :"this is raw html"
+              | {:"this is raw html", String.t()}
+              | :"do not show this result in output"
+              | :"this is an inline image"
+              | {:"this is an inline image", Keyword.t()}
+              | String.t(),
+            stdout :: String.t(),
+            stderr :: String.t(),
+            execution_count :: integer
+          }
+          | {
+              status :: :error,
+              exception_name :: String.t(),
+              traceback :: [String.t()],
+              execution_count :: integer
+            }
 
   use GenServer
   require Logger
@@ -64,7 +73,7 @@ defmodule IElixir.Sandbox do
       {:yes, "", ["Enum", "Enumerable"]}
 
   """
-  @spec get_code_completion(String.t) :: {yes_or_no, String.t, [String.t]}
+  @spec get_code_completion(String.t()) :: {yes_or_no, String.t(), [String.t()]}
   def get_code_completion(code) do
     GenServer.call(Sandbox, {:get_code_completion, code})
   end
@@ -138,7 +147,7 @@ defmodule IElixir.Sandbox do
       :incomplete
 
   """
-  @spec is_complete_code(String.t) :: :complete | :invalid | :incomplete
+  @spec is_complete_code(String.t()) :: :complete | :invalid | :incomplete
   def is_complete_code(code) do
     GenServer.call(Sandbox, {:is_complete_code, code})
   end
@@ -158,27 +167,50 @@ defmodule IElixir.Sandbox do
   end
 
   def handle_call({:execute_code, request}, _from, state) do
-    Logger.debug("Executing request: #{inspect request}, count #{state.execution_count}")
+    Logger.debug("Executing request: #{inspect(request)}, count #{state.execution_count}")
 
     try do
-      {{result, binding, env, scope}, stdout, stderr} = CaptureIO.capture do
-        {:ok, quoted} = Code.string_to_quoted(request["code"])
-        eval_forms(quoted, state.binding, state.env, state.scope)
-      end
-      binding = case result do
-         :"do not show this result in output" ->
-           binding
-         :"this is an inline image" ->
-           binding
-         {:"this is an inline image",_} ->
-           binding
-         _ ->
-           binding
-           |> Keyword.put(:ans, result)
-           |> Keyword.update(:out, %{state.execution_count => result}, &Map.put(&1, state.execution_count, result))
-      end
-      new_state = %{execution_count: state.execution_count+1, binding: binding, env: env, scope: scope}
-      Logger.debug("State: #{inspect new_state}")
+      {{result, binding, env, scope}, stdout, stderr} =
+        CaptureIO.capture do
+          {:ok, quoted} = Code.string_to_quoted(request["code"])
+          eval_forms(quoted, state.binding, state.env, state.scope)
+        end
+
+      binding =
+        case result do
+          :"do not show this result in output" ->
+            binding
+
+          :"this is an inline image" ->
+            binding
+
+          {:"this is an inline image", _} ->
+            binding
+
+          :"this is raw html" ->
+            binding
+
+          {:"this is raw html", _} ->
+            binding
+
+          _ ->
+            binding
+            |> Keyword.put(:ans, result)
+            |> Keyword.update(
+              :out,
+              %{state.execution_count => result},
+              &Map.put(&1, state.execution_count, result)
+            )
+        end
+
+      new_state = %{
+        execution_count: state.execution_count + 1,
+        binding: binding,
+        env: env,
+        scope: scope
+      }
+
+      Logger.debug("State: #{inspect(new_state)}")
 
       {:reply, {:ok, maybe_inspect(result), stdout, stderr, state.execution_count}, new_state}
 
@@ -190,17 +222,27 @@ defmodule IElixir.Sandbox do
       #   _ ->
       #     {:reply, {:ok, inspect(result), output, state.execution_count}, new_state}
       # end
-
     rescue
       error in ArgumentError ->
-        error_message = "** (#{inspect error.__struct__}) #{inspect error.message}"
-        {:reply, {:error, inspect(error.__struct__), [error_message], state.execution_count}, state}
+        error_message = "** (#{inspect(error.__struct__)}) #{inspect(error.message)}"
+
+        {:reply, {:error, inspect(error.__struct__), [error_message], state.execution_count},
+         state}
+
       error in CompileError ->
-        error_message = "** (#{inspect error.__struct__}) console:#{inspect error.line} #{inspect error.description}"
-        {:reply, {:error, inspect(error.__struct__), [error_message], state.execution_count}, state}
+        error_message =
+          "** (#{inspect(error.__struct__)}) console:#{inspect(error.line)} #{
+            inspect(error.description)
+          }"
+
+        {:reply, {:error, inspect(error.__struct__), [error_message], state.execution_count},
+         state}
+
       error ->
-        error_message = "** #{inspect error}"
-        {:reply, {:error, inspect(error.__struct__), [error_message], state.execution_count}, state}
+        error_message = "** #{inspect(error)}"
+
+        {:reply, {:error, inspect(error.__struct__), [error_message], state.execution_count},
+         state}
     end
   end
 
@@ -211,6 +253,7 @@ defmodule IElixir.Sandbox do
     rescue
       _error in TokenMissingError ->
         {:reply, :incomplete, state}
+
       _ ->
         {:reply, :invalid, state}
     end
@@ -221,15 +264,27 @@ defmodule IElixir.Sandbox do
     %{execution_count: 1, binding: binding, env: env, scope: scope}
   end
 
-  defp maybe_inspect(result) when result in [:"this is raw html", :"do not show this result in output"] do
+  defp maybe_inspect(result)
+       when result in [:"do not show this result in output"] do
     ""
   end
-  defp maybe_inspect(result = {:"this is an inline image",_}) do
+
+  defp maybe_inspect(result = :"this is raw html") do
     result
   end
+
+  defp maybe_inspect(result = {:"this is raw html", _}) do
+    result
+  end
+
+  defp maybe_inspect(result = {:"this is an inline image", _}) do
+    result
+  end
+
   defp maybe_inspect(result = :"this is an inline image") do
     result
   end
+
   defp maybe_inspect(result) do
     inspect(result)
   end
@@ -241,8 +296,9 @@ defmodule IElixir.Sandbox do
   defp eval(string, binding, opts) when is_list(opts) do
     eval(string, binding, :elixir.env_for_eval(opts))
   end
-  defp eval(string, binding, %{line: line, file: file} = e) when
-      is_list(string) and is_list(binding) and is_integer(line) and is_binary(file) do
+
+  defp eval(string, binding, %{line: line, file: file} = e)
+       when is_list(string) and is_list(binding) and is_integer(line) and is_binary(file) do
     forms = Code.string_to_quoted!(string, file: file, line: line)
     eval_forms(forms, binding, e)
   end
@@ -251,6 +307,7 @@ defmodule IElixir.Sandbox do
     :elixir.eval_forms(forms, binding, e)
     |> Tuple.append(scope)
   end
+
   defp eval_forms(forms, binding, e) do
     :elixir.eval_forms(forms, binding, e)
     |> Tuple.append(:elixir_env.env_to_scope(e))
