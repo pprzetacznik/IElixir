@@ -187,7 +187,7 @@ If you would like to make some changes to the images you can find dockerfiles in
 
 #### Other docker images worth seeing
 
-* [Dockerfile for smaller image based on alpine](https://github.com/cprieto/jupyter-images/blob/master/elixir/Dockerfile)
+* [Dockerfile for smaller image based on alpine](https://github.com/cprieto/docker-jupyter/blob/master/elixir/Dockerfile)
 
 ### Some issues
 
@@ -230,7 +230,7 @@ Some useful articles:
 * [Hydrogen plugin for Atom](https://atom.io/packages/hydrogen)
 * [Installation guide](http://blog.jonharrington.org/elixir-and-jupyter/)
 * [Jupyter Notebooks with Elixir and RDF](https://medium.com/@tonyhammond/jupyter-notebooks-with-elixir-and-rdf-598689c2dad3)
-* [Making Graphs using Elixir inside Jupyter Notebook](http://aipotato.com/2019/04/making-graphs-using-elixir-inside-jupyter-notebook/)
+* [Making Graphs using Elixir inside Jupyter Notebook snapshot from 2019/04 on Internet Archive](https://web.archive.org/web/20191228085409/http://aipotato.com/2019/04/making-graphs-using-elixir-inside-jupyter-notebook/)
 
 I was inspired by following codes and articles:
 
