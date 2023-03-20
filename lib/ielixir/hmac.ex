@@ -55,9 +55,9 @@ defmodule IElixir.HMAC do
   end
   def handle_call({:compute_sig, parts}, _from, state = {algo, key}) do
     ctx = Enum.reduce(parts,
-            :crypto.hmac_init(algo, key),
-            &:crypto.hmac_update(&2, &1))
-          |> :crypto.hmac_final()
+            :crypto.mac_init(:hmac, algo, key),
+            &:crypto.mac_update(&2, &1))
+          |> :crypto.mac_final()
     hex = for <<h :: size(4), l :: size(4) <- ctx>>, into: <<>>, do: <<to_hex_char(h), to_hex_char(l)>>
     {:reply, hex, state}
   end
