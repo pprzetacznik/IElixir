@@ -310,6 +310,6 @@ defmodule IElixir.Sandbox do
 
   defp eval_forms(forms, binding, e) do
     :elixir.eval_forms(forms, binding, e)
-    |> Tuple.append(:elixir_env.env_to_scope(e))
+    |> Tuple.append(:elixir_erl_var.from_env(e))
   end
 end
