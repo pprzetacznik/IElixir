@@ -9,7 +9,7 @@ defmodule IElixir.Mixfile do
       version: @version,
       source_url: "https://github.com/pprzetacznik/IElixir",
       name: "IElixir",
-      elixir: ">= 1.10.3",
+      elixir: ">= 1.14.0",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       consolidate_protocols: false,
@@ -37,7 +37,7 @@ defmodule IElixir.Mixfile do
       {:erlzmq, "~> 3.0"},
       {:floki, "~> 0.29.0"},
       {:poison, "~> 3.0"},
-      {:uuid_erl, "~> 1.7.5", app: false},
+      {:uuid, "~> 1.7.5", [hex: "uuid_erl", repo: "hexpm"]},
       {:sqlite_ecto2, "~> 2.4.0"},
 
       # Docs dependencies
@@ -46,7 +46,7 @@ defmodule IElixir.Mixfile do
       {:inch_ex, "~> 2.0.0", only: :docs},
 
       # Test dependencies
-      {:excoveralls, "~> 0.13.3", only: :test}
+      {:excoveralls, "~> 0.18", only: :test}
     ]
   end
 

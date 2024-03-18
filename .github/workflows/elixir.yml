@@ -15,19 +15,20 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-22.04]
-        elixir-version: ['1.11.2', '1.14']
-        otp-version: ['23.1', '25']
-        python-version: ['3.8', '3.11']
+        elixir-version: ['1.14']
+        otp-version: ['26']
+        python-version: ['3.8', '3.12']
     steps:
     - uses: actions/checkout@v2
     - name: Install prerequisites
       run: |
+        sudo apt install -y openssl libncurses5
         sudo apt install -y libzmq3-dev libsqlite3-dev libssl-dev
     - name: Set up Elixir
-      uses: actions/setup-elixir@v1
+      uses: erlef/setup-beam@v1
       with:
-        elixir-version: ${{ matrix.elixir-version }}
-        otp-version: ${{ matrix.otp-version }}
+        otp-version: 'OTP-${{ matrix.otp-version }}'
+        elixir-version: 'v${{ matrix.elixir-version }}-otp-${{ matrix.otp-version }}'
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -35,9 +36,7 @@ jobs:
     - name: Install python packages
       run: |
         pip install pip --upgrade
-        pip install tornado==4.5.3
-        pip install jupyter nose
-        git clone -b ielixir https://github.com/pprzetacznik/jupyter_kernel_test.git
+        pip install -r jupyter_kernel_test/requirements.txt
     - name: Restore dependencies cache
       uses: actions/cache@v2
       with:
@@ -52,9 +51,7 @@ jobs:
     - name: Run tests
       run: |
         mix test
-        pushd jupyter_kernel_test
-        MIX_ENV=dev python test_ipython.py
-        popd
+        MIX_ENV=dev python jupyter_kernel_test/test_ielixir.py
 
   docs:
     name: Documentation and coverage reports

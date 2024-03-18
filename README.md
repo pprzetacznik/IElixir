@@ -215,6 +215,12 @@ ELIXIR_ERL_OPTIONS="-smp enable"
 ```
 This option has been included inside `install_script.sh` and `start_script.sh` scripts.
 
+#### Listing all available jupyter kernels.
+
+```Bash
+$ jupyter kernelspec list
+```
+
 ### Contribution
 
 * Try to write some description of the feature or bug fix you're working in pull request's description and concise description of new modules or functions in moduledoc annotations,

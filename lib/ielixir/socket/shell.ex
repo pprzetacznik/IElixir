@@ -45,7 +45,8 @@ defmodule IElixir.Socket.Shell do
     IOPub.send_status("busy", message)
 
     content = %{
-      protocol_version: "5.0",
+      status: "ok",
+      protocol_version: "5.2",
       implementation: "ielixir",
       implementation_version: "1.0",
       language_info: %{

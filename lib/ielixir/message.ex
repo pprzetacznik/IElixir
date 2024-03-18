@@ -79,7 +79,7 @@ defmodule IElixir.Message do
         "username" => "ielixir_kernel",
         "session" => message.header["session"],
         "msg_type" => message_type,
-        "version" => "5.0",
+        "version" => "5.2",
       },
       parent_header: message.header,
       metadata: %{},
