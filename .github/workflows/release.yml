@@ -20,8 +20,8 @@ jobs:
     - name: Set up Elixir
       uses: actions/setup-elixir@v1
       with:
-        elixir-version: '1.11.2'
-        otp-version: '23.1'
+        elixir-version: '1.14'
+        otp-version: '26'
     - name: Generate documentation
       run: |
         MIX_ENV=docs mix deps.get

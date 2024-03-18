@@ -116,11 +116,11 @@ defmodule IElixir.Sandbox do
       {:ok, ":sampleatom", "", "", 1}
 
       iex> IElixir.Sandbox.execute_code(%{"code" => "asdf"})
-      {:error, "CompileError", ["** (CompileError) console:1 \"undefined function asdf/0\""], 1}
+      {:error, "CompileError", ["** (CompileError) console:1 \"undefined function asdf/0 (there is no such import)\""], 1}
 
       iex> IElixir.Sandbox.execute_code(%{"code" => "hd []"})
-      {:error, "ArgumentError", ["** (ArgumentError) \"argument error\""], 1}
-
+      {:error, "ArgumentError", ["** (ArgumentError) \"errors were found at the given arguments:\\n\\n  * 1st argument: not a nonempty list\\n\""], 1}
+      
       iex> abc = IElixir.Sandbox.execute_code(%{"code" => "\"a\" + 5"})
       iex> elem(abc, 0)
       :error
@@ -310,6 +310,6 @@ defmodule IElixir.Sandbox do
 
   defp eval_forms(forms, binding, e) do
     :elixir.eval_forms(forms, binding, e)
-    |> Tuple.append(:elixir_env.env_to_scope(e))
+    |> Tuple.append(:elixir_erl_var.from_env(e))
   end
 end

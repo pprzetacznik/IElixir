@@ -1,6 +1,6 @@
 #!/bin/sh
 
-function install_ielixir () {
+install_ielixir() {
   export MIX_ENV=${MIX_ENV:-prod}
 
   # Provide setup according to kernel-spec
