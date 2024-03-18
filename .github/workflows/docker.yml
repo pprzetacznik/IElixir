@@ -3,11 +3,22 @@ name: IElixir Docker
 on:
   push:
     branches: master
+  pull_request:
+    branches:
+      - 'master'
+      - 'feature/**'
+      - 'fix/**'
 
 jobs:
   main:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout IElixir project
+        uses: actions/checkout@v2
+      - name: Generate version
+        id: gen_ielixir_version
+        run: |
+          echo "IELIXIR_VERSION=$(cat ./VERSION).$(date '+%Y%m%d%H%M%S')" >> "$GITHUB_OUTPUT"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -23,16 +34,18 @@ jobs:
         with:
           push: true
           file: ./docker/ielixir-requirements/Dockerfile
-          tags: pprzetacznik/ielixir-requirements:latest
+          tags: pprzetacznik/ielixir-requirements:${{ steps.gen_ielixir_version.outputs.IELIXIR_VERSION }}
           build-args: |
-            ERL_VERSION=23.1.2
-            ELIXIR_VERSION=1.11.2
+            ERL_VERSION=26.2.3
+            ELIXIR_VERSION=1.14.2
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
         with:
           push: true
           file: ./docker/ielixir/Dockerfile
-          tags: pprzetacznik/ielixir:latest
+          tags: pprzetacznik/ielixir:${{ steps.gen_ielixir_version.outputs.IELIXIR_VERSION }}
+          build-args: |
+            IELIXIR_REQUIREMENTS_DOCKER_VERSION=${{ steps.gen_ielixir_version.outputs.IELIXIR_VERSION }}
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}

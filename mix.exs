@@ -1,12 +1,10 @@
 defmodule IElixir.Mixfile do
   use Mix.Project
 
-  @version "0.9.21"
-
   def project do
     [
       app: :ielixir,
-      version: @version,
+      version: read_version(),
       source_url: "https://github.com/pprzetacznik/IElixir",
       name: "IElixir",
       elixir: ">= 1.14.0",
@@ -72,5 +70,11 @@ defmodule IElixir.Mixfile do
         "Docs" => "http://hexdocs.pm/ielixir/"
       }
     ]
+  end
+
+  def read_version() do
+    "VERSION"
+    |> File.read!
+    |> String.trim
   end
 end
