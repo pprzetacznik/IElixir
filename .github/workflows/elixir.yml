@@ -7,6 +7,7 @@ on:
     branches:
       - 'master'
       - 'feature/**'
+      - 'fix/**'
 
 jobs:
   build:
@@ -19,7 +20,8 @@ jobs:
         otp-version: ['26']
         python-version: ['3.8', '3.12']
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout IElixir project
+      uses: actions/checkout@v2
     - name: Install prerequisites
       run: |
         sudo apt install -y openssl libncurses5

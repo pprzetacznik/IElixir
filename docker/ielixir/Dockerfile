@@ -1,4 +1,5 @@
-FROM pprzetacznik/ielixir-requirements
+ARG IELIXIR_REQUIREMENTS_DOCKER_VERSION
+FROM pprzetacznik/ielixir-requirements:$IELIXIR_REQUIREMENTS_DOCKER_VERSION
 
 ENV WORK_DIR=/opt
 
@@ -9,10 +10,11 @@ RUN apt install -y \
     libsqlite3-dev
 
 RUN set -xe \
-  && curl -s https://api.github.com/repos/pprzetacznik/IElixir/releases/latest | grep "tarball_url" | sed -n -e 's/.*tarball_url": "\(.*\)".*/\1/p' | xargs -t curl -fSL -o ielixir.tar.gz \
-  && mkdir ielixir \
-  && tar -zxvf ielixir.tar.gz -C ielixir --strip-components=1 \
-  && rm ielixir.tar.gz \
+  && curl -L https://github.com/pprzetacznik/IElixir/archive/refs/heads/master.zip -o ielixir.zip \
+  && apt install -y unzip \
+  && unzip ielixir.zip -d ielixir_tmp \
+  && mv ielixir_tmp/IElixir-master ielixir \
+  && rm -rf ielixir_tmp \
   && cd ielixir \
   && ls -alh \
   && mix local.hex --force \
