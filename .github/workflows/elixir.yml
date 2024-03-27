@@ -2,7 +2,7 @@ name: IElixir CI
 
 on:
   push:
-    branches: [ master ]
+    branches: master
   pull_request:
     branches:
       - 'master'
@@ -10,9 +10,22 @@ on:
       - 'fix/**'
 
 jobs:
+  generate_version:
+    uses: ./.github/workflows/generate_version.yml
+
+  build_docker:
+    uses: ./.github/workflows/docker_workflow.yml
+    needs: generate_version
+    with:
+      version: ${{ needs.generate_version.outputs.version }}
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
   build:
     name: Build and test
     runs-on: ${{ matrix.os }}
+    needs: generate_version
     strategy:
       matrix:
         os: [ubuntu-22.04]
@@ -22,6 +35,9 @@ jobs:
     steps:
     - name: Checkout IElixir project
       uses: actions/checkout@v2
+    - name: Set version
+      run: |
+        echo ${{ needs.generate_version.outputs.build_version }} > VERSION
     - name: Install prerequisites
       run: |
         sudo apt install -y openssl libncurses5
@@ -56,25 +72,9 @@ jobs:
         MIX_ENV=dev python jupyter_kernel_test/test_ielixir.py
 
   docs:
-    name: Documentation and coverage reports
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install prerequisites
-      run: |
-        sudo apt install -y openssl libncurses5
-        sudo apt install -y libzmq3-dev libsqlite3-dev libssl-dev
-    - name: Set up Elixir
-      uses: erlef/setup-beam@v1
-      with:
-        otp-version: 'OTP-26.0'
-        elixir-version: 'v1.14-otp-26'
-    - name: Generate documentation
-      run: |
-        MIX_ENV=docs mix deps.get
-        MIX_ENV=docs mix compile
-        MIX_ENV=docs mix docs
-        MIX_ENV=docs mix inch.report
-        MIX_ENV=test mix coveralls.github
+    uses: ./.github/workflows/docs_workflow.yml
+    needs: generate_version
+    with:
+      version: ${{ needs.generate_version.outputs.version }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

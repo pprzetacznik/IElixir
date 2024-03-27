@@ -1,0 +1,40 @@
+name: IElixir generate documentation
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+    secrets:
+      GH_TOKEN:
+        required: true
+
+jobs:
+  docs:
+    name: Documentation and coverage reports
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+    steps:
+    - name: Checkout IElixir project
+      uses: actions/checkout@v2
+    - name: Set version
+      run: |
+        echo ${{ inputs.version }} > VERSION
+    - name: Install prerequisites
+      run: |
+        sudo apt install -y openssl libncurses5
+        sudo apt install -y libzmq3-dev libsqlite3-dev libssl-dev
+    - name: Set up Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        otp-version: 'OTP-26.0'
+        elixir-version: 'v1.14-otp-26'
+    - name: Generate documentation
+      run: |
+        MIX_ENV=docs mix deps.get
+        MIX_ENV=docs mix compile
+        MIX_ENV=docs mix docs
+        MIX_ENV=docs mix inch.report
+        MIX_ENV=test mix coveralls.github
