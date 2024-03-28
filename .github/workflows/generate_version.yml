@@ -1,0 +1,37 @@
+name: Reusable version generation workflow
+
+on:
+  workflow_call:
+    outputs:
+      version:
+        description: "Generated version"
+        value: ${{ jobs.generate_version.outputs.version }}
+      build_version:
+        description: "Generated build version"
+        value: ${{ jobs.generate_version.outputs.build_version }}
+      is_release:
+        description: "Generated is release flag"
+        value: ${{ jobs.generate_version.outputs.is_release }}
+
+jobs:
+  generate_version:
+    name: Generate version job
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.gen_ielixir_version.outputs.IELIXIR_VERSION }}
+      build_version: ${{ steps.gen_ielixir_version.outputs.IELIXIR_BUILD_VERSION }}
+      is_release: ${{ steps.gen_ielixir_version.outputs.IELIXIR_IS_RELEASE }}
+    steps:
+      - name: Checkout IElixir project
+        uses: actions/checkout@v2
+      - name: Generate version
+        id: gen_ielixir_version
+        run: |
+          echo "IELIXIR_VERSION=$(cat ./VERSION)" >> $GITHUB_OUTPUT
+          echo "IELIXIR_BUILD_VERSION=$(cat ./VERSION)+dev$(date '+%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
+      - name: Check if release
+        id: check_if_release
+        run: |
+          echo "${{ github.ref }}"
+          echo "IELIXIR_IS_RELEASE=${{ startsWith(github.ref, 'refs/tags/') }}" >> $GITHUB_OUTPUT
+

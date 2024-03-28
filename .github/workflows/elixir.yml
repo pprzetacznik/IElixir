@@ -2,7 +2,7 @@ name: IElixir CI
 
 on:
   push:
-    branches: [ master ]
+    branches: master
   pull_request:
     branches:
       - 'master'
@@ -10,71 +10,33 @@ on:
       - 'fix/**'
 
 jobs:
-  build:
-    name: Build and test
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-22.04]
-        elixir-version: ['1.14']
-        otp-version: ['26']
-        python-version: ['3.8', '3.12']
-    steps:
-    - name: Checkout IElixir project
-      uses: actions/checkout@v2
-    - name: Install prerequisites
-      run: |
-        sudo apt install -y openssl libncurses5
-        sudo apt install -y libzmq3-dev libsqlite3-dev libssl-dev
-    - name: Set up Elixir
-      uses: erlef/setup-beam@v1
-      with:
-        otp-version: 'OTP-${{ matrix.otp-version }}'
-        elixir-version: 'v${{ matrix.elixir-version }}-otp-${{ matrix.otp-version }}'
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install python packages
-      run: |
-        pip install pip --upgrade
-        pip install -r jupyter_kernel_test/requirements.txt
-    - name: Restore dependencies cache
-      uses: actions/cache@v2
-      with:
-        path: deps
-        key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
-        restore-keys: ${{ runner.os }}-mix-
-    - name: Compile IElixir and install
-      run: |
-        mix deps.get
-        mix deps.compile
-        MIX_ENV=dev ./install_script.sh
-    - name: Run tests
-      run: |
-        mix test
-        MIX_ENV=dev python jupyter_kernel_test/test_ielixir.py
+  generate_version:
+    uses: ./.github/workflows/generate_version.yml
+
+  build_ielixir:
+    uses: ./.github/workflows/build_workflow.yml
+    needs: generate_version
+    with:
+      version: ${{ needs.generate_version.outputs.version }}
+      build_version: ${{ needs.generate_version.outputs.build_version }}
+      is_release: ${{ needs.generate_version.outputs.is_release }}
+
+  build_docker:
+    uses: ./.github/workflows/docker_workflow.yml
+    needs: [generate_version, build_ielixir]
+    with:
+      version: ${{ needs.generate_version.outputs.version }}
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
   docs:
-    name: Documentation and coverage reports
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install prerequisites
-      run: |
-        sudo apt install -y openssl libncurses5
-        sudo apt install -y libzmq3-dev libsqlite3-dev libssl-dev
-    - name: Set up Elixir
-      uses: erlef/setup-beam@v1
-      with:
-        otp-version: 'OTP-26.0'
-        elixir-version: 'v1.14-otp-26'
-    - name: Generate documentation
-      run: |
-        MIX_ENV=docs mix deps.get
-        MIX_ENV=docs mix compile
-        MIX_ENV=docs mix docs
-        MIX_ENV=docs mix inch.report
-        MIX_ENV=test mix coveralls.github
+    uses: ./.github/workflows/docs_workflow.yml
+    needs: generate_version
+    with:
+      version: ${{ needs.generate_version.outputs.version }}
+      build_version: ${{ needs.generate_version.outputs.build_version }}
+      is_release: ${{ needs.generate_version.outputs.is_release }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      HEX_API_KEY: ${{ secrets.HEX_API_KEY }}

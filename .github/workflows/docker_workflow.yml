@@ -1,13 +1,16 @@
 name: IElixir Docker
 
 on:
-  push:
-    branches: master
-  pull_request:
-    branches:
-      - 'master'
-      - 'feature/**'
-      - 'fix/**'
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
 
 jobs:
   main:
@@ -15,10 +18,9 @@ jobs:
     steps:
       - name: Checkout IElixir project
         uses: actions/checkout@v2
-      - name: Generate version
-        id: gen_ielixir_version
+      - name: Set version
         run: |
-          echo "IELIXIR_VERSION=$(cat ./VERSION).$(date '+%Y%m%d%H%M%S')" >> "$GITHUB_OUTPUT"
+          echo ${{ inputs.version }} >> VERSION
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -34,7 +36,7 @@ jobs:
         with:
           push: true
           file: ./docker/ielixir-requirements/Dockerfile
-          tags: pprzetacznik/ielixir-requirements:${{ steps.gen_ielixir_version.outputs.IELIXIR_VERSION }}
+          tags: pprzetacznik/ielixir-requirements:${{ inputs.version }}
           build-args: |
             ERL_VERSION=26.2.3
             ELIXIR_VERSION=1.14.2
@@ -44,8 +46,8 @@ jobs:
         with:
           push: true
           file: ./docker/ielixir/Dockerfile
-          tags: pprzetacznik/ielixir:${{ steps.gen_ielixir_version.outputs.IELIXIR_VERSION }}
+          tags: pprzetacznik/ielixir:${{ inputs.version }}
           build-args: |
-            IELIXIR_REQUIREMENTS_DOCKER_VERSION=${{ steps.gen_ielixir_version.outputs.IELIXIR_VERSION }}
+            IELIXIR_REQUIREMENTS_DOCKER_VERSION=${{ inputs.version }}
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
