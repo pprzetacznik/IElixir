@@ -34,8 +34,4 @@ jobs:
         run: |
           echo "${{ github.ref }}"
           echo "IELIXIR_IS_RELEASE=${{ startsWith(github.ref, 'refs/tags/') }}" >> $GITHUB_OUTPUT
-      - name: Print flags
-        run: |
-          cat $GITHUB_OUTPUT
-          echo $GITHUB_OUTPUT
 
