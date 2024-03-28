@@ -1,0 +1,68 @@
+name: IElixir build and test
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      build_version:
+        required: true
+        type: string
+      is_release:
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ['ubuntu-22.04']
+        elixir-version: ['1.14']
+        otp-version: ['26']
+        python-version: ['3.8', '3.12']
+    steps:
+    - name: Checkout IElixir project
+      uses: actions/checkout@v2
+    - name: Set version
+      if: inputs.is_release == 'true'
+      run: |
+        echo ${{ inputs.version }} > VERSION
+    - name: Set build version
+      if: inputs.is_release == 'false'
+      run: |
+        echo ${{ inputs.build_version }} > VERSION
+    - name: Install prerequisites
+      run: |
+        sudo apt install -y openssl libncurses5
+        sudo apt install -y libzmq3-dev libsqlite3-dev libssl-dev
+    - name: Set up Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        otp-version: 'OTP-${{ matrix.otp-version }}'
+        elixir-version: 'v${{ matrix.elixir-version }}-otp-${{ matrix.otp-version }}'
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install python packages
+      run: |
+        pip install pip --upgrade
+        pip install -r jupyter_kernel_test/requirements.txt
+    - name: Restore dependencies cache
+      uses: actions/cache@v2
+      with:
+        path: deps
+        key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+        restore-keys: ${{ runner.os }}-mix-
+    - name: Compile IElixir and install
+      run: |
+        mix deps.get
+        mix deps.compile
+        MIX_ENV=dev ./install_script.sh
+    - name: Run tests
+      run: |
+        mix test
+        MIX_ENV=dev python jupyter_kernel_test/test_ielixir.py

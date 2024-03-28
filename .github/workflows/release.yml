@@ -4,50 +4,14 @@ on:
   push:
     tags:
       - 'v*'
-  pull_request:
-    branches:
-      - 'feature/**'
 
 jobs:
-  generate_version:
-    uses: ./.github/workflows/generate_version.yml
-
   release:
-    name: Documentation and coverage reports
+    name: Create a release
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
     steps:
-    - name: Checkout IElixir project
-      uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Set version
-      run: |
-        echo ${{ needs.generate_version.outputs.version }} > VERSION
-        python -c 'import sys; a, b, c = sys.stdin.read().strip().split("."); print(f"{a}.{b}.{int(c)+1}")' < VERSION > VERSION
-    - name: Install prerequisites
-      run: |
-        sudo apt install -y openssl libncurses5
-        sudo apt install -y libzmq3-dev libsqlite3-dev libssl-dev
-    - name: Set up Elixir
-      uses: erlef/setup-beam@v1
-      with:
-        otp-version: 'OTP-${{ matrix.otp-version }}'
-        elixir-version: 'v${{ matrix.elixir-version }}-otp-${{ matrix.otp-version }}'
-    - name: Generate documentation
-      run: |
-        MIX_ENV=docs mix deps.get
-        MIX_ENV=docs mix compile
-        MIX_ENV=docs mix docs
-        MIX_ENV=docs mix inch.report
-        MIX_ENV=test mix coveralls.github
-        mix hex.config api_key $HEX_API_KEY
-        mix hex.publish package --yes
-        MIX_ENV=docs mix hex.publish docs
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
