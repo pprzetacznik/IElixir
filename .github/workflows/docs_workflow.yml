@@ -6,8 +6,16 @@ on:
       version:
         required: true
         type: string
+      build_version:
+        required: true
+        type: string
+      is_release:
+        required: true
+        type: string
     secrets:
       GH_TOKEN:
+        required: true
+      HEX_API_KEY:
         required: true
 
 jobs:
@@ -16,25 +24,37 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
     steps:
-    - name: Checkout IElixir project
-      uses: actions/checkout@v2
-    - name: Set version
-      run: |
-        echo ${{ inputs.version }} > VERSION
-    - name: Install prerequisites
-      run: |
-        sudo apt install -y openssl libncurses5
-        sudo apt install -y libzmq3-dev libsqlite3-dev libssl-dev
-    - name: Set up Elixir
-      uses: erlef/setup-beam@v1
-      with:
-        otp-version: 'OTP-26.0'
-        elixir-version: 'v1.14-otp-26'
-    - name: Generate documentation
-      run: |
-        MIX_ENV=docs mix deps.get
-        MIX_ENV=docs mix compile
-        MIX_ENV=docs mix docs
-        MIX_ENV=docs mix inch.report
-        MIX_ENV=test mix coveralls.github
+      - name: Checkout IElixir project
+        uses: actions/checkout@v2
+      - name: Set version
+        if: inputs.is_release == 'true'
+        run: |
+          echo ${{ inputs.version }} > VERSION
+      - name: Set build version
+        if: inputs.is_release == 'false'
+        run: |
+          echo ${{ inputs.build_version }} > VERSION
+      - name: Install prerequisites
+        run: |
+          sudo apt install -y openssl libncurses5
+          sudo apt install -y libzmq3-dev libsqlite3-dev libssl-dev
+      - name: Set up Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: 'OTP-26.0'
+          elixir-version: 'v1.14-otp-26'
+      - name: Generate documentation
+        run: |
+          MIX_ENV=docs mix deps.get
+          MIX_ENV=docs mix compile
+          MIX_ENV=docs mix docs
+          MIX_ENV=docs mix inch.report
+          MIX_ENV=test mix coveralls.github
+      - name: Publish documentation
+        if: inputs.is_release == 'true'
+        run: |
+          mix hex.config api_key $HEX_API_KEY
+          mix hex.publish package --yes
+          MIX_ENV=docs mix hex.publish docs
