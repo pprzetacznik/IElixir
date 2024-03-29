@@ -26,6 +26,8 @@ jobs:
     needs: [generate_version, build_ielixir]
     with:
       version: ${{ needs.generate_version.outputs.version }}
+      build_docker_version: ${{ needs.generate_version.outputs.build_docker_version }}
+      is_release: ${{ needs.generate_version.outputs.is_release }}
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}

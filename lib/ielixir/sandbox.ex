@@ -116,11 +116,11 @@ defmodule IElixir.Sandbox do
       {:ok, ":sampleatom", "", "", 1}
 
       iex> IElixir.Sandbox.execute_code(%{"code" => "asdf"})
-      {:error, "CompileError", ["** (CompileError) console:1 \"undefined function asdf/0 (there is no such import)\""], 1}
+      {:error, "CompileError", ["** (CompileError) console:0 \"cannot compile file (errors have been logged)\""], 1}
 
       iex> IElixir.Sandbox.execute_code(%{"code" => "hd []"})
       {:error, "ArgumentError", ["** (ArgumentError) \"errors were found at the given arguments:\\n\\n  * 1st argument: not a nonempty list\\n\""], 1}
-      
+
       iex> abc = IElixir.Sandbox.execute_code(%{"code" => "\"a\" + 5"})
       iex> elem(abc, 0)
       :error

@@ -39,7 +39,7 @@ defmodule IElixir.Mixfile do
       {:floki, "~> 0.29.0"},
       {:poison, "~> 3.0"},
       {:uuid, "~> 1.7.5", [hex: "uuid_erl", repo: "hexpm"]},
-      {:sqlite_ecto2, "~> 2.4.0"},
+      {:sqlite_ecto2, "~> 2.4.1"},
 
       # Docs dependencies
       {:earmark, "~> 1.3.6", only: :docs},

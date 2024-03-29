@@ -27,7 +27,7 @@ jobs:
       HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
     steps:
       - name: Checkout IElixir project
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Set version
         if: inputs.is_release == 'true'
         run: |
