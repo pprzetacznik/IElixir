@@ -29,7 +29,7 @@ defmodule IElixir.Mixfile do
   def application do
     [
       mod: {IElixir, []},
-      applications: [:logger, :iex, :ecto, :erlzmq, :poison, :uuid, :floki]
+      applications: [:logger, :iex, :ecto_sqlite3, :erlzmq, :poison, :uuid, :floki]
     ]
   end
 
@@ -39,7 +39,7 @@ defmodule IElixir.Mixfile do
       {:floki, "~> 0.29.0"},
       {:poison, "~> 3.0"},
       {:uuid, "~> 1.7.5", [hex: "uuid_erl", repo: "hexpm"]},
-      {:sqlite_ecto2, "~> 2.4.1"},
+      {:ecto_sqlite3, "~> 0.14"},
 
       # Docs dependencies
       {:earmark, "~> 1.3.6", only: :docs},
