@@ -9,6 +9,9 @@ on:
       build_version:
         description: "Generated build version"
         value: ${{ jobs.generate_version.outputs.build_version }}
+      build_docker_version:
+        description: "Generated build docker version"
+        value: ${{ jobs.generate_version.outputs.build_docker_version }}
       is_release:
         description: "Generated is release flag"
         value: ${{ jobs.generate_version.outputs.is_release }}
@@ -20,15 +23,17 @@ jobs:
     outputs:
       version: ${{ steps.gen_ielixir_version.outputs.IELIXIR_VERSION }}
       build_version: ${{ steps.gen_ielixir_version.outputs.IELIXIR_BUILD_VERSION }}
+      build_docker_version: ${{ steps.gen_ielixir_version.outputs.IELIXIR_BUILD_DOCKER_VERSION }}
       is_release: ${{ steps.gen_ielixir_version.outputs.IELIXIR_IS_RELEASE }}
     steps:
       - name: Checkout IElixir project
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Generate version
         id: gen_ielixir_version
         run: |
           echo "IELIXIR_VERSION=$(cat ./VERSION)" >> $GITHUB_OUTPUT
           echo "IELIXIR_BUILD_VERSION=$(cat ./VERSION)+dev$(date '+%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
+          echo "IELIXIR_BUILD_DOCKER_VERSION=$(cat ./VERSION).$(date '+%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
       - name: Check if release
         id: check_if_release
         run: |

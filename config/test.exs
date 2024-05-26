@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :logger,
   level: :debug
@@ -6,6 +6,5 @@ config :logger,
 config :ielixir, connection_file: "test/test_connection_file"
 
 config :ielixir, IElixir.Repo,
-  adapter: Sqlite.Ecto,
+  adapter: Ecto.Adapters.SQLite3,
   database: "test_db.sqlite3"
-

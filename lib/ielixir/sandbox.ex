@@ -120,7 +120,7 @@ defmodule IElixir.Sandbox do
 
       iex> IElixir.Sandbox.execute_code(%{"code" => "hd []"})
       {:error, "ArgumentError", ["** (ArgumentError) \"errors were found at the given arguments:\\n\\n  * 1st argument: not a nonempty list\\n\""], 1}
-      
+
       iex> abc = IElixir.Sandbox.execute_code(%{"code" => "\"a\" + 5"})
       iex> elem(abc, 0)
       :error

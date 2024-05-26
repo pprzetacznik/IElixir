@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :logger,
   level: :debug
@@ -8,6 +8,5 @@ config :ielixir,
   working_directory: System.get_env("WORKING_DIRECTORY")
 
 config :ielixir, IElixir.Repo,
-  adapter: Sqlite.Ecto,
+  adapter: Ecto.Adapters.SQLite3,
   database: "dev_db.sqlite3"
-

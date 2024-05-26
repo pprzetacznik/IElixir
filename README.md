@@ -1,18 +1,17 @@
 IElixir
 =======
 
-Jupyter's kernel for Elixir
+Jupyter's kernel for Elixir.
 
 [![Build Status](https://travis-ci.org/pprzetacznik/IElixir.svg?branch=master)](https://travis-ci.org/pprzetacznik/IElixir)
 [![IElixir CI](https://github.com/pprzetacznik/IElixir/workflows/IElixir%20CI/badge.svg)](https://github.com/pprzetacznik/IElixir/actions?query=workflow%3A"IElixir+CI")
-[![IElixir Docker](https://github.com/pprzetacznik/IElixir/workflows/IElixir%20Docker/badge.svg)](https://github.com/pprzetacznik/IElixir/actions?query=workflow%3A"IElixir+Docker")
 [![Inline docs](http://inch-ci.org/github/pprzetacznik/IElixir.svg?branch=master)](http://inch-ci.org/github/pprzetacznik/IElixir)
 [![Coverage Status](https://coveralls.io/repos/github/pprzetacznik/IElixir/badge.svg?branch=master)](https://coveralls.io/github/pprzetacznik/IElixir?branch=master)
 [![Join the chat at https://gitter.im/pprzetacznik/IElixir](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pprzetacznik/IElixir?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Hex: https://hex.pm/packages/ielixir.
-
 Please see generated documentation for implementation details: http://hexdocs.pm/ielixir/.
+Docker: [pprzetacznik/ielixir](https://hub.docker.com/r/pprzetacznik/ielixir).
 
 ## Getting Started
 
@@ -27,6 +26,7 @@ Please see generated documentation for implementation details: http://hexdocs.pm
 * [Generate documentation](#generate-documentation)
 * [Docker](#docker)
 * [Some issues](#some-issues)
+* [Publish new release](#publish-new-release)
 * [Contribution](#contribution)
 * [References](#references)
 * [License](#license)
@@ -221,6 +221,13 @@ This option has been included inside `install_script.sh` and `start_script.sh` s
 
 ```Bash
 $ jupyter kernelspec list
+```
+
+### Publish new release
+
+```Bash
+$ git tag v1.0.1
+$ git push origin v1.0.1
 ```
 
 ### Contribution

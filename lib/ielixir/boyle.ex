@@ -252,6 +252,7 @@ defmodule Boyle do
         Code.load_file("mix.exs")
         # Mix.Project.push(CustomEnvironment)
         # IO.inspect(CustomEnvironment.project())
+
         Mix.Task.run("deps.get")
         Mix.Tasks.Deps.Compile.run([])
       end)
@@ -338,22 +339,22 @@ defmodule Boyle do
 
   defp create_mix_exs_file(env_path) do
     File.write!(Path.join(env_path, "mix.exs"), """
-		defmodule CustomEnvironment do
-			use Mix.Project
+    defmodule CustomEnvironment do
+      use Mix.Project
 
-			def project do
+      def project do
         [app: :customenv,
          version: "1.0.0",
          build_per_environment: false,
          deps: deps()]
-			end
+      end
 
-			def deps do
-				{deps, _bindings} = Code.eval_file("deps.lock")
-				deps
-			end
-		end
-		""")
+      def deps do
+        {deps, _bindings} = Code.eval_file("deps.lock")
+        deps
+      end
+    end
+    """)
   end
 
   defp create_deps_lock_file(env_path) do
