@@ -27,7 +27,10 @@ defmodule IElixir.Mixfile do
   end
 
   def application do
-    [mod: {IElixir, []}, applications: [:logger, :iex, :ecto, :erlzmq, :poison, :uuid, :floki]]
+    [
+      mod: {IElixir, []},
+      applications: [:logger, :iex, :ecto, :erlzmq, :poison, :uuid, :floki]
+    ]
   end
 
   defp deps do
@@ -39,7 +42,7 @@ defmodule IElixir.Mixfile do
       {:sqlite_ecto2, "~> 2.4.0"},
 
       # Docs dependencies
-      {:earmark, "~> 1.3.2", only: :docs},
+      {:earmark, "~> 1.3.6", only: :docs},
       {:ex_doc, "~> 0.23", only: :docs, runtime: false},
       {:inch_ex, "~> 2.0.0", only: :docs},
 

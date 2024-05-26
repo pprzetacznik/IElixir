@@ -185,7 +185,7 @@ If you would like to make some changes to the images you can find dockerfiles in
 * docker/ielixir - for dockerfile source of pprzetacznik/ielixir image,
 * docker/ielixir-requirements - for dockerfile source of pprzetacznik/ielixir-requirements image.
 
-Elixir builds takend from [hex.pm builds.txt](https://repo.hex.pm/builds/elixir/builds.txt).
+Elixir builds taken from [hex.pm builds.txt](https://repo.hex.pm/builds/elixir/builds.txt).
 
 #### Other docker images worth seeing
 
