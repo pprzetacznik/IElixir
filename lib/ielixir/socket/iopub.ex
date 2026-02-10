@@ -120,7 +120,11 @@ defmodule IElixir.Socket.IOPub do
       content = %{
         data: %{
           "image/png" => raw64
-        }
+        },
+        metadata: %{
+          "image/png" => %{}
+        },
+        transient: %{}
       }
 
       Message.send_message(sock, message, "display_data", content)
@@ -136,8 +140,12 @@ defmodule IElixir.Socket.IOPub do
     content = %{
       data: %{
         "image/png" => raw64
-      }
-    }
+      },
+      metadata: %{
+        "image/png" => %{}
+      },
+      transient: %{}
+     }
 
     Message.send_message(sock, message, "display_data", content)
     {:noreply, sock}
