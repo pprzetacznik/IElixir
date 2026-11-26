@@ -162,7 +162,7 @@ defmodule Boyle do
         :code.all_loaded |> Enum.map(fn {module, path} ->
           if {module, path} not in state.initial_modules and
             String.contains?(to_string(path), environment_path) and
-            not String.contains?(to_string(module), ["Elixir.Boyle", "Elixir.IElixir"]) do
+            not preserve_runtime_module?(module) do
 
             purge([module])
             Logger.debug("Purged module #{to_string(module)} : #{to_string(path)}")
@@ -366,5 +366,17 @@ defmodule Boyle do
       :code.purge(module)
       :code.delete(module)
     end)
+  end
+
+  defp preserve_runtime_module?(module) do
+    name = to_string(module)
+
+    String.contains?(name, ["Elixir.Boyle", "Elixir.IElixir", "Elixir.Hex", "Elixir.Mix"]) ||
+      module in [
+        :mix_hex_registry,
+        :mix_hex_repo,
+        :mix_hex_cli_auth,
+        :mix_hex_core
+      ]
   end
 end

@@ -28,6 +28,8 @@ jobs:
     steps:
       - name: Checkout IElixir project
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set version
         if: inputs.is_release == 'true'
         run: |
@@ -43,8 +45,8 @@ jobs:
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
         with:
-          otp-version: 'OTP-26.0'
-          elixir-version: 'v1.15-otp-26'
+          otp-version: 'OTP-27'
+          elixir-version: 'v1.17.3-otp-27'
       - name: Generate documentation
         run: |
           MIX_ENV=docs mix deps.get

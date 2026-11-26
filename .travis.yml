@@ -1,8 +1,8 @@
 language: elixir
 dist: jammy
 elixir:
-  - "1.15.7"
-otp_release: 26.2.1
+  - "1.17.3"
+otp_release: 27.3.4.2
 env:
   - PYTHON_VERSION=`which python3.12`
 

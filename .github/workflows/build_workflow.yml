@@ -20,8 +20,8 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu-22.04', 'ubuntu-24.04', 'ubuntu-26.04']
-        elixir-version: ['1.15']
-        otp-version: ['26']
+        elixir-version: ['1.17.3']
+        otp-version: ['27']
         python-version: ['3.12']
     steps:
     - name: Checkout IElixir project
