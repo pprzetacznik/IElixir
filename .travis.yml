@@ -4,7 +4,7 @@ elixir:
   - "1.15.7"
 otp_release: 26.2.1
 env:
-  - PYTHON_VERSION=`which python3`
+  - PYTHON_VERSION=`which python3.12`
 
 addons:
   apt:
@@ -33,5 +33,5 @@ after_script:
   - cd $TRAVIS_BUILD_DIR
   - MIX_ENV=docs mix deps.get
   - MIX_ENV=docs mix docs
-  - MIX_ENV=docs mix inch.report
+  - INCH_SKIP_REPORT=true MIX_ENV=docs mix inch.report
   - MIX_ENV=test mix coveralls.travis

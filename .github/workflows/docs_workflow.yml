@@ -51,7 +51,7 @@ jobs:
           MIX_ENV=docs mix compile
           export ERL_FLAGS="$(for d in "$PWD"/_build/docs/lib/*/ebin; do printf -- '-pa %s ' "$d"; done)"
           MIX_ENV=docs mix docs
-          MIX_ENV=docs mix inch.report
+          INCH_SKIP_REPORT=true MIX_ENV=docs mix inch.report
           MIX_ENV=test mix coveralls.github
       - name: Publish documentation
         if: inputs.is_release == 'true'
