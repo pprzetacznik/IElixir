@@ -6,7 +6,7 @@ defmodule IElixir.BoyleTest do
   setup_all do
     {:ok, _} = Boyle.mk("boyle_test_env")
     :ok = Boyle.activate("boyle_test_env")
-    :ok = Boyle.install({:decimal, "~> 1.7.0", app: false})
+    :ok = Boyle.install({:decimal, "~> 3.2.0", app: false})
     :ok = Boyle.deactivate()
     {:ok, _} = Boyle.mk("test_env_for_removal")
 
@@ -26,7 +26,7 @@ defmodule IElixir.BoyleTest do
 
     Boyle.activate(env_name)
     assert env_name == Boyle.active_env_name()
-    Boyle.install({:number, "~> 0.5.7"})
+    Boyle.install({:number, "~> 1.0.5"})
     assert_that_number_module_works_properly()
     Boyle.deactivate()
     assert nil == Boyle.active_env_name()

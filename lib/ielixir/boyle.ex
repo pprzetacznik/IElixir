@@ -94,12 +94,12 @@ defmodule Boyle do
       {%{decimal:
         {:hex,
           :decimal,
-          "1.7.0",
-          "30d6b52c88541f9a66637359ddf85016df9eb266170d53105f02e4a67e00c5aa",
+          "3.2.0",
+          "f1235f05d841a211fda78a08fdb9777f2ff51a71f18455233fae186ff76187c6",
           [:mix],
           [],
           "hexpm",
-          "771ea78576e5fa505ad58a834f57915c7f5f9df11c87a598a01fdf6065ccfb5d"
+          "190bca80580ce61aa69bb0eacadd7677710205c770225c2c2c07e32a5c31b234"
         }},
         []}
       iex> Boyle.deactivate()
@@ -148,6 +148,7 @@ defmodule Boyle do
         Mix.State.clear_cache()
         # Mix.ProjectStack.clear_stack()
         environment_path = environment_path()
+        :code.set_path(state().initial_paths)
         state = state()
 
         :code.get_path |> Enum.map(fn path ->
@@ -160,14 +161,14 @@ defmodule Boyle do
         end)
         :code.all_loaded |> Enum.map(fn {module, path} ->
           if {module, path} not in state.initial_modules and
-            (String.contains?(to_string(path), environment_path) or "" == to_string(path)) and
-            not String.contains?(to_string(module), ["Elixir.Boyle", "Elixir.IElixir"]) do
+            String.contains?(to_string(path), environment_path) and
+            not preserve_runtime_module?(module) do
 
             purge([module])
             Logger.debug("Purged module #{to_string(module)} : #{to_string(path)}")
           end
         end)
-        Code.load_file("mix.exs")
+        Code.compile_file("mix.exs")
         GenServer.call(Boyle, {:activate, nil})
       else
         :ok
@@ -249,10 +250,14 @@ defmodule Boyle do
       Mix.Project.pop()
 
       File.cd!(env_path, fn ->
-        Code.load_file("mix.exs")
+        Code.compile_file("mix.exs")
         # Mix.Project.push(CustomEnvironment)
         # IO.inspect(CustomEnvironment.project())
-        Mix.Task.run("deps.get")
+        case System.cmd("mix", ["deps.get"], cd: env_path, into: IO.stream(:stdio, :line)) do
+          {_output, 0} -> :ok
+          {_output, status} -> raise "mix deps.get failed with exit status #{status}"
+        end
+
         Mix.Tasks.Deps.Compile.run([])
       end)
       :ok
@@ -365,5 +370,17 @@ defmodule Boyle do
       :code.purge(module)
       :code.delete(module)
     end)
+  end
+
+  defp preserve_runtime_module?(module) do
+    name = to_string(module)
+
+    String.contains?(name, ["Elixir.Boyle", "Elixir.IElixir", "Elixir.Hex", "Elixir.Mix"]) ||
+      module in [
+        :mix_hex_registry,
+        :mix_hex_repo,
+        :mix_hex_cli_auth,
+        :mix_hex_core
+      ]
   end
 end

@@ -8,8 +8,10 @@ defmodule IElixir.CaptureIO do
 
   ## Examples
 
-    iex> IElixir.CaptureIO.capture do: IO.puts("sdf") |> (&(IO.puts(:stderr, &1))).()
-    {:ok, "sdf\n", "ok\n"}
+  ```elixir
+  iex> IElixir.CaptureIO.capture do: IO.puts("sdf") |> (&(IO.puts(:stderr, &1))).()
+  {:ok, "sdf\n", "ok\n"}
+  ```
 
   """
   defmacro capture(do: expression) do

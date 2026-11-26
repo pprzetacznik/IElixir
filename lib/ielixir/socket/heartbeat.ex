@@ -28,7 +28,7 @@ defmodule IElixir.Socket.Heartbeat do
     {:noreply, sock}
   end
   def handle_info(msg, state) do
-    Logger.warn("Got unexpected message on hb process: #{inspect msg}")
+    Logger.warning("Got unexpected message on hb process: #{inspect msg}")
     {:noreply, state}
   end
 end

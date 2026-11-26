@@ -1,12 +1,10 @@
 language: elixir
-dist: bionic
+dist: jammy
 elixir:
-  - "1.10.3"
-  - "1.11.2"
-otp_release: 23.0
+  - "1.20.5"
+otp_release: 29.1.3
 env:
-  - PYTHON_VERSION=`which python2.7`
-  - PYTHON_VERSION=`which python3.6`
+  - PYTHON_VERSION=`which python3.12`
 
 addons:
   apt:
@@ -19,7 +17,6 @@ install:
   - virtualenv -p $PYTHON_VERSION ~/test_ielixir
   - source ~/test_ielixir/bin/activate
   - pip install pip --upgrade
-  - pip install tornado==4.5.3
   - pip install jupyter nose
 before_script:
   - mix local.hex --force
@@ -36,5 +33,5 @@ after_script:
   - cd $TRAVIS_BUILD_DIR
   - MIX_ENV=docs mix deps.get
   - MIX_ENV=docs mix docs
-  - MIX_ENV=docs mix inch.report
+  - INCH_SKIP_REPORT=true MIX_ENV=docs mix inch.report
   - MIX_ENV=test mix coveralls.travis

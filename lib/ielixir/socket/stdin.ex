@@ -35,7 +35,7 @@ defmodule IElixir.Socket.StdIn do
     {:noreply, sock}
   end
   def handle_info(msg, sock) do
-    Logger.warn("Got unexpected message on StdIn process: #{inspect msg}")
+    Logger.warning("Got unexpected message on StdIn process: #{inspect msg}")
     {:noreply, sock}
   end
 end
