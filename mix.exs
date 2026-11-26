@@ -45,12 +45,7 @@ defmodule IElixir.Mixfile do
       {:exqlite, "~> 0.11.0"},
 
       # Docs dependencies
-      {:earmark, "~> 1.3.6", only: :docs},
-      {:ex_doc, "~> 0.25.1", only: :docs, runtime: false},
-      {:makeup, "~> 1.0.5", only: :docs},
-      {:makeup_elixir, "~> 0.15.1", only: :docs},
-      {:makeup_erlang, "~> 0.1.1", only: :docs},
-      {:nimble_parsec, "~> 1.1.0", only: :docs},
+      {:ex_doc, "~> 0.40", only: :docs, runtime: false},
       {:inch_ex, "~> 2.0.0", only: :docs},
 
       # Test dependencies

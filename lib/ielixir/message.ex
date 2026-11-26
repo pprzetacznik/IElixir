@@ -47,7 +47,7 @@ defmodule IElixir.Message do
       blob: blob}
   end
   def parse(_, message) do
-    Logger.warn("Invalid message on shell socket #{inspect message}")
+    Logger.warning("Invalid message on shell socket #{inspect message}")
   end
 
   @doc false

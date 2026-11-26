@@ -24,7 +24,7 @@ defmodule IElixir.Socket.Control do
     {:noreply, Message.assemble_message(message, state, &process/3)}
   end
   def handle_info(msg, state) do
-    Logger.warn("Got unexpected message on control process: #{inspect msg}")
+    Logger.warning("Got unexpected message on control process: #{inspect msg}")
     {:noreply, state}
   end
 

@@ -107,7 +107,7 @@ defmodule IElixir.Socket.IOPub do
       metadata: %{}
     }
 
-    Logger.warn(content)
+    Logger.warning(content)
 
     Message.send_message(sock, message, "display_data", content)
     {:noreply, sock}

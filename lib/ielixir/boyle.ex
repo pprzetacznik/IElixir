@@ -168,7 +168,7 @@ defmodule Boyle do
             Logger.debug("Purged module #{to_string(module)} : #{to_string(path)}")
           end
         end)
-        Code.load_file("mix.exs")
+        Code.compile_file("mix.exs")
         GenServer.call(Boyle, {:activate, nil})
       else
         :ok
@@ -250,7 +250,7 @@ defmodule Boyle do
       Mix.Project.pop()
 
       File.cd!(env_path, fn ->
-        Code.load_file("mix.exs")
+        Code.compile_file("mix.exs")
         # Mix.Project.push(CustomEnvironment)
         # IO.inspect(CustomEnvironment.project())
         Mix.Task.run("deps.get")

@@ -260,7 +260,7 @@ defmodule IElixir.Sandbox do
   end
 
   defp prepare_clear_state() do
-    {_, binding, env, scope} = eval('import IEx.Helpers', [])
+    {_, binding, env, scope} = eval(~c"import IEx.Helpers", [])
     %{execution_count: 1, binding: binding, env: env, scope: scope}
   end
 

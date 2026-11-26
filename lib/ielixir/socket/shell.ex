@@ -36,7 +36,7 @@ defmodule IElixir.Socket.Shell do
   end
 
   def handle_info(message, state) do
-    Logger.warn("Got unexpected message on shell process: #{inspect(message)}")
+    Logger.warning("Got unexpected message on shell process: #{inspect(message)}")
     {:noreply, state}
   end
 

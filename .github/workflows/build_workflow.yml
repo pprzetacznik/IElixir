@@ -19,7 +19,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['ubuntu-22.04', 'ubuntu-24.04', 'ubuntu-26.04']
+        os: ['ubuntu-24.04', 'ubuntu-26.04']
         elixir-version: ['1.17.3']
         otp-version: ['27']
         python-version: ['3.12']
