@@ -253,7 +253,11 @@ defmodule Boyle do
         Code.compile_file("mix.exs")
         # Mix.Project.push(CustomEnvironment)
         # IO.inspect(CustomEnvironment.project())
-        Mix.Task.run("deps.get")
+        case System.cmd("mix", ["deps.get"], cd: env_path, into: IO.stream(:stdio, :line)) do
+          {_output, 0} -> :ok
+          {_output, status} -> raise "mix deps.get failed with exit status #{status}"
+        end
+
         Mix.Tasks.Deps.Compile.run([])
       end)
       :ok

@@ -51,8 +51,23 @@ jobs:
         run: |
           MIX_ENV=docs mix deps.get
           MIX_ENV=docs mix compile
-          INCH_SKIP_REPORT=true MIX_ENV=docs mix run --no-start -e 'Path.wildcard("_build/docs/lib/*/ebin") |> Enum.each(&Code.prepend_path/1); Mix.Task.run("docs"); Mix.Task.run("inch.report")'
-          MIX_ENV=test mix coveralls.github
+          # Mix resets the code path, so expose the dependencies needed by these tasks.
+          INCH_SKIP_REPORT=true MIX_ENV=docs mix run --no-start -e '
+            Path.wildcard("_build/docs/lib/*/ebin")
+            |> Enum.each(&Code.prepend_path/1)
+
+            Mix.Task.run("docs")
+            Mix.Task.run("inch.report")
+          '
+          MIX_ENV=test mix run --no-start -e '
+            Path.wildcard("_build/test/lib/*/ebin")
+            |> Enum.each(&Code.prepend_path/1)
+
+            Path.wildcard(Path.join(to_string(:code.root_dir()), "lib/tools-*/ebin"))
+            |> Enum.each(&Code.prepend_path/1)
+
+            Mix.Task.run("coveralls.github")
+          '
       - name: Publish documentation
         if: inputs.is_release == 'true'
         run: |
