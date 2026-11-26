@@ -94,12 +94,12 @@ defmodule Boyle do
       {%{decimal:
         {:hex,
           :decimal,
-          "1.7.0",
-          "30d6b52c88541f9a66637359ddf85016df9eb266170d53105f02e4a67e00c5aa",
+          "3.2.0",
+          "f1235f05d841a211fda78a08fdb9777f2ff51a71f18455233fae186ff76187c6",
           [:mix],
           [],
           "hexpm",
-          "771ea78576e5fa505ad58a834f57915c7f5f9df11c87a598a01fdf6065ccfb5d"
+          "190bca80580ce61aa69bb0eacadd7677710205c770225c2c2c07e32a5c31b234"
         }},
         []}
       iex> Boyle.deactivate()
