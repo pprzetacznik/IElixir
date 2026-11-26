@@ -15,18 +15,18 @@ defmodule IElixir.Supervisor do
   @doc false
   def init(opts) do
     children = [
-      worker(IElixir.Repo, []),
-      worker(IElixir.Socket.Control, [opts]),
-      worker(IElixir.HMAC, [opts[:conn_info]]),
-      worker(IElixir.Sandbox, [[]]),
-      worker(IElixir.Socket.Heartbeat, [opts]),
-      worker(IElixir.Socket.IOPub, [opts]),
-      worker(IElixir.Socket.Shell, [opts]),
-      worker(IElixir.Socket.StdIn, [opts]),
-      worker(Boyle, [opts])
+      {IElixir.Repo, []},
+      {IElixir.Socket.Control, opts},
+      {IElixir.HMAC, opts[:conn_info]},
+      {IElixir.Sandbox, []},
+      {IElixir.Socket.Heartbeat, opts},
+      {IElixir.Socket.IOPub, opts},
+      {IElixir.Socket.Shell, opts},
+      {IElixir.Socket.StdIn, opts},
+      {Boyle, opts}
     ]
 
-    supervise(children, strategy: :one_for_one)
+    Supervisor.init(children, strategy: :one_for_one)
   end
 end
 

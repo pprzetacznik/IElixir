@@ -7,7 +7,7 @@ defmodule IElixir.Mixfile do
       version: read_version(),
       source_url: "https://github.com/pprzetacznik/IElixir",
       name: "IElixir",
-      elixir: ">= 1.14.0",
+      elixir: ">= 1.15.0",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       consolidate_protocols: false,
@@ -29,7 +29,7 @@ defmodule IElixir.Mixfile do
   def application do
     [
       mod: {IElixir, []},
-      applications: [:logger, :iex, :ecto, :erlzmq, :poison, :uuid, :floki]
+      applications: [:logger, :iex, :ecto, :ecto_sql, :ecto_sqlite3, :erlzmq, :poison, :uuid, :floki]
     ]
   end
 
@@ -39,7 +39,10 @@ defmodule IElixir.Mixfile do
       {:floki, "~> 0.29.0"},
       {:poison, "~> 3.0"},
       {:uuid, "~> 1.7.5", [hex: "uuid_erl", repo: "hexpm"]},
-      {:sqlite_ecto2, "~> 2.4.0"},
+      {:ecto, "~> 3.11.0"},
+      {:ecto_sql, "~> 3.11.0"},
+      {:ecto_sqlite3, "~> 0.13.0"},
+      {:exqlite, "~> 0.11.0"},
 
       # Docs dependencies
       {:earmark, "~> 1.3.6", only: :docs},

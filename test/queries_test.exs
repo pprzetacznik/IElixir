@@ -4,10 +4,19 @@ defmodule IElixir.QueriesTest do
 
   setup do
     IElixir.Sandbox.clean()
-    Mix.Tasks.Ecto.Migrate.run(["-r", "IElixir.Repo"])
+    IElixir.Repo.query!("DROP TABLE IF EXISTS history")
+    IElixir.Repo.query!("CREATE TABLE history (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      input TEXT,
+      output TEXT,
+      session TEXT,
+      line_number INTEGER,
+      inserted_at TEXT,
+      updated_at TEXT
+    )")
 
     on_exit fn ->
-      Mix.Tasks.Ecto.Rollback.run(["-r", "IElixir.Repo"])
+      IElixir.Repo.query!("DROP TABLE IF EXISTS history")
     end
   end
 end

@@ -148,6 +148,7 @@ defmodule Boyle do
         Mix.State.clear_cache()
         # Mix.ProjectStack.clear_stack()
         environment_path = environment_path()
+        :code.set_path(state().initial_paths)
         state = state()
 
         :code.get_path |> Enum.map(fn path ->
@@ -160,7 +161,7 @@ defmodule Boyle do
         end)
         :code.all_loaded |> Enum.map(fn {module, path} ->
           if {module, path} not in state.initial_modules and
-            (String.contains?(to_string(path), environment_path) or "" == to_string(path)) and
+            String.contains?(to_string(path), environment_path) and
             not String.contains?(to_string(module), ["Elixir.Boyle", "Elixir.IElixir"]) do
 
             purge([module])
