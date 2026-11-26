@@ -3,12 +3,15 @@ FROM jupyter/base-notebook
 USER root
 
 ENV WORK_DIR=/opt
+ARG ERL_VERSION_SHORT=26
+ARG ERL_VERSION=26.2.3
+ARG ELIXIR_VERSION=1.15.7
 ENV ERL_TOP=$WORK_DIR/otp \
     ELIXIR_TOP=$WORK_DIR/elixir
 ENV PATH=$ERL_TOP/target/bin:$ELIXIR_TOP/bin:$PATH \
-    ERL_VERSION_SHORT=26 \
-    ERL_VERSION=26.2.2 \
-    ELIXIR_VERSION=1.14.5
+    ERL_VERSION_SHORT=$ERL_VERSION_SHORT \
+    ERL_VERSION=$ERL_VERSION \
+    ELIXIR_VERSION=$ELIXIR_VERSION
 
 RUN set -xe \
   && apt-get update \
@@ -20,8 +23,7 @@ RUN set -xe \
     autoconf \
     g++ \
     gcc \
-    libncurses5-dev \
-    libncursesw5-dev \
+    libncurses-dev \
     libssl-dev \
     libxslt-dev \
     libwxbase3.0-dev \

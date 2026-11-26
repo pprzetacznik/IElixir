@@ -37,7 +37,7 @@ jobs:
           tags: pprzetacznik/ielixir-requirements:${{ inputs.version }}
           build-args: |
             ERL_VERSION=26.2.3
-            ELIXIR_VERSION=1.14.2
+            ELIXIR_VERSION=1.15.7
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
