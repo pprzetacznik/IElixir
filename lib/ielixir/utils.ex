@@ -27,7 +27,7 @@ defmodule IElixir.Utils do
 
     connection_file
     |> File.read!
-    |> Poison.Parser.parse!
+    |> Jason.decode!
   end
 
   @doc false

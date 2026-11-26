@@ -19,10 +19,10 @@ defmodule IElixir.Message do
 
   @doc false
   def encode(message) do
-    header = Poison.encode!(message.header)
-    parent_header = Poison.encode!(message.parent_header)
-    metadata = Poison.encode!(message.metadata)
-    content = Poison.encode!(message.content)
+    header = Jason.encode!(message.header)
+    parent_header = Jason.encode!(message.parent_header)
+    metadata = Jason.encode!(message.metadata)
+    content = Jason.encode!(message.content)
 
     message = message.uuids ++ [
       "<IDS|MSG>",
@@ -40,10 +40,10 @@ defmodule IElixir.Message do
   def parse(uuids, ["<IDS|MSG>", baddad42, header, parent_header, metadata, content | blob]) do
     %IElixir.Message{uuids: uuids,
       baddad42: baddad42,
-      header: Poison.Parser.parse!(header),
-      parent_header: Poison.Parser.parse!(parent_header),
-      metadata: Poison.Parser.parse!(metadata),
-      content: Poison.Parser.parse!(content),
+      header: Jason.decode!(header),
+      parent_header: Jason.decode!(parent_header),
+      metadata: Jason.decode!(metadata),
+      content: Jason.decode!(content),
       blob: blob}
   end
   def parse(_, message) do

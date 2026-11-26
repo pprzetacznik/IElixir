@@ -1,6 +1,7 @@
 /_build
 /cover
 /deps
+/doc
 /.idea
 erl_crash.dump
 *.ez
@@ -12,4 +13,5 @@ resources/ielixir/kernel.json
 
 .elixir_ls
 *.sqlite3
+*.sqlite3-*
 envs

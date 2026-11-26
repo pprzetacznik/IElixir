@@ -29,24 +29,24 @@ defmodule IElixir.Mixfile do
   def application do
     [
       mod: {IElixir, []},
-      applications: [:logger, :iex, :ecto, :ecto_sql, :ecto_sqlite3, :erlzmq, :poison, :uuid, :floki]
+      applications: [:logger, :iex, :ecto, :ecto_sql, :ecto_sqlite3, :erlzmq, :jason, :uuid, :floki]
     ]
   end
 
   defp deps do
     [
       {:erlzmq, "~> 3.0"},
-      {:floki, "~> 0.29.0"},
-      {:poison, "~> 3.0"},
+      {:floki, "~> 0.38.5"},
+      {:jason, "~> 1.4"},
       {:uuid, "~> 1.7.5", [hex: "uuid_erl", repo: "hexpm"]},
-      {:ecto, "~> 3.11.0"},
-      {:ecto_sql, "~> 3.11.0"},
-      {:ecto_sqlite3, "~> 0.13.0"},
-      {:exqlite, "~> 0.11.0"},
+      {:ecto, "~> 3.14"},
+      {:ecto_sql, "~> 3.14"},
+      {:ecto_sqlite3, "~> 0.26"},
+      {:exqlite, "~> 0.40"},
 
       # Docs dependencies
       {:ex_doc, "~> 0.40", only: :docs, runtime: false},
-      {:inch_ex, "~> 2.0.0", only: :docs},
+      {:inch_ex, "~> 2.1.0", only: :docs},
 
       # Test dependencies
       {:excoveralls, "~> 0.18", only: :test}

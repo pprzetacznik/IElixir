@@ -27,7 +27,7 @@ jobs:
       HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
     steps:
       - name: Checkout IElixir project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Set version
@@ -40,8 +40,8 @@ jobs:
           echo ${{ inputs.build_version }} > VERSION
       - name: Install prerequisites
         run: |
-          sudo apt install -y openssl libncurses-dev
-          sudo apt install -y libzmq3-dev libsqlite3-dev libssl-dev
+          sudo apt-get install -y openssl libncurses-dev
+          sudo apt-get install -y libzmq3-dev libsqlite3-dev libssl-dev
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
         with:
@@ -51,9 +51,7 @@ jobs:
         run: |
           MIX_ENV=docs mix deps.get
           MIX_ENV=docs mix compile
-          export ERL_FLAGS="$(for d in "$PWD"/_build/docs/lib/*/ebin; do printf -- '-pa %s ' "$d"; done)"
-          MIX_ENV=docs mix docs
-          INCH_SKIP_REPORT=true MIX_ENV=docs mix inch.report
+          INCH_SKIP_REPORT=true MIX_ENV=docs mix run --no-start -e 'Path.wildcard("_build/docs/lib/*/ebin") |> Enum.each(&Code.prepend_path/1); Mix.Task.run("docs"); Mix.Task.run("inch.report")'
           MIX_ENV=test mix coveralls.github
       - name: Publish documentation
         if: inputs.is_release == 'true'
