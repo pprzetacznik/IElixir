@@ -20,7 +20,7 @@ on:
 
 jobs:
   docs:
-    name: Documentation and coverage reports
+    name: Documentation and unit tests
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -47,7 +47,7 @@ jobs:
         with:
           otp-version: 'OTP-29.1.3'
           elixir-version: 'v1.20.5-otp-29'
-      - name: Generate documentation
+      - name: Generate documentation and run tests
         run: |
           MIX_ENV=docs mix deps.get
           MIX_ENV=test mix deps.get
@@ -60,7 +60,7 @@ jobs:
             Mix.Task.run("docs")
             Mix.Task.run("inch.report")
           '
-          MIX_ENV=test mix coveralls.github
+          MIX_ENV=test mix test
       - name: Publish documentation
         if: inputs.is_release == 'true'
         run: |
