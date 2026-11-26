@@ -27,7 +27,7 @@ jobs:
       HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
     steps:
       - name: Checkout IElixir project
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Set version
         if: inputs.is_release == 'true'
         run: |
@@ -38,13 +38,13 @@ jobs:
           echo ${{ inputs.build_version }} > VERSION
       - name: Install prerequisites
         run: |
-          sudo apt install -y openssl libncurses5
+          sudo apt install -y openssl libncurses-dev
           sudo apt install -y libzmq3-dev libsqlite3-dev libssl-dev
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
         with:
           otp-version: 'OTP-26.0'
-          elixir-version: 'v1.14-otp-26'
+          elixir-version: 'v1.15-otp-26'
       - name: Generate documentation
         run: |
           MIX_ENV=docs mix deps.get

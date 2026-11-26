@@ -20,12 +20,12 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu-22.04']
-        elixir-version: ['1.14']
+        elixir-version: ['1.15']
         otp-version: ['26']
         python-version: ['3.8', '3.12']
     steps:
     - name: Checkout IElixir project
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Set version
       if: inputs.is_release == 'true'
       run: |
@@ -36,7 +36,7 @@ jobs:
         echo ${{ inputs.build_version }} > VERSION
     - name: Install prerequisites
       run: |
-        sudo apt install -y openssl libncurses5
+        sudo apt install -y openssl libncurses-dev
         sudo apt install -y libzmq3-dev libsqlite3-dev libssl-dev
     - name: Set up Elixir
       uses: erlef/setup-beam@v1
@@ -44,7 +44,7 @@ jobs:
         otp-version: 'OTP-${{ matrix.otp-version }}'
         elixir-version: 'v${{ matrix.elixir-version }}-otp-${{ matrix.otp-version }}'
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install python packages
@@ -52,7 +52,7 @@ jobs:
         pip install pip --upgrade
         pip install -r jupyter_kernel_test/requirements.txt
     - name: Restore dependencies cache
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: deps
         key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
